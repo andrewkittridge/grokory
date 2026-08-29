@@ -44,6 +44,7 @@ export function CopyLinkButton({
     <button
       type="button"
       onClick={onCopy}
+      aria-live="polite"
       className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted"
     >
       {copied ? <Check className="size-4" /> : <Copy className="size-4" />}

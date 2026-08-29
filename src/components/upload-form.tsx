@@ -1,10 +1,8 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
-import { createListing, previewShareLink } from "@/lib/actions";
-import { parseShareUrl } from "@/lib/bot-url";
+import { useActionState, useEffect, useState } from "react";
+import { createListing, lookupShareLink } from "@/lib/actions";
 import { CATEGORIES } from "@/lib/types";
-import type { BotPreview } from "@/lib/types";
 import { Label } from "@/components/ui/label";
 import { BotCover } from "@/components/bot-cover";
 import { cn } from "@/lib/utils";
@@ -19,42 +17,26 @@ const areaClass =
 
 export function UploadForm() {
   const [state, action, pending] = useActionState(createListing, initial);
-  const [previewPending, startPreview] = useTransition();
+  const [lookupState, lookupAction, lookupPending] = useActionState(
+    lookupShareLink,
+    {}
+  );
   const [shareUrl, setShareUrl] = useState("");
-  const [preview, setPreview] = useState<BotPreview | null>(null);
-  const [lookupError, setLookupError] = useState<string | null>(null);
+  const [hideLookupError, setHideLookupError] = useState(false);
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [description, setDescription] = useState("");
 
-  function lookup() {
-    const value = shareUrl.trim();
-    if (!value) {
-      setPreview(null);
-      setLookupError("Paste a Grok Bot share link first.");
-      return;
-    }
-    if (!parseShareUrl(value)) {
-      setPreview(null);
-      setLookupError(
-        "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
-      );
-      return;
-    }
-    setLookupError(null);
-    startPreview(async () => {
-      const result = await previewShareLink(value);
-      if (!result.ok) {
-        setPreview(null);
-        setLookupError(result.error);
-        return;
-      }
-      setPreview(result.preview);
-      setTitle(result.preview.title);
-      setAuthorName(result.preview.authorName);
-      setDescription(result.preview.description);
-    });
-  }
+  const preview = lookupState.preview ?? null;
+  const lookupError =
+    hideLookupError || !lookupState.error ? null : lookupState.error;
+
+  useEffect(() => {
+    if (!lookupState.preview) return;
+    setTitle(lookupState.preview.title);
+    setAuthorName(lookupState.preview.authorName);
+    setDescription(lookupState.preview.description);
+  }, [lookupState.preview]);
 
   return (
     <form action={action} noValidate className="space-y-6">
@@ -65,18 +47,23 @@ export function UploadForm() {
             id="shareUrl"
             name="shareUrl"
             value={shareUrl}
-            onChange={(event) => setShareUrl(event.target.value)}
+            onChange={(event) => {
+              setShareUrl(event.target.value);
+              setHideLookupError(true);
+            }}
             placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
             className={cn(fieldClass, "font-mono")}
             autoComplete="off"
           />
           <button
-            type="button"
-            className="h-10 shrink-0 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted"
-            disabled={previewPending}
-            onClick={lookup}
+            type="submit"
+            formAction={lookupAction}
+            formNoValidate
+            className="h-10 shrink-0 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50"
+            disabled={lookupPending}
+            onClick={() => setHideLookupError(false)}
           >
-            {previewPending ? "Looking up…" : "Look up"}
+            {lookupPending ? "Looking up…" : "Look up"}
           </button>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -90,7 +77,10 @@ export function UploadForm() {
           role="alert"
           className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
         >
-          {lookupError} You can still name it below and publish.
+          {lookupError}
+          {lookupState.soft
+            ? " You can still name it below and publish."
+            : null}
         </p>
       ) : null}
 

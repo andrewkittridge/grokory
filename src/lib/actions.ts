@@ -18,10 +18,30 @@ export type ActionState = {
   slug?: string;
 };
 
-export async function previewShareLink(url: string): Promise<
-  { ok: true; preview: BotPreview } | { ok: false; error: string }
-> {
-  return fetchBotPreview(url);
+export type LookupState = {
+  error?: string;
+  soft?: boolean;
+  preview?: BotPreview;
+};
+
+export async function lookupShareLink(
+  _prev: LookupState,
+  formData: FormData
+): Promise<LookupState> {
+  const shareInput = String(formData.get("shareUrl") ?? "");
+  if (!shareInput.trim()) {
+    return { error: "Paste a Grok Bot share link first." };
+  }
+  const parsed = parseShareUrl(shareInput);
+  if (!parsed) {
+    return {
+      error:
+        "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN",
+    };
+  }
+  const result = await fetchBotPreview(parsed.botUrl);
+  if (!result.ok) return { error: result.error, soft: true };
+  return { preview: result.preview };
 }
 
 export async function createListing(
@@ -119,11 +139,15 @@ export async function recordAdd(slug: string) {
   revalidatePath(`/templates/${slug}`);
 }
 
-export async function castVote(templateId: string, value: VoteValue) {
+export async function castVote(formData: FormData) {
+  const templateId = String(formData.get("templateId") ?? "").trim();
+  const raw = String(formData.get("value") ?? "");
+  if (!templateId || (raw !== "1" && raw !== "-1")) return;
+
+  const value = Number(raw) as VoteValue;
   const voterId = await getVoterId();
   const updated = await setVote(voterId, templateId, value);
   revalidatePath("/");
   revalidatePath("/templates");
   if (updated) revalidatePath(`/templates/${updated.slug}`);
-  return updated;
 }

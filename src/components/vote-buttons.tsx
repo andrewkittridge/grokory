@@ -1,10 +1,41 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import type { ReactNode } from "react";
+import { useFormStatus } from "react-dom";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { castVote } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import type { VoteValue } from "@/lib/types";
+
+function VoteSubmit({
+  value,
+  active,
+  label,
+  children,
+}: {
+  value: VoteValue;
+  active: boolean;
+  label: string;
+  children: ReactNode;
+}) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      name="value"
+      value={value}
+      aria-label={label}
+      aria-pressed={active}
+      disabled={pending}
+      className={cn(
+        "inline-flex size-8 items-center justify-center rounded-md hover:bg-muted disabled:opacity-50",
+        active && "text-primary"
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
 export function VoteButtons({
   templateId,
@@ -17,74 +48,29 @@ export function VoteButtons({
   userVote: 0 | VoteValue;
   layout?: "column" | "row";
 }) {
-  const [pending, start] = useTransition();
-  const [optimistic, setOptimistic] = useOptimistic(
-    { score, userVote },
-    (
-      current,
-      next: VoteValue
-    ): { score: number; userVote: 0 | VoteValue } => {
-      if (current.userVote === next) {
-        return { score: current.score - next, userVote: 0 };
-      }
-      if (current.userVote === 0) {
-        return { score: current.score + next, userVote: next };
-      }
-      return {
-        score: current.score - current.userVote + next,
-        userVote: next,
-      };
-    }
-  );
-
-  function vote(value: VoteValue) {
-    start(async () => {
-      setOptimistic(value);
-      await castVote(templateId, value);
-    });
-  }
-
   return (
-    <div
+    <form
+      action={castVote}
       className={cn(
         "flex items-center gap-0.5",
         layout === "column" ? "flex-col" : "flex-row"
       )}
     >
-      <button
-        type="button"
-        aria-label="Upvote"
-        aria-pressed={optimistic.userVote === 1}
-        disabled={pending}
-        onClick={() => vote(1)}
-        className={cn(
-          "inline-flex size-8 items-center justify-center rounded-md hover:bg-muted",
-          optimistic.userVote === 1 && "text-primary"
-        )}
-      >
+      <input type="hidden" name="templateId" value={templateId} />
+      <VoteSubmit value={1} active={userVote === 1} label="Upvote">
         <ChevronUp className="size-5" />
-      </button>
+      </VoteSubmit>
       <span
         className={cn(
           "min-w-8 text-center font-mono text-sm tabular-nums",
-          optimistic.userVote !== 0 && "text-primary"
+          userVote !== 0 && "text-primary"
         )}
       >
-        {optimistic.score}
+        {score}
       </span>
-      <button
-        type="button"
-        aria-label="Downvote"
-        aria-pressed={optimistic.userVote === -1}
-        disabled={pending}
-        onClick={() => vote(-1)}
-        className={cn(
-          "inline-flex size-8 items-center justify-center rounded-md hover:bg-muted",
-          optimistic.userVote === -1 && "text-primary"
-        )}
-      >
+      <VoteSubmit value={-1} active={userVote === -1} label="Downvote">
         <ChevronDown className="size-5" />
-      </button>
-    </div>
+      </VoteSubmit>
+    </form>
   );
 }
