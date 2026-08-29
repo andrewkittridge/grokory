@@ -2,7 +2,29 @@
 
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+
+function copyText(text: string) {
+  return (async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+    } catch {
+      // Fall through to execCommand in environments without clipboard permission.
+    }
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.left = "-9999px";
+    document.body.appendChild(field);
+    field.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(field);
+    if (!ok) throw new Error("copy failed");
+  })();
+}
 
 export function CopyLinkButton({
   url,
@@ -15,7 +37,7 @@ export function CopyLinkButton({
 
   async function onCopy() {
     try {
-      await navigator.clipboard.writeText(url);
+      await copyText(url);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
@@ -24,9 +46,13 @@ export function CopyLinkButton({
   }
 
   return (
-    <Button type="button" variant="outline" onClick={onCopy}>
-      {copied ? <Check data-icon="inline-start" /> : <Copy data-icon="inline-start" />}
+    <button
+      type="button"
+      onClick={onCopy}
+      className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted"
+    >
+      {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
       {copied ? "Copied" : label}
-    </Button>
+    </button>
   );
 }
