@@ -39,6 +39,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         <div className="flex flex-1 flex-col">{children}</div>
         <SiteFooter />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(window.__grokoryCopy)return;window.__grokoryCopy=1;document.addEventListener("click",function(e){var n=e.target;if(n&&n.nodeType===3)n=n.parentElement;var el=n&&n.closest&&n.closest("[data-copy-url]");if(!el)return;var u=el.getAttribute("data-copy-url");if(!u)return;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).catch(function(){})}},true)})();`,
+          }}
+        />
       </body>
     </html>
   );
