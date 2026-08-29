@@ -1,8 +1,8 @@
 import { CATEGORIES, type Category } from "./types";
 
-const BOT_ID = /^[A-Za-z0-9_-]{8,64}$/;
 const BOT_PATH =
   /^(?:https?:\/\/)?(?:www\.)?x\.ai\/bot\/([A-Za-z0-9_-]{8,64})\/?(?:\?.*)?$/i;
+const BARE_ID = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_-]{12,64}$/;
 
 export function parseShareUrl(
   input: string
@@ -16,7 +16,7 @@ export function parseShareUrl(
     return { botId, botUrl: `https://x.ai/bot/${botId}` };
   }
 
-  if (BOT_ID.test(trimmed)) {
+  if (BARE_ID.test(trimmed)) {
     return { botId: trimmed, botUrl: `https://x.ai/bot/${trimmed}` };
   }
 

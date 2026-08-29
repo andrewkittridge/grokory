@@ -20,9 +20,8 @@ function copyText(text: string) {
     field.style.left = "-9999px";
     document.body.appendChild(field);
     field.select();
-    const ok = document.execCommand("copy");
+    document.execCommand("copy");
     document.body.removeChild(field);
-    if (!ok) throw new Error("copy failed");
   })();
 }
 
@@ -35,14 +34,10 @@ export function CopyLinkButton({
 }) {
   const [copied, setCopied] = useState(false);
 
-  async function onCopy() {
-    try {
-      await copyText(url);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      setCopied(false);
-    }
+  function onCopy() {
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+    void copyText(url);
   }
 
   return (

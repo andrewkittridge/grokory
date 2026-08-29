@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s · Grokory",
   },
   description:
-    "A public gallery of Grok Bot share links. Find staff picks, paste your x.ai/bot URL, and let other people Add to Grok Bot.",
+    "A public ranked board of Grok Bot share links. Upvote the good ones, paste your x.ai/bot URL, and Add to Grok Bot.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

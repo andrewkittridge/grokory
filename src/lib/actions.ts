@@ -2,10 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { addTemplate, findByBotId, incrementAdds as bumpAdds } from "./templates-store";
+import {
+  addTemplate,
+  findByBotId,
+  incrementAdds as bumpAdds,
+  setVote,
+} from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import { isCategory, parseShareUrl, parseTags, slugify } from "./bot-url";
-import type { BotPreview, BotTemplate } from "./types";
+import { getVoterId } from "./voter";
+import type { BotPreview, BotTemplate, VoteValue } from "./types";
 
 export type ActionState = {
   error?: string;
@@ -60,10 +66,7 @@ export async function createListing(
 
   if (resolvedTitle.length < 2) {
     return {
-      error:
-        lookedUp.ok
-          ? "Give the bot a name."
-          : lookedUp.error,
+      error: lookedUp.ok ? "Give the bot a name." : lookedUp.error,
     };
   }
   if (resolvedDescription.length < 12) {
@@ -114,4 +117,13 @@ export async function recordAdd(slug: string) {
   revalidatePath("/");
   revalidatePath("/templates");
   revalidatePath(`/templates/${slug}`);
+}
+
+export async function castVote(templateId: string, value: VoteValue) {
+  const voterId = await getVoterId();
+  const updated = await setVote(voterId, templateId, value);
+  revalidatePath("/");
+  revalidatePath("/templates");
+  if (updated) revalidatePath(`/templates/${updated.slug}`);
+  return updated;
 }

@@ -2,6 +2,7 @@
 
 import { useActionState, useState, useTransition } from "react";
 import { createListing, previewShareLink } from "@/lib/actions";
+import { parseShareUrl } from "@/lib/bot-url";
 import { CATEGORIES } from "@/lib/types";
 import type { BotPreview } from "@/lib/types";
 import { Label } from "@/components/ui/label";
@@ -29,7 +30,15 @@ export function UploadForm() {
   function lookup() {
     const value = shareUrl.trim();
     if (!value) {
+      setPreview(null);
       setLookupError("Paste a Grok Bot share link first.");
+      return;
+    }
+    if (!parseShareUrl(value)) {
+      setPreview(null);
+      setLookupError(
+        "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
+      );
       return;
     }
     setLookupError(null);

@@ -1,13 +1,15 @@
-import type { BotTemplate, TemplateFilters } from "./types";
+import type { ListedTemplate, TemplateFilters } from "./types";
+import { sortTemplates } from "./rank";
 
 export function filterTemplates(
-  templates: BotTemplate[],
+  templates: ListedTemplate[],
   filters: TemplateFilters
 ) {
   const q = filters.q?.trim().toLowerCase();
-  const category = filters.category && filters.category !== "all"
-    ? filters.category
-    : undefined;
+  const category =
+    filters.category && filters.category !== "all"
+      ? filters.category
+      : undefined;
   const origin =
     filters.origin && filters.origin !== "all" ? filters.origin : undefined;
 
@@ -30,27 +32,26 @@ export function filterTemplates(
   });
 }
 
-export function sortByNewest(templates: BotTemplate[]) {
-  return [...templates].sort(
-    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
-  );
-}
-
-export function featuredTemplates(templates: BotTemplate[]) {
+export function featuredTemplates(templates: ListedTemplate[]) {
   return templates.filter((template) => template.featured);
 }
 
-export function communityTemplates(templates: BotTemplate[]) {
-  return sortByNewest(
-    templates.filter((template) => template.origin === "community")
+export function communityTemplates(templates: ListedTemplate[]) {
+  return sortTemplates(
+    templates.filter((template) => template.origin === "community"),
+    "hot"
   );
 }
 
-export function relatedTemplates(templates: BotTemplate[], current: BotTemplate) {
-  return templates
-    .filter(
+export function relatedTemplates(
+  templates: ListedTemplate[],
+  current: ListedTemplate
+) {
+  return sortTemplates(
+    templates.filter(
       (template) =>
         template.slug !== current.slug && template.category === current.category
-    )
-    .slice(0, 3);
+    ),
+    "hot"
+  ).slice(0, 3);
 }

@@ -16,7 +16,7 @@ export function SiteHeader() {
         <Link href="/" className="flex items-baseline gap-2" onClick={() => setMenuOpen(false)}>
           <span className="font-heading text-xl tracking-tight">Grokory</span>
           <span className="hidden text-[11px] tracking-[0.18em] text-muted-foreground uppercase sm:inline">
-            Grok Bot library
+            Grok Bot board
           </span>
         </Link>
         <nav className="hidden items-center gap-1 sm:flex">
@@ -49,7 +49,7 @@ export function SiteHeader() {
       {menuOpen ? (
         <div
           id="mobile-nav"
-          className="border-t border-border bg-background sm:hidden"
+          className="fixed inset-x-0 top-14 z-50 border-b border-border bg-background shadow-lg sm:hidden"
         >
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3">
             <Link

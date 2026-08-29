@@ -7,6 +7,7 @@ function hrefFor(params: {
   q?: string;
   category?: string;
   origin?: string;
+  sort?: string;
 }) {
   const search = new URLSearchParams();
   if (params.q) search.set("q", params.q);
@@ -16,6 +17,9 @@ function hrefFor(params: {
   if (params.origin && params.origin !== "all") {
     search.set("origin", params.origin);
   }
+  if (params.sort && params.sort !== "hot") {
+    search.set("sort", params.sort);
+  }
   const qs = search.toString();
   return qs ? `/templates?${qs}` : "/templates";
 }
@@ -24,16 +28,19 @@ export function BotFilters({
   q,
   category,
   origin,
+  sort,
 }: {
   q: string;
   category: string;
   origin: string;
+  sort: string;
 }) {
   return (
     <div className="space-y-4">
       <form action="/templates" className="flex flex-col gap-3 sm:flex-row">
         <input type="hidden" name="category" value={category} />
         <input type="hidden" name="origin" value={origin} />
+        <input type="hidden" name="sort" value={sort} />
         <label className="sr-only" htmlFor="q">
           Search bots
         </label>
@@ -52,8 +59,23 @@ export function BotFilters({
         </button>
       </form>
       <div className="flex flex-wrap gap-1.5">
+        {[
+          { value: "hot", label: "Hot" },
+          { value: "top", label: "Top" },
+          { value: "new", label: "New" },
+        ].map((item) => (
+          <FilterChip
+            key={item.value}
+            href={hrefFor({ q, category, origin, sort: item.value })}
+            active={(sort || "hot") === item.value}
+          >
+            {item.label}
+          </FilterChip>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
         <FilterChip
-          href={hrefFor({ q, origin, category: "all" })}
+          href={hrefFor({ q, origin, sort, category: "all" })}
           active={!category || category === "all"}
         >
           All jobs
@@ -61,7 +83,7 @@ export function BotFilters({
         {CATEGORIES.map((item) => (
           <FilterChip
             key={item}
-            href={hrefFor({ q, origin, category: item })}
+            href={hrefFor({ q, origin, sort, category: item })}
             active={category === item}
           >
             {item}
@@ -76,7 +98,7 @@ export function BotFilters({
         ].map((item) => (
           <FilterChip
             key={item.value}
-            href={hrefFor({ q, category, origin: item.value })}
+            href={hrefFor({ q, category, sort, origin: item.value })}
             active={(origin || "all") === item.value}
           >
             {item.label}

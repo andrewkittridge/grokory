@@ -14,6 +14,16 @@ export type Category = (typeof CATEGORIES)[number];
 
 export type TemplateOrigin = "curated" | "community";
 
+export type SortMode = "hot" | "top" | "new";
+
+export type VoteValue = 1 | -1;
+
+export type Vote = {
+  voterId: string;
+  templateId: string;
+  value: VoteValue;
+};
+
 export type BotTemplate = {
   id: string;
   slug: string;
@@ -34,6 +44,11 @@ export type BotTemplate = {
   adds: number;
 };
 
+export type ListedTemplate = BotTemplate & {
+  score: number;
+  userVote: 0 | VoteValue;
+};
+
 export type BotPreview = {
   botId: string;
   botUrl: string;
@@ -48,4 +63,5 @@ export type TemplateFilters = {
   q?: string;
   category?: string;
   origin?: "all" | TemplateOrigin;
+  sort?: SortMode;
 };

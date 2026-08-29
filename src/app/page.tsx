@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { communityTemplates, featuredTemplates } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { CATEGORIES } from "@/lib/types";
+import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const templates = await listTemplates();
+  const templates = await listTemplates(await readVoterId());
   const featured = featuredTemplates(templates);
   const community = communityTemplates(templates).slice(0, 6);
 
@@ -17,7 +18,7 @@ export default async function HomePage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
       <section className="max-w-3xl">
         <p className="text-xs tracking-[0.22em] text-primary uppercase">
-          Public Grok Bot index
+          Public Grok Bot board
         </p>
         <h1 className="font-heading mt-3 text-4xl leading-[1.1] tracking-tight sm:text-6xl">
           Find Grok Bots worth adding.
@@ -27,12 +28,12 @@ export default async function HomePage() {
           <span className="font-mono text-sm text-foreground">
             x.ai/bot/N92u9t1nHlL_gtgk2nAeN
           </span>
-          . Grokory is the place to browse those share links, then hit{" "}
+          . Upvote the good ones so they rise. Then{" "}
           <span className="text-foreground">Add to Grok Bot</span> on x.ai.
         </p>
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Button size="lg" nativeButton={false} render={<Link href="/templates" />}>
-            Browse the library
+            Browse the board
           </Button>
           <Button
             size="lg"
@@ -59,8 +60,8 @@ export default async function HomePage() {
           },
           {
             step: "03",
-            title: "Anyone can add it",
-            body: "Visitors open the listing and Add to Grok Bot. They get a copy, not your computer.",
+            title: "Vote it up",
+            body: "The board ranks by Hot, Top, and New. No account — one vote per browser.",
           },
         ].map((item) => (
           <div
@@ -125,15 +126,13 @@ export default async function HomePage() {
       <section className="mt-14">
         <div className="mb-5 flex items-end justify-between gap-4">
           <div>
-            <h2 className="font-heading text-3xl tracking-tight">
-              Fresh from the community
-            </h2>
+            <h2 className="font-heading text-3xl tracking-tight">Hot from the community</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Anyone can paste a share link. No account.
+              Ranked by votes. Anyone can paste a share link — no account.
             </p>
           </div>
-          <Link href="/upload" className="text-sm text-primary hover:underline">
-            Share yours
+          <Link href="/templates?origin=community" className="text-sm text-primary hover:underline">
+            Full board
           </Link>
         </div>
         {community.length === 0 ? (

@@ -4,10 +4,12 @@ import { AddBotButton } from "@/components/add-bot-button";
 import { BotCard } from "@/components/bot-card";
 import { BotCover } from "@/components/bot-cover";
 import { CopyLinkButton } from "@/components/copy-link-button";
+import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
 import { formatCount } from "@/lib/bot-url";
+import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
@@ -31,16 +33,17 @@ export default async function TemplateDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const template = await getTemplate(slug);
+  const voterId = await readVoterId();
+  const template = await getTemplate(slug, voterId);
   if (!template) notFound();
 
-  const related = relatedTemplates(await listTemplates(), template);
+  const related = relatedTemplates(await listTemplates(voterId), template);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <p className="text-sm text-muted-foreground">
         <Link href="/templates" className="hover:text-foreground">
-          Library
+          Board
         </Link>
         <span className="mx-2">/</span>
         {template.title}
@@ -89,6 +92,23 @@ export default async function TemplateDetailPage({
         <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
           <div className="rounded-xl border border-border bg-card p-5">
             <p className="text-xs tracking-[0.18em] text-muted-foreground uppercase">
+              Rank
+            </p>
+            <div className="mt-3">
+              <VoteButtons
+                templateId={template.id}
+                score={template.score}
+                userVote={template.userVote}
+                layout="row"
+              />
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {template.score === 1 ? "1 point" : `${template.score} points`} ·{" "}
+              {formatCount(template.adds)} adds
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-card p-5">
+            <p className="text-xs tracking-[0.18em] text-muted-foreground uppercase">
               Share link
             </p>
             <p className="mt-2 break-all font-mono text-xs text-foreground">
@@ -99,7 +119,7 @@ export default async function TemplateDetailPage({
               <CopyLinkButton url={template.botUrl} />
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              {formatCount(template.adds)} adds · listed by {template.submittedBy}
+              Listed by {template.submittedBy}
             </p>
           </div>
         </aside>

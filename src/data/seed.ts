@@ -1,4 +1,4 @@
-import type { BotTemplate } from "@/lib/types";
+import type { BotTemplate, Vote } from "@/lib/types";
 
 export const SEED_TEMPLATES: BotTemplate[] = [
   {
@@ -23,4 +23,19 @@ export const SEED_TEMPLATES: BotTemplate[] = [
     createdAt: "2026-08-20T12:00:00.000Z",
     adds: 128,
   },
+];
+
+export const SEED_VOTES: Vote[] = [
+  { voterId: "seed-voter-01", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-02", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-03", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-04", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-05", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-06", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-07", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-08", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-09", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-10", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-11", templateId: "seed-jarvis", value: 1 },
+  { voterId: "seed-voter-12", templateId: "seed-jarvis", value: -1 },
 ];
