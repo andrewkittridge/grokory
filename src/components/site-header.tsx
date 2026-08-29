@@ -13,7 +13,6 @@ import {
 
 const links = [
   { href: "/templates", label: "Browse" },
-  { href: "/upload", label: "Share a bot" },
 ];
 
 export function SiteHeader() {
