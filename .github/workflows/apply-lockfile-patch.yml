@@ -1,0 +1,26 @@
+name: Apply Neon package-lock patch
+
+on:
+  push:
+    paths:
+      - ".github/apply-lockfile-patch.py"
+      - ".github/workflows/apply-lockfile-patch.yml"
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch package-lock.json from workspace Neon entries
+        run: python3 .github/apply-lockfile-patch.py
+      - name: Commit lockfile and remove helpers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -f .github/apply-lockfile-patch.py .github/workflows/apply-lockfile-patch.yml
+          git add package-lock.json
+          git status
+          git commit -m "Update package-lock for Neon serverless client."
+          git push
