@@ -17,6 +17,7 @@ type StoreFile = {
 };
 
 let queue: Promise<unknown> = Promise.resolve();
+let memoryStore: StoreFile | null = null;
 
 function withLock<T>(fn: () => Promise<T>): Promise<T> {
   const run = queue.then(fn, fn);
@@ -96,8 +97,18 @@ function emptyStore(): StoreFile {
   };
 }
 
+async function persist(store: StoreFile) {
+  memoryStore = store;
+  try {
+    await mkdir(DATA_DIR, { recursive: true });
+    await writeFile(DATA_FILE, JSON.stringify(store, null, 2));
+  } catch {
+    // Vercel’s filesystem is read-only; keep serving seed + in-memory data.
+  }
+}
+
 async function readStore(): Promise<StoreFile> {
-  await mkdir(DATA_DIR, { recursive: true });
+  if (memoryStore) return mergeSeed(memoryStore);
   try {
     const raw = await readFile(DATA_FILE, "utf8");
     const parsed = JSON.parse(raw) as StoreFile | BotTemplate[];
@@ -110,15 +121,12 @@ async function readStore(): Promise<StoreFile> {
       votes: Array.isArray(parsed.votes) ? parsed.votes : [],
     });
   } catch {
-    const store = emptyStore();
-    await writeFile(DATA_FILE, JSON.stringify(store, null, 2));
-    return store;
+    return emptyStore();
   }
 }
 
 async function writeStore(store: StoreFile) {
-  await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(DATA_FILE, JSON.stringify(store, null, 2));
+  await persist(store);
 }
 
 export async function listTemplates(voterId?: string) {
