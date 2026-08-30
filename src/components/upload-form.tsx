@@ -4,16 +4,17 @@ import { useActionState, useEffect, useState } from "react";
 import { createListing, lookupShareLink } from "@/lib/actions";
 import { CATEGORIES } from "@/lib/types";
 import { Label } from "@/components/ui/label";
+import { Frame } from "@/components/frame";
 import { BotCover } from "@/components/bot-cover";
 import { cn } from "@/lib/utils";
 
 const initial: { error?: string; slug?: string } = {};
 
 const fieldClass =
-  "h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-10 w-full rounded-lg border border-input bg-canvas-soft px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 const areaClass =
-  "min-h-20 w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "min-h-20 w-full rounded-lg border border-input bg-canvas-soft px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function UploadForm() {
   const [state, action, pending] = useActionState(createListing, initial);
@@ -59,7 +60,7 @@ export function UploadForm() {
             type="submit"
             formAction={lookupAction}
             formNoValidate
-            className="h-10 shrink-0 rounded-lg border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50"
+            className="h-10 shrink-0 rounded-full border border-pill-border px-4 text-sm font-normal hover:bg-white/5 disabled:opacity-50"
             disabled={lookupPending}
             onClick={() => setHideLookupError(false)}
           >
@@ -85,20 +86,20 @@ export function UploadForm() {
       ) : null}
 
       {preview ? (
-        <div className="overflow-hidden rounded-xl ring-1 ring-foreground/10">
+        <Frame staticFrame>
           <BotCover
             botId={preview.botId}
             title={preview.title}
             ogImage={preview.ogImage}
             className="h-32"
           />
-          <div className="bg-card px-4 py-3">
-            <p className="font-heading text-lg">{preview.title}</p>
+          <div className="px-4 py-3">
+            <p className="text-lg font-normal tracking-tight">{preview.title}</p>
             <p className="text-sm text-muted-foreground">
               by {preview.authorName}
             </p>
           </div>
-        </div>
+        </Frame>
       ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -207,7 +208,7 @@ export function UploadForm() {
       <button
         type="submit"
         disabled={pending}
-        className="inline-flex h-9 w-full items-center justify-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80 disabled:opacity-50 sm:w-auto"
+        className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary px-5 text-sm font-normal text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
       >
         {pending ? "Publishing…" : "Publish to Grokory"}
       </button>
