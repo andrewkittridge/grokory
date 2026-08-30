@@ -1,4 +1,5 @@
-import type { ListedTemplate, TemplateFilters } from "./types";
+import type { ListedTemplate, TemplateFilters, Category } from "./types";
+import { CATEGORIES } from "./types";
 import { sortTemplates } from "./rank";
 
 export function filterTemplates(
@@ -41,6 +42,16 @@ export function communityTemplates(templates: ListedTemplate[]) {
     templates.filter((template) => template.origin === "community"),
     "hot"
   );
+}
+
+export function populatedCategories(templates: ListedTemplate[]): Category[] {
+  const present = new Set(templates.map((template) => template.category));
+  return CATEGORIES.filter((category) => present.has(category));
+}
+
+export function hasBothOrigins(templates: ListedTemplate[]) {
+  const origins = new Set(templates.map((template) => template.origin));
+  return origins.has("curated") && origins.has("community");
 }
 
 export function relatedTemplates(
