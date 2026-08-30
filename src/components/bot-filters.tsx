@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { CATEGORIES } from "@/lib/types";
+import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function hrefFor(params: {
@@ -29,11 +29,15 @@ export function BotFilters({
   category,
   origin,
   sort,
+  jobs,
+  showOrigin,
 }: {
   q: string;
   category: string;
   origin: string;
   sort: string;
+  jobs: Category[];
+  showOrigin: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -49,11 +53,11 @@ export function BotFilters({
           name="q"
           defaultValue={q}
           placeholder="Search names, authors, jobs…"
-          className="h-10 w-full rounded-lg border border-input bg-background px-3 font-mono text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full rounded-full border border-input bg-canvas-soft px-4 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
         <button
           type="submit"
-          className="h-10 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground"
+          className="h-10 rounded-full bg-primary px-5 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
         >
           Search
         </button>
@@ -73,38 +77,42 @@ export function BotFilters({
           </FilterChip>
         ))}
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        <FilterChip
-          href={hrefFor({ q, origin, sort, category: "all" })}
-          active={!category || category === "all"}
-        >
-          All jobs
-        </FilterChip>
-        {CATEGORIES.map((item) => (
+      {jobs.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
           <FilterChip
-            key={item}
-            href={hrefFor({ q, origin, sort, category: item })}
-            active={category === item}
+            href={hrefFor({ q, origin, sort, category: "all" })}
+            active={!category || category === "all"}
           >
-            {item}
+            All jobs
           </FilterChip>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {[
-          { value: "all", label: "Everyone" },
-          { value: "curated", label: "Staff picks" },
-          { value: "community", label: "Community" },
-        ].map((item) => (
-          <FilterChip
-            key={item.value}
-            href={hrefFor({ q, category, sort, origin: item.value })}
-            active={(origin || "all") === item.value}
-          >
-            {item.label}
-          </FilterChip>
-        ))}
-      </div>
+          {jobs.map((item) => (
+            <FilterChip
+              key={item}
+              href={hrefFor({ q, origin, sort, category: item })}
+              active={category === item}
+            >
+              {item}
+            </FilterChip>
+          ))}
+        </div>
+      ) : null}
+      {showOrigin ? (
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { value: "all", label: "Everyone" },
+            { value: "curated", label: "Staff picks" },
+            { value: "community", label: "Community" },
+          ].map((item) => (
+            <FilterChip
+              key={item.value}
+              href={hrefFor({ q, category, sort, origin: item.value })}
+              active={(origin || "all") === item.value}
+            >
+              {item.label}
+            </FilterChip>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -122,10 +130,10 @@ function FilterChip({
     <Link
       href={href}
       className={cn(
-        "rounded-full border px-3 py-1 text-xs tracking-wide transition-colors",
+        "rounded-full border px-3 py-1 text-xs tracking-wide transition-colors duration-200 focus-visible:ring-3 focus-visible:ring-ring/50",
         active
           ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-background/60 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+          : "border-pill-border bg-transparent text-muted-foreground hover:border-white/40 hover:text-foreground"
       )}
     >
       {children}
