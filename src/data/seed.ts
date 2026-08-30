@@ -21,7 +21,7 @@ export const SEED_TEMPLATES: BotTemplate[] = [
     origin: "curated",
     featured: true,
     createdAt: "2026-08-20T12:00:00.000Z",
-    adds: 128,
+    adds: 0,
   },
 ];
 

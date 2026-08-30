@@ -1,25 +1,59 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-border/70">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-8 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
-        <p>
-          Grokory indexes public{" "}
-          <a
-            href="https://x.ai/bot"
-            className="text-foreground underline-offset-4 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
+    <footer className="mt-auto border-t border-border">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <div className="flex flex-col gap-4 border-b border-border py-8 sm:flex-row sm:items-center sm:justify-between">
+          <Link href="/" className="flex items-center gap-2.5 text-foreground">
+            <BrandMark className="size-4" />
+            <span className="text-sm tracking-tight">Grokory</span>
+          </Link>
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+            <Link
+              href="/templates"
+              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              Browse
+            </Link>
+            <Link
+              href="/upload"
+              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              Share
+            </Link>
+            <a
+              href="https://x.ai/bot"
+              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              x.ai/bot
+            </a>
+          </nav>
+        </div>
+        <div className="flex flex-col gap-3 py-6 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            Grokory indexes public{" "}
+            <a
+              href="https://x.ai/bot"
+              className="text-foreground underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Grok Bot
+            </a>{" "}
+            share links. Adding a bot on x.ai copies the template, not the author’s
+            computer or logins.
+          </p>
+          <Link
+            href="/upload"
+            className="shrink-0 font-mono tracking-wide text-foreground uppercase hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
           >
-            Grok Bot
-          </a>{" "}
-          share links. Adding a bot on x.ai copies the template, not the author’s
-          computer or logins.
-        </p>
-        <Link href="/upload" className="text-foreground hover:underline">
-          Share yours
-        </Link>
+            Share yours
+          </Link>
+        </div>
       </div>
     </footer>
   );

@@ -8,7 +8,7 @@ export function CopyLinkButton({
   return (
     <label
       data-copy-url={url}
-      className="copy-share inline-flex h-8 w-full cursor-pointer select-none items-center justify-center rounded-lg border border-border bg-background px-2.5 text-sm font-medium hover:bg-muted sm:w-auto"
+      className="copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-full border border-pill-border bg-transparent px-4 text-sm font-normal hover:bg-white/5"
     >
       <input type="checkbox" className="sr-only" aria-label={label} />
       <span className="copy-share-idle">{label}</span>

@@ -1,49 +1,58 @@
 import Link from "next/link";
 import { Menu } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
+import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="flex min-w-0 items-baseline gap-2">
-          <span className="font-heading text-xl tracking-tight">Grokory</span>
-          <span className="hidden text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
-            Grok Bot board
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5">
+          <BrandMark className="size-[1.15rem] text-foreground" />
+          <span className="text-lg font-normal tracking-tight">Grokory</span>
+          <span className="hidden font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
+            Ranked Grok Bots
           </span>
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">
-          <Link
-            href="/templates"
-            className="inline-flex h-8 items-center rounded-lg px-2.5 text-sm font-medium hover:bg-muted"
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/templates" />}
           >
             Browse
-          </Link>
-          <Link
-            href="/upload"
-            className="inline-flex h-8 items-center rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80"
+          </Button>
+          <Button
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/upload" />}
           >
-            Paste a share link
-          </Link>
+            Share a bot
+          </Button>
         </nav>
         <details className="group relative lg:hidden">
-          <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-sm font-medium hover:bg-muted [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center gap-1.5 rounded-full border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-white/5 [&::-webkit-details-marker]:hidden">
             <Menu className="size-4" aria-hidden="true" />
             Menu
           </summary>
-          <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-background shadow-lg">
-            <nav className="flex flex-col p-1.5">
-              <Link
-                href="/templates"
-                className="rounded-lg px-3 py-2 text-sm hover:bg-muted"
+          <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-md border border-border bg-popover p-1.5 ring-1 ring-white/10">
+            <nav className="flex flex-col gap-1">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                nativeButton={false}
+                render={<Link href="/templates" />}
               >
                 Browse
-              </Link>
-              <Link
-                href="/upload"
-                className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground"
+              </Button>
+              <Button
+                className="w-full"
+                nativeButton={false}
+                render={<Link href="/upload" />}
               >
-                Paste a share link
-              </Link>
+                Share a bot
+              </Button>
             </nav>
           </div>
         </details>

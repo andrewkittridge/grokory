@@ -1,14 +1,24 @@
 import type { CSSProperties } from "react";
+import { cn } from "@/lib/utils";
+
+const ROOM_PIGMENTS = [
+  { hue: 250, chroma: 0.04 },
+  { hue: 32, chroma: 0.06 },
+  { hue: 220, chroma: 0.03 },
+  { hue: 18, chroma: 0.05 },
+  { hue: 240, chroma: 0.035 },
+] as const;
 
 export function botAccent(botId: string) {
   let hash = 0;
   for (const char of botId) hash = (hash * 33 + char.charCodeAt(0)) >>> 0;
-  const hue = hash % 360;
+  const pigment = ROOM_PIGMENTS[hash % ROOM_PIGMENTS.length];
+  const { hue, chroma } = pigment;
   return {
-    "--blob-0": `oklch(0.55 0.14 ${hue})`,
-    "--blob-1": `oklch(0.42 0.1 ${(hue + 40) % 360})`,
-    "--blob-2": `oklch(0.28 0.06 ${(hue + 80) % 360})`,
-    "--blob-3": `oklch(0.2 0.03 ${hue})`,
+    "--blob-0": `oklch(0.28 ${chroma} ${hue})`,
+    "--blob-1": `oklch(0.22 ${chroma * 0.7} ${(hue + 16) % 360})`,
+    "--blob-2": `oklch(0.18 ${chroma * 0.5} ${(hue + 340) % 360})`,
+    "--blob-3": `oklch(0.16 ${chroma * 0.3} ${hue})`,
   } as CSSProperties;
 }
 
@@ -25,7 +35,7 @@ export function BotCover({
 }) {
   return (
     <div
-      className={`bot-cover relative overflow-hidden ${className ?? "h-36"}`}
+      className={cn("bot-cover relative overflow-hidden", className ?? "h-36")}
       style={botAccent(botId)}
     >
       {ogImage ? (
@@ -36,7 +46,7 @@ export function BotCover({
           className="absolute inset-0 size-full object-cover"
         />
       ) : (
-        <span className="absolute inset-0 flex items-center justify-center font-heading text-3xl text-white/80 italic">
+        <span className="absolute inset-0 z-1 flex items-center justify-center text-4xl font-normal text-white/70">
           {title.slice(0, 1)}
         </span>
       )}

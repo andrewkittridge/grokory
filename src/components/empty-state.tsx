@@ -13,12 +13,17 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-border bg-card/40 px-6 py-12 text-center">
-      <h3 className="font-heading text-2xl tracking-tight">{title}</h3>
-      <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">{body}</p>
+    <div className="rounded-lg border border-dashed border-border px-6 py-20 text-center">
+      <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
+        Empty
+      </p>
+      <h3 className="mt-3 text-2xl font-normal tracking-tight">{title}</h3>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+        {body}
+      </p>
       {actionHref && actionLabel ? (
         <Button
-          className="mt-5"
+          className="mt-6"
           nativeButton={false}
           render={<Link href={actionHref} />}
         >
