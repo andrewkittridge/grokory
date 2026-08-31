@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BotFilters } from "@/components/bot-filters";
 import { BotRankRow } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
@@ -8,6 +9,13 @@ import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "The board",
+  description:
+    "Ranked public Grok Bot share links. Upvote the ones worth adding, then open the share link on x.ai.",
+  alternates: { canonical: "/templates" },
+};
 
 type Search = {
   q?: string;

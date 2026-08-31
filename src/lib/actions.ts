@@ -10,6 +10,7 @@ import {
 } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import { isCategory, parseShareUrl, parseTags, slugify } from "./bot-url";
+import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
 import type { BotPreview, BotTemplate, VoteValue } from "./types";
 
@@ -28,6 +29,8 @@ export async function lookupShareLink(
   _prev: LookupState,
   formData: FormData
 ): Promise<LookupState> {
+  const blocked = await verifyTurnstile(formData);
+  if (blocked) return { error: blocked };
   const shareInput = String(formData.get("shareUrl") ?? "");
   if (!shareInput.trim()) {
     return { error: "Paste a Grok Bot share link first." };
@@ -48,6 +51,8 @@ export async function createListing(
   _prev: ActionState,
   formData: FormData
 ): Promise<ActionState> {
+  const blocked = await verifyTurnstile(formData);
+  if (blocked) return { error: blocked };
   const shareInput = String(formData.get("shareUrl") ?? "");
   const parsed = parseShareUrl(shareInput);
   if (!parsed) {
@@ -136,7 +141,7 @@ export async function createListing(
       error: "Could not save this listing. Try again in a moment.",
     };
   }
-  redirect(`/templates/${slug}`);
+  redirect(`/templates/${slug}?listed=1`);
 }
 
 export async function recordAdd(slug: string) {

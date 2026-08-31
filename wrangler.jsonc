@@ -9,12 +9,16 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS",
+    "html_handling": "none",
   },
   "observability": {
     "enabled": true,
   },
+  "vars": {
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEjDWXVo9ws84fi6",
+  },
   "secrets": {
-    "required": ["DATABASE_URL"],
+    "required": ["DATABASE_URL", "TURNSTILE_SECRET"],
   },
   "kv_namespaces": [
     {

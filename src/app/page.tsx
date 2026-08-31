@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { LandingCta } from "@/components/landing-cta";
 import { LandingHero } from "@/components/landing-hero";
@@ -8,6 +9,10 @@ import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default async function HomePage() {
   const templates = await listTemplates(await readVoterId());

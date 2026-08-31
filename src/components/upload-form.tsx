@@ -9,10 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Frame } from "@/components/frame";
 import { BotCover } from "@/components/bot-cover";
+import { TurnstileField } from "@/components/turnstile-field";
 
 const initial: { error?: string; slug?: string } = {};
 
-export function UploadForm() {
+export function UploadForm({ siteKey }: { siteKey?: string }) {
   const [state, action, pending] = useActionState(createListing, initial);
   const [lookupState, lookupAction, lookupPending] = useActionState(
     lookupShareLink,
@@ -23,6 +24,7 @@ export function UploadForm() {
   const [title, setTitle] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [description, setDescription] = useState("");
+  const [turnstileReset, setTurnstileReset] = useState(0);
 
   const preview = lookupState.preview ?? null;
   const lookupError =
@@ -34,6 +36,17 @@ export function UploadForm() {
     setAuthorName(lookupState.preview.authorName);
     setDescription(lookupState.preview.description);
   }, [lookupState.preview]);
+
+  useEffect(() => {
+    if (!siteKey) return;
+    if (!lookupState.error && !lookupState.preview && !lookupState.soft) return;
+    setTurnstileReset((value) => value + 1);
+  }, [lookupState, siteKey]);
+
+  useEffect(() => {
+    if (!siteKey || !state.error) return;
+    setTurnstileReset((value) => value + 1);
+  }, [state, siteKey]);
 
   return (
     <form action={action} noValidate className="space-y-6">
@@ -68,6 +81,11 @@ export function UploadForm() {
           In Grok Bot, open the bot → copy its public share link. That URL is the
           template.
         </p>
+        {siteKey ? (
+          <div className="pt-2">
+            <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+          </div>
+        ) : null}
       </div>
 
       {lookupError ? (

@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist_Mono, Inter } from "next/font/google";
+import { GoogleTag } from "@/components/google-tag";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import {
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_TITLE,
+  SITE_URL,
+  publicEnv,
+  safeTagId,
+} from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,26 +24,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title = "Grokdex — Ranked Grok Bot catalog";
-const description =
-  "A public ranked catalog of Grok Bot templates. Browse specialist agents, upvote the useful ones, and add a copy to your Grok account.";
-
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: title,
-    template: "%s · Grokdex",
+    default: SITE_TITLE,
+    template: `%s · ${SITE_NAME}`,
   },
-  description,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
   openGraph: {
-    title,
-    description,
-    siteName: "Grokdex",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_NAME,
     type: "website",
+    url: SITE_URL,
+    locale: "en_US",
   },
   twitter: {
-    card: "summary",
-    title,
-    description,
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
 };
 
@@ -49,6 +58,12 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <GoogleTag
+          gaId={safeTagId(publicEnv("NEXT_PUBLIC_GA_ID"))}
+          awId={safeTagId(publicEnv("NEXT_PUBLIC_AW_ID"))}
+          addLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_ADD_LABEL"))}
+          listLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_LIST_LABEL"))}
+        />
         <SiteHeader />
         <div className="flex flex-1 flex-col">{children}</div>
         <SiteFooter />

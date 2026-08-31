@@ -1,11 +1,13 @@
 import { Frame } from "@/components/frame";
 import { UploadForm } from "@/components/upload-form";
+import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
 
 export const metadata = {
   title: "Share a Grok Bot",
   description:
     "Paste an x.ai/bot share link to list your Grok Bot template on Grokdex.",
+  alternates: { canonical: "/upload" },
 };
 
 export default function UploadPage() {
@@ -35,7 +37,7 @@ export default function UploadPage() {
       </p>
       <div className="motion-enter mt-10" style={motionDelay(3)}>
         <Frame staticFrame matClassName="p-5 sm:p-8">
-          <UploadForm />
+          <UploadForm siteKey={turnstileSiteKey()} />
         </Frame>
       </div>
     </main>

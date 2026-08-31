@@ -6,6 +6,7 @@ import { BotCover } from "@/components/bot-cover";
 import { BotRankRow } from "@/components/bot-rank-row";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
+import { ListedConversion } from "@/components/listed-conversion";
 import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
@@ -37,15 +38,25 @@ export async function generateMetadata({
   return {
     title: template.title,
     description: template.summary,
+    alternates: { canonical: `/templates/${slug}` },
+    openGraph: {
+      title: template.title,
+      description: template.summary,
+      url: `/templates/${slug}`,
+      images: template.ogImage ? [{ url: template.ogImage }] : undefined,
+    },
   };
 }
 
 export default async function TemplateDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ listed?: string }>;
 }) {
   const { slug } = await params;
+  const listed = (await searchParams).listed === "1";
   const voterId = await readVoterId();
   const template = await getTemplate(slug, voterId);
   if (!template) notFound();
@@ -55,6 +66,7 @@ export default async function TemplateDetailPage({
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+      <ListedConversion listed={listed} />
       <p
         className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
         style={motionDelay(0)}

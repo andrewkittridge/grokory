@@ -4,6 +4,7 @@ import { ExternalLink } from "lucide-react";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { recordAdd } from "@/lib/actions";
+import { trackConversion } from "@/lib/analytics";
 
 export function AddBotButton({
   slug,
@@ -27,7 +28,10 @@ export function AddBotButton({
           href={botUrl}
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => start(() => recordAdd(slug))}
+          onClick={() => {
+            trackConversion("add_bot");
+            start(() => recordAdd(slug));
+          }}
         />
       }
     >

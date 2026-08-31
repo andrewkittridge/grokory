@@ -31,6 +31,18 @@ export function SiteFooter() {
             >
               x.ai/bot
             </a>
+            <Link
+              href="/privacy"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              Privacy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              Terms
+            </Link>
           </nav>
         </div>
         <div className="flex flex-col gap-3 py-5 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
