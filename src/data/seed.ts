@@ -17,7 +17,7 @@ export const SEED_TEMPLATES: BotTemplate[] = [
     category: "Founder",
     tags: ["chief-of-staff", "routing", "solo-founder"],
     note: "The share-link pattern this gallery is built around: open on x.ai, then Add to Grok Bot.",
-    submittedBy: "Grokory staff",
+    submittedBy: "Grokdex staff",
     origin: "curated",
     featured: true,
     createdAt: "2026-08-20T12:00:00.000Z",

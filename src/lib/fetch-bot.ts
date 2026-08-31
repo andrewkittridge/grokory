@@ -54,7 +54,7 @@ export async function fetchBotPreview(
       signal: controller.signal,
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (compatible; Grokory/1.0; +https://grokdex.net)",
+          "Mozilla/5.0 (compatible; Grokdex/1.0; +https://grokdex.net)",
         Accept: "text/html",
       },
       cache: "no-store",

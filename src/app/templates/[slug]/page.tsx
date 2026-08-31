@@ -51,7 +51,7 @@ export default async function TemplateDetailPage({
   if (!template) notFound();
 
   const related = relatedTemplates(await listTemplates(voterId), template);
-  const grokoryUrl = await listingUrl(template.slug);
+  const listingHref = await listingUrl(template.slug);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
@@ -83,7 +83,7 @@ export default async function TemplateDetailPage({
                   size="lg"
                 />
                 <CopyLinkButton url={template.botUrl} />
-                <CopyLinkButton url={grokoryUrl} label="Copy listing link" />
+                <CopyLinkButton url={listingHref} label="Copy listing link" />
               </div>
               <p className="mt-4 text-xs text-muted-foreground">
                 Listed by {template.submittedBy}

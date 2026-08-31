@@ -8,7 +8,7 @@ export function SiteFooter() {
         <div className="flex flex-col gap-4 border-b border-border py-8 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex items-center gap-2.5 text-foreground">
             <BrandMark className="size-4" />
-            <span className="text-sm tracking-tight">Grokory</span>
+            <span className="text-sm tracking-tight">Grokdex</span>
           </Link>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <Link
@@ -35,7 +35,7 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-col gap-3 py-6 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            Grokory indexes public{" "}
+            Grokdex indexes public{" "}
             <a
               href="https://x.ai/bot"
               className="text-foreground underline-offset-4 hover:underline"

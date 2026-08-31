@@ -1,4 +1,4 @@
-# Grokory
+# Grokdex
 
 A public ranked board of [Grok Bot](https://x.ai/bot) templates. People share bots as links like:
 
@@ -21,12 +21,12 @@ Copy `.env.example` to `.env.local` and set `DATABASE_URL` to your Neon pooled c
 
 On Vercel, add `DATABASE_URL` as an environment variable.
 
-Production: [https://grokory.vercel.app](https://grokory.vercel.app). Custom domain: grokdex.net (Cloudflare DNS).
+Production: [https://grokdex.net](https://grokdex.net).
 
 ## How listing works
 
 1. In Grok Bot, copy the bot’s public share link.
-2. Paste it on `/upload`. Grokory looks up the name, author, and description from x.ai.
+2. Paste it on `/upload`. Grokdex looks up the name, author, and description from x.ai.
 3. Pick a job category. The bot appears on the board immediately. No account.
 
 Staff picks live in `src/data/seed.ts`.

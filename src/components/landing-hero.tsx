@@ -21,7 +21,7 @@ export function LandingHero({ ranked }: { ranked: ListedTemplate[] }) {
           Ready-made Grok Bots you can add.
         </h1>
         <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-          Grok Bots are custom agents on x.ai. Grokory ranks the public ones.
+          Grok Bots are custom agents on x.ai. Grokdex ranks the public ones.
           Upvote the useful ones, then Add — it copies the template onto your
           Grok account, not the author’s computer.
         </p>

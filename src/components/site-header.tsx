@@ -9,7 +9,7 @@ export function SiteHeader() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <BrandMark className="size-[1.15rem] text-foreground" />
-          <span className="text-lg font-normal tracking-tight">Grokory</span>
+          <span className="text-lg font-normal tracking-tight">Grokdex</span>
           <span className="hidden font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
             Ranked Grok Bots
           </span>

@@ -5,7 +5,7 @@ import { motionDelay } from "@/lib/utils";
 export const metadata = {
   title: "Share a Grok Bot",
   description:
-    "Paste an x.ai/bot share link to list your Grok Bot template on Grokory.",
+    "Paste an x.ai/bot share link to list your Grok Bot template on Grokdex.",
 };
 
 export default function UploadPage() {

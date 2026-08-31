@@ -210,7 +210,7 @@ export function UploadForm() {
         disabled={pending}
         className="inline-flex h-10 w-full items-center justify-center rounded-full bg-primary px-5 text-sm font-normal text-primary-foreground hover:bg-primary/90 disabled:opacity-50 sm:w-auto"
       >
-        {pending ? "Publishing…" : "Publish to Grokory"}
+        {pending ? "Publishing…" : "Publish to Grokdex"}
       </button>
     </form>
   );
