@@ -20,7 +20,7 @@ export function BrandMark({ className }: { className?: string }) {
         strokeWidth="1.4"
         strokeLinecap="square"
       />
-      <circle cx="12" cy="12" r="1.55" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.55" fill="var(--sunset)" />
     </svg>
   );
 }
