@@ -1,11 +1,6 @@
 import Link from "next/link";
 import { BotRankRow } from "@/components/bot-rank-row";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "@/components/ui/card";
 import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
@@ -17,7 +12,7 @@ export function LandingHero({ ranked }: { ranked: ListedTemplate[] }) {
           <span className="live-dot" aria-hidden="true" />
           Ranked Grok Bot catalog
         </p>
-        <h1 className="mt-5 text-4xl leading-[1.05] font-normal tracking-tight text-balance sm:text-6xl lg:text-7xl">
+        <h1 className="mt-5 text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
           Ready-made Grok Bots you can add.
         </h1>
         <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
@@ -45,20 +40,20 @@ export function LandingHero({ ranked }: { ranked: ListedTemplate[] }) {
       </div>
 
       <div className="motion-enter" style={motionDelay(1)}>
-        <Card className="gap-0 rounded-md bg-card/80 py-0 backdrop-blur-sm">
-          <CardHeader className="flex flex-row items-baseline justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="border border-border bg-card">
+          <div className="flex flex-row items-baseline justify-between gap-3 border-b border-border px-4 py-3">
             <p className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
               <span className="live-dot" aria-hidden="true" />
               Live ranking
             </p>
             <Link
               href="/templates"
-              className="shrink-0 font-mono text-[10px] tracking-wide text-muted-foreground uppercase sm:text-[11px] hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="shrink-0 font-mono text-[10px] tracking-wide text-muted-foreground uppercase sm:text-[11px] hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >
               Open the full board
             </Link>
-          </CardHeader>
-          <CardContent className="px-2 py-1.5">
+          </div>
+          <div className="px-1 py-1">
             {ranked.length === 0 ? (
               <div className="px-3 py-6">
                 <p className="text-sm text-muted-foreground">No bots listed yet.</p>
@@ -78,8 +73,8 @@ export function LandingHero({ ranked }: { ranked: ListedTemplate[] }) {
                 ))}
               </ol>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </section>
   );

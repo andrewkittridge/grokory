@@ -13,7 +13,7 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="rounded-lg border border-dashed border-border px-6 py-20 text-center">
+    <div className="border border-border px-6 py-16 text-center">
       <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
         Empty
       </p>

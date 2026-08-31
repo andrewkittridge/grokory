@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -40,84 +42,91 @@ export function BotFilters({
   showOrigin: boolean;
 }) {
   return (
-    <div className="space-y-4">
-      <form action="/templates" className="flex flex-col gap-3 sm:flex-row">
+    <div className="space-y-5">
+      <form action="/templates" className="flex flex-col gap-2 sm:flex-row">
         <input type="hidden" name="category" value={category} />
         <input type="hidden" name="origin" value={origin} />
         <input type="hidden" name="sort" value={sort} />
         <label className="sr-only" htmlFor="q">
           Search bots
         </label>
-        <input
+        <Input
           id="q"
           name="q"
           defaultValue={q}
           placeholder="Search names, authors, jobs…"
-          className="h-10 w-full rounded-full border border-input bg-canvas-soft px-4 font-mono text-sm text-foreground outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 font-mono"
         />
-        <button
-          type="submit"
-          className="h-10 rounded-full bg-primary px-5 text-sm text-primary-foreground transition-colors hover:bg-primary/90"
-        >
+        <Button type="submit" variant="outline" className="h-10 rounded-none sm:w-auto">
           Search
-        </button>
+        </Button>
       </form>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex gap-0 border-b border-border">
         {[
           { value: "hot", label: "Hot" },
           { value: "top", label: "Top" },
           { value: "new", label: "New" },
         ].map((item) => (
-          <FilterChip
+          <FilterTab
             key={item.value}
             href={hrefFor({ q, category, origin, sort: item.value })}
             active={(sort || "hot") === item.value}
           >
             {item.label}
-          </FilterChip>
+          </FilterTab>
         ))}
       </div>
       {jobs.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5">
-          <FilterChip
+        <p className="text-sm leading-7 text-muted-foreground">
+          <FilterText
             href={hrefFor({ q, origin, sort, category: "all" })}
             active={!category || category === "all"}
           >
             All jobs
-          </FilterChip>
+          </FilterText>
           {jobs.map((item) => (
-            <FilterChip
-              key={item}
-              href={hrefFor({ q, origin, sort, category: item })}
-              active={category === item}
-            >
-              {item}
-            </FilterChip>
+            <span key={item}>
+              <span className="text-border" aria-hidden="true">
+                {" · "}
+              </span>
+              <FilterText
+                href={hrefFor({ q, origin, sort, category: item })}
+                active={category === item}
+              >
+                {item}
+              </FilterText>
+            </span>
           ))}
-        </div>
+        </p>
       ) : null}
       {showOrigin ? (
-        <div className="flex flex-wrap gap-1.5">
+        <p className="text-sm leading-7 text-muted-foreground">
           {[
             { value: "all", label: "Everyone" },
             { value: "curated", label: "Staff picks" },
             { value: "community", label: "Community" },
-          ].map((item) => (
-            <FilterChip
-              key={item.value}
-              href={hrefFor({ q, category, sort, origin: item.value })}
-              active={(origin || "all") === item.value}
-            >
-              {item.label}
-            </FilterChip>
+          ].map((item, index) => (
+            <span key={item.value}>
+              {index > 0 ? (
+                <span className="text-border" aria-hidden="true">
+                  {" · "}
+                </span>
+              ) : null}
+              <FilterText
+                href={hrefFor({ q, category, sort, origin: item.value })}
+                active={(origin || "all") === item.value}
+              >
+                {item.label}
+              </FilterText>
+            </span>
           ))}
-        </div>
+        </p>
       ) : null}
     </div>
   );
 }
 
-function FilterChip({
+function FilterTab({
   href,
   active,
   children,
@@ -130,10 +139,32 @@ function FilterChip({
     <Link
       href={href}
       className={cn(
-        "rounded-full border px-3 py-1 text-xs tracking-wide transition-colors duration-200 focus-visible:ring-3 focus-visible:ring-ring/50",
+        "-mb-px border-b px-3 py-2 font-mono text-xs tracking-[0.16em] uppercase focus-visible:ring-1 focus-visible:ring-foreground",
         active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-pill-border bg-transparent text-muted-foreground hover:border-white/40 hover:text-foreground"
+          ? "border-foreground text-foreground"
+          : "border-transparent text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function FilterText({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "focus-visible:ring-1 focus-visible:ring-foreground",
+        active ? "text-foreground" : "hover:text-foreground"
       )}
     >
       {children}

@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center rounded-full border border-transparent bg-clip-padding text-sm font-normal whitespace-nowrap transition-colors outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center border border-transparent bg-clip-padding text-sm font-normal whitespace-nowrap transition-colors outline-none select-none focus-visible:ring-1 focus-visible:ring-foreground disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
-          "border-pill-border bg-transparent text-foreground hover:bg-white/5 aria-expanded:bg-white/5",
+          "rounded-none border-border bg-transparent text-foreground hover:bg-white/5 aria-expanded:bg-white/5",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-white/5 aria-expanded:bg-secondary",
+          "rounded-none bg-secondary text-secondary-foreground hover:bg-white/5 aria-expanded:bg-secondary",
         ghost:
-          "text-muted-foreground hover:bg-white/5 hover:text-foreground aria-expanded:bg-white/5 aria-expanded:text-foreground",
+          "rounded-none text-muted-foreground hover:bg-white/5 hover:text-foreground aria-expanded:bg-white/5 aria-expanded:text-foreground",
         destructive:
-          "bg-destructive/15 text-destructive hover:bg-destructive/25 focus-visible:border-destructive/40 focus-visible:ring-destructive/20",
-        link: "text-foreground underline-offset-4 hover:underline",
+          "rounded-none bg-destructive/15 text-destructive hover:bg-destructive/25",
+        link: "rounded-none text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default:
@@ -49,7 +49,7 @@ function Button({
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   )

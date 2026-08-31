@@ -1,5 +1,5 @@
-import { BotCard } from "@/components/bot-card";
 import { BotFilters } from "@/components/bot-filters";
+import { BotRankRow } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import {
@@ -42,10 +42,9 @@ export default async function TemplatesPage({
     }),
     sort
   );
-  const dense = templates.length >= 3;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <h1
         className="motion-enter text-4xl font-normal tracking-tight sm:text-5xl"
         style={motionDelay(0)}
@@ -59,7 +58,7 @@ export default async function TemplatesPage({
         Every listing is a public Grok Bot share URL. Upvote the ones worth
         adding, then open the share link on x.ai.
       </p>
-      <div className="motion-enter mt-10" style={motionDelay(2)}>
+      <div className="motion-enter mt-8" style={motionDelay(2)}>
         <BotFilters
           q={q}
           category={category}
@@ -91,23 +90,13 @@ export default async function TemplatesPage({
           )}
         </div>
       ) : (
-        <div
-          className={
-            dense
-              ? "mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-              : "mt-5 max-w-2xl"
-          }
-        >
+        <ol className="mt-3 divide-y divide-border border-y border-border">
           {templates.map((template, index) => (
-            <BotCard
-              key={template.id}
-              template={template}
-              delay={index}
-              size={dense ? "default" : "lg"}
-              rank={index + 1}
-            />
+            <li key={template.id}>
+              <BotRankRow rank={index + 1} template={template} showVote />
+            </li>
           ))}
-        </div>
+        </ol>
       )}
     </main>
   );

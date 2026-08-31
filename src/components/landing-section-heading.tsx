@@ -13,7 +13,7 @@ export function LandingSectionHeading({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       {kicker ? (
         <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
           {kicker}
@@ -32,7 +32,7 @@ export function LandingSectionHeading({
           {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       </div>
-      <Separator className="mt-6" />
+      <Separator className="mt-5" />
     </div>
   );
 }

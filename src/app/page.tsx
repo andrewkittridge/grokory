@@ -1,15 +1,10 @@
 import Link from "next/link";
 import { BotCard } from "@/components/bot-card";
+import { BotRankRow } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
 import { LandingCta } from "@/components/landing-cta";
 import { LandingHero } from "@/components/landing-hero";
 import { LandingSectionHeading } from "@/components/landing-section-heading";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { sortTemplates } from "@/lib/rank";
 import {
   communityTemplates,
@@ -45,39 +40,36 @@ export default async function HomePage() {
   const jobs = populatedCategories(templates);
 
   return (
-    <main className="landing-atmosphere">
-      <div className="landing-hero-pad">
-        <div className="landing-hero-grid" aria-hidden="true" />
-        <div className="landing-hero-floor" aria-hidden="true" />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-          <LandingHero ranked={ranked} />
-        </div>
+    <main>
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+        <LandingHero ranked={ranked} />
       </div>
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <section className="grid gap-3 sm:grid-cols-3">
+        <section
+          className="motion-enter grid gap-8 border-y border-border py-8 sm:grid-cols-3 sm:gap-0"
+          style={motionDelay(2)}
+        >
           {FEATURES.map((item, index) => (
-            <Card
+            <div
               key={item.title}
-              className="motion-enter rounded-md bg-card/70 py-5 backdrop-blur-sm"
-              style={motionDelay(index + 2)}
+              className={
+                index === 0
+                  ? "sm:pr-8"
+                  : index === 1
+                    ? "sm:border-x sm:border-border sm:px-8"
+                    : "sm:pl-8"
+              }
             >
-              <CardHeader className="gap-0">
-                <p className="font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <CardTitle className="mt-3 text-xl font-normal tracking-tight">
-                  {item.title}
-                </CardTitle>
-                <CardDescription className="mt-2 leading-6">
-                  {item.body}
-                </CardDescription>
-              </CardHeader>
-            </Card>
+              <h2 className="text-lg font-normal tracking-tight">{item.title}</h2>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                {item.body}
+              </p>
+            </div>
           ))}
         </section>
 
-        <section className="motion-enter mt-24" style={motionDelay(5)}>
+        <section className="motion-enter mt-20" style={motionDelay(5)}>
           <LandingSectionHeading
             kicker="Curated"
             title="Staff picks"
@@ -86,7 +78,7 @@ export default async function HomePage() {
               featured.length > 1 ? (
                 <Link
                   href="/templates?origin=curated"
-                  className="shrink-0 font-mono text-[11px] tracking-wide text-muted-foreground uppercase hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="shrink-0 font-mono text-[11px] tracking-wide text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
                 >
                   All staff picks
                 </Link>
@@ -103,7 +95,7 @@ export default async function HomePage() {
               <BotCard template={featured[0]} size="lg" rank={1} />
             </div>
           ) : (
-            <div className="grid gap-6 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2">
               {featured.map((template, index) => (
                 <BotCard
                   key={template.id}
@@ -118,29 +110,38 @@ export default async function HomePage() {
         </section>
 
         {jobs.length > 0 ? (
-          <section className="motion-enter mt-24" style={motionDelay(6)}>
+          <section className="motion-enter mt-20" style={motionDelay(6)}>
             <LandingSectionHeading kicker="Catalog" title="Jobs" />
-            <div className="-mt-2 flex flex-wrap items-center gap-2">
-              {jobs.map((category) => (
-                <Link
-                  key={category}
-                  href={`/templates?category=${encodeURIComponent(category)}`}
-                  className="rounded-full border border-pill-border px-3.5 py-1.5 text-sm text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-                >
-                  {category}
-                </Link>
+            <p className="-mt-2 text-sm leading-7 text-muted-foreground">
+              {jobs.map((category, index) => (
+                <span key={category}>
+                  {index > 0 ? (
+                    <span className="text-border" aria-hidden="true">
+                      {" · "}
+                    </span>
+                  ) : null}
+                  <Link
+                    href={`/templates?category=${encodeURIComponent(category)}`}
+                    className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                  >
+                    {category}
+                  </Link>
+                </span>
               ))}
+              <span className="text-border" aria-hidden="true">
+                {" · "}
+              </span>
               <Link
                 href="/upload"
-                className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                className="hover:text-foreground hover:underline"
               >
                 Share a bot in another job
               </Link>
-            </div>
+            </p>
           </section>
         ) : null}
 
-        <section className="motion-enter mt-24 mb-24" style={motionDelay(7)}>
+        <section className="motion-enter mt-20 mb-20" style={motionDelay(7)}>
           <LandingSectionHeading
             kicker="Public board"
             title={
@@ -160,11 +161,17 @@ export default async function HomePage() {
               actionLabel="Share a bot"
             />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <ol className="divide-y divide-border border-y border-border">
               {community.map((template, index) => (
-                <BotCard key={template.id} template={template} delay={index} />
+                <li key={template.id}>
+                  <BotRankRow
+                    rank={index + 1}
+                    template={template}
+                    showVote
+                  />
+                </li>
               ))}
-            </div>
+            </ol>
           )}
         </section>
       </div>

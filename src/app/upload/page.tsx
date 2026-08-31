@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function UploadPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-4 py-16 sm:px-6 sm:py-20">
+    <main className="mx-auto w-full max-w-2xl px-4 py-14 sm:px-6 sm:py-16">
       <p
         className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
         style={motionDelay(0)}

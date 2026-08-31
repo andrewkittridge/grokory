@@ -8,7 +8,7 @@ export function LandingCta() {
       className="motion-enter border-y border-border"
       style={motionDelay(8)}
     >
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-12 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-14">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-12">
         <div className="max-w-xl">
           <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
             Next listing

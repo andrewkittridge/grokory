@@ -4,7 +4,7 @@ import { BotCover } from "@/components/bot-cover";
 import { Frame } from "@/components/frame";
 import { VoteButtons } from "@/components/vote-buttons";
 import { formatCount } from "@/lib/bot-url";
-import { cn, motionDelay } from "@/lib/utils";
+import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
 export function BotCard({
@@ -19,19 +19,19 @@ export function BotCard({
   rank?: number;
 }) {
   const href = `/templates/${template.slug}`;
-  const coverHeight = size === "lg" ? "h-52 sm:h-64" : "h-40";
+  const coverHeight = size === "lg" ? "h-28 sm:h-32" : "h-24";
 
   return (
     <Frame
-      className="motion-card motion-enter h-full"
+      className="motion-enter h-full"
       matClassName="relative flex h-full flex-col"
       style={motionDelay(delay)}
     >
       <Link
         href={href}
-        className="flex min-h-0 flex-1 flex-col rounded-[1px] focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex min-h-0 flex-1 flex-col focus-visible:ring-1 focus-visible:ring-foreground"
       >
-        <div className="px-2.5 pt-2.5">
+        <div className="px-0">
           <BotCover
             botId={template.botId}
             title={template.title}
@@ -42,7 +42,13 @@ export function BotCard({
         <div className="flex min-w-0 flex-1 flex-col px-3 pt-3 pb-3">
           <div className="flex flex-wrap items-center gap-1.5">
             {rank != null ? (
-              <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              <span
+                className={
+                  rank === 1
+                    ? "font-mono text-xs tabular-nums text-sunset"
+                    : "font-mono text-xs tabular-nums text-muted-foreground"
+                }
+              >
                 #{rank}
               </span>
             ) : null}
@@ -59,7 +65,7 @@ export function BotCard({
           <p className="mt-0.5 text-sm text-muted-foreground">
             by {template.authorName}
           </p>
-          <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">
             {template.summary}
           </p>
           <p className="mt-3 flex justify-between text-xs text-muted-foreground">
@@ -79,13 +85,5 @@ export function BotCard({
         />
       </div>
     </Frame>
-  );
-}
-
-export function BotCardSkeleton({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn("h-72 animate-pulse rounded-lg bg-canvas-soft", className)}
-    />
   );
 }

@@ -5,7 +5,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-col gap-4 border-b border-border py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-border py-6 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex items-center gap-2.5 text-foreground">
             <BrandMark className="size-4" />
             <span className="text-sm tracking-tight">Grokdex</span>
@@ -13,19 +13,19 @@ export function SiteFooter() {
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <Link
               href="/templates"
-              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >
               Browse
             </Link>
             <Link
               href="/upload"
-              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >
               Share
             </Link>
             <a
               href="https://x.ai/bot"
-              className="hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -33,7 +33,7 @@ export function SiteFooter() {
             </a>
           </nav>
         </div>
-        <div className="flex flex-col gap-3 py-6 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 py-5 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
             Grokdex indexes public{" "}
             <a
@@ -49,7 +49,7 @@ export function SiteFooter() {
           </p>
           <Link
             href="/upload"
-            className="shrink-0 font-mono tracking-wide text-foreground uppercase hover:underline focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="shrink-0 font-mono tracking-wide text-foreground uppercase hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
           >
             Share yours
           </Link>

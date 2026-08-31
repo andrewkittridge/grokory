@@ -2,8 +2,8 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { AddBotButton } from "@/components/add-bot-button";
-import { BotCard } from "@/components/bot-card";
 import { BotCover } from "@/components/bot-cover";
+import { BotRankRow } from "@/components/bot-rank-row";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
 import { VoteButtons } from "@/components/vote-buttons";
@@ -54,12 +54,15 @@ export default async function TemplateDetailPage({
   const listingHref = await listingUrl(template.slug);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <p
         className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
         style={motionDelay(0)}
       >
-        <Link href="/templates" className="hover:text-foreground">
+        <Link
+          href="/templates"
+          className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+        >
           Board
         </Link>
         <span className="mx-2 text-border">/</span>
@@ -67,7 +70,7 @@ export default async function TemplateDetailPage({
       </p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
-        <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-20 lg:self-start">
+        <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-16 lg:self-start">
           <div className="motion-enter" style={motionDelay(1)}>
             <Frame staticFrame matClassName="p-5">
               <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
@@ -121,7 +124,7 @@ export default async function TemplateDetailPage({
                 botId={template.botId}
                 title={template.title}
                 ogImage={template.ogImage}
-                className="h-52 sm:h-64"
+                className="h-36 sm:h-44"
               />
               <div className="px-5 py-6 sm:px-8 sm:py-8">
                 <div className="flex flex-wrap gap-1.5">
@@ -149,7 +152,7 @@ export default async function TemplateDetailPage({
                   {template.description}
                 </p>
                 {template.note ? (
-                  <blockquote className="mt-6 border-l border-pill-border pl-4 text-sm leading-6 text-muted-foreground">
+                  <blockquote className="mt-6 border-l border-border pl-4 text-sm leading-6 text-muted-foreground">
                     {template.note}
                   </blockquote>
                 ) : null}
@@ -166,13 +169,15 @@ export default async function TemplateDetailPage({
       </div>
 
       {related.length > 0 ? (
-        <section className="mt-24">
+        <section className="mt-16">
           <h2 className="text-2xl font-normal tracking-tight">Same job</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ol className="mt-5 divide-y divide-border border-y border-border">
             {related.map((item, index) => (
-              <BotCard key={item.id} template={item} delay={index} />
+              <li key={item.id}>
+                <BotRankRow rank={index + 1} template={item} showVote />
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
       ) : null}
     </main>
