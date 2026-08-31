@@ -6,7 +6,7 @@ export function LandingCta() {
   return (
     <section
       className="motion-enter border-y border-border"
-      style={motionDelay(8)}
+      style={motionDelay(5)}
     >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-12">
         <div className="max-w-xl">
@@ -21,23 +21,13 @@ export function LandingCta() {
             No account.
           </p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            size="lg"
-            nativeButton={false}
-            render={<Link href="/templates" />}
-          >
-            Browse bots
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            nativeButton={false}
-            render={<Link href="/upload" />}
-          >
-            Share a bot
-          </Button>
-        </div>
+        <Button
+          size="lg"
+          nativeButton={false}
+          render={<Link href="/upload" />}
+        >
+          Share a bot
+        </Button>
       </div>
     </section>
   );

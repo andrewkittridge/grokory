@@ -52,11 +52,6 @@ export function BotCard({
                 #{rank}
               </span>
             ) : null}
-            <Badge
-              variant={template.origin === "curated" ? "default" : "outline"}
-            >
-              {template.origin === "curated" ? "Staff pick" : "Community"}
-            </Badge>
             <Badge variant="secondary">{template.category}</Badge>
           </div>
           <h3 className="mt-2 text-xl font-normal tracking-tight">

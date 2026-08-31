@@ -8,16 +8,12 @@ import { cn } from "@/lib/utils";
 function hrefFor(params: {
   q?: string;
   category?: string;
-  origin?: string;
   sort?: string;
 }) {
   const search = new URLSearchParams();
   if (params.q) search.set("q", params.q);
   if (params.category && params.category !== "all") {
     search.set("category", params.category);
-  }
-  if (params.origin && params.origin !== "all") {
-    search.set("origin", params.origin);
   }
   if (params.sort && params.sort !== "hot") {
     search.set("sort", params.sort);
@@ -29,23 +25,18 @@ function hrefFor(params: {
 export function BotFilters({
   q,
   category,
-  origin,
   sort,
   jobs,
-  showOrigin,
 }: {
   q: string;
   category: string;
-  origin: string;
   sort: string;
   jobs: Category[];
-  showOrigin: boolean;
 }) {
   return (
     <div className="space-y-5">
       <form action="/templates" className="flex flex-col gap-2 sm:flex-row">
         <input type="hidden" name="category" value={category} />
-        <input type="hidden" name="origin" value={origin} />
         <input type="hidden" name="sort" value={sort} />
         <label className="sr-only" htmlFor="q">
           Search bots
@@ -69,7 +60,7 @@ export function BotFilters({
         ].map((item) => (
           <FilterTab
             key={item.value}
-            href={hrefFor({ q, category, origin, sort: item.value })}
+            href={hrefFor({ q, category, sort: item.value })}
             active={(sort || "hot") === item.value}
           >
             {item.label}
@@ -79,7 +70,7 @@ export function BotFilters({
       {jobs.length > 0 ? (
         <p className="text-sm leading-7 text-muted-foreground">
           <FilterText
-            href={hrefFor({ q, origin, sort, category: "all" })}
+            href={hrefFor({ q, sort, category: "all" })}
             active={!category || category === "all"}
           >
             All jobs
@@ -90,33 +81,10 @@ export function BotFilters({
                 {" · "}
               </span>
               <FilterText
-                href={hrefFor({ q, origin, sort, category: item })}
+                href={hrefFor({ q, sort, category: item })}
                 active={category === item}
               >
                 {item}
-              </FilterText>
-            </span>
-          ))}
-        </p>
-      ) : null}
-      {showOrigin ? (
-        <p className="text-sm leading-7 text-muted-foreground">
-          {[
-            { value: "all", label: "Everyone" },
-            { value: "curated", label: "Staff picks" },
-            { value: "community", label: "Community" },
-          ].map((item, index) => (
-            <span key={item.value}>
-              {index > 0 ? (
-                <span className="text-border" aria-hidden="true">
-                  {" · "}
-                </span>
-              ) : null}
-              <FilterText
-                href={hrefFor({ q, category, sort, origin: item.value })}
-                active={(origin || "all") === item.value}
-              >
-                {item.label}
               </FilterText>
             </span>
           ))}

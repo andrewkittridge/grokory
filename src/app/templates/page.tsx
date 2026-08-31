@@ -2,13 +2,8 @@ import { BotFilters } from "@/components/bot-filters";
 import { BotRankRow } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
 import { parseSort, sortTemplates } from "@/lib/rank";
-import {
-  filterTemplates,
-  hasBothOrigins,
-  populatedCategories,
-} from "@/lib/templates";
+import { filterTemplates, populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
-import type { TemplateOrigin } from "@/lib/types";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
@@ -17,7 +12,6 @@ export const dynamic = "force-dynamic";
 type Search = {
   q?: string;
   category?: string;
-  origin?: string;
   sort?: string;
 };
 
@@ -29,19 +23,17 @@ export default async function TemplatesPage({
   const params = await searchParams;
   const q = params.q?.trim() ?? "";
   const category = params.category ?? "all";
-  const origin = (params.origin ?? "all") as "all" | TemplateOrigin;
   const sort = parseSort(params.sort);
   const all = await listTemplates(await readVoterId());
   const jobs = populatedCategories(all);
-  const showOrigin = hasBothOrigins(all);
   const templates = sortTemplates(
     filterTemplates(all, {
       q,
       category,
-      origin,
     }),
     sort
   );
+  const emptyBoard = !q && (!category || category === "all");
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
@@ -59,21 +51,14 @@ export default async function TemplatesPage({
         adding, then open the share link on x.ai.
       </p>
       <div className="motion-enter mt-8" style={motionDelay(2)}>
-        <BotFilters
-          q={q}
-          category={category}
-          origin={origin}
-          sort={sort}
-          jobs={jobs}
-          showOrigin={showOrigin}
-        />
+        <BotFilters q={q} category={category} sort={sort} jobs={jobs} />
       </div>
       <p className="mt-8 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
         {templates.length} {templates.length === 1 ? "bot" : "bots"} · {sort}
       </p>
       {templates.length === 0 ? (
         <div className="mt-6">
-          {origin === "community" && !q && (!category || category === "all") ? (
+          {emptyBoard ? (
             <EmptyState
               title="The next listing lands here"
               body="Got a Grok Bot share link? Paste it and it shows up here for everyone else."

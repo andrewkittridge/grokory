@@ -3,21 +3,39 @@ import { VoteButtons } from "@/components/vote-buttons";
 import { cn } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
+function jobLine(template: ListedTemplate) {
+  return template.origin === "curated"
+    ? `Staff pick · ${template.category}`
+    : template.category;
+}
+
 export function BotRankRow({
   rank,
   template,
   showVote = false,
+  size = "default",
+  detail,
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
+  size?: "default" | "leader";
+  detail?: "summary" | "job";
 }) {
-  const origin = template.origin === "curated" ? "Staff pick" : "Community";
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
+  const subtitle = detail ?? (showVote ? "job" : "summary");
+  const leader = size === "leader";
 
   return (
-    <div className="relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-white/5">
+    <div
+      className={cn(
+        "relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 hover:bg-white/5",
+        leader
+          ? "items-start px-3 py-4 sm:px-4 sm:py-5"
+          : "items-center px-2 py-2.5"
+      )}
+    >
       <Link
         href={`/templates/${template.slug}`}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
@@ -26,22 +44,35 @@ export function BotRankRow({
       <span
         className={cn(
           "relative z-10 font-mono text-xs tabular-nums tracking-wide",
+          leader ? "pt-1" : undefined,
           rank === 1 ? "text-sunset" : "text-muted-foreground"
         )}
       >
         {String(rank).padStart(2, "0")}
       </span>
       <span className="relative z-10 min-w-0 pointer-events-none">
-        <span className="truncate text-[15px] leading-tight font-normal tracking-tight">
+        <span
+          className={cn(
+            "font-normal tracking-tight",
+            leader
+              ? "line-clamp-2 text-lg leading-tight sm:text-xl"
+              : "block truncate text-[15px] leading-tight"
+          )}
+        >
           {template.title}
         </span>
-        {showVote ? (
-          <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-            {template.category}
-            <span className="text-border" aria-hidden="true">
-              {" · "}
+        {leader ? (
+          <>
+            <span className="mt-1 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+              {jobLine(template)}
             </span>
-            {origin}
+            <span className="mt-1.5 line-clamp-2 block text-sm leading-6 text-muted-foreground">
+              {template.summary}
+            </span>
+          </>
+        ) : subtitle === "job" ? (
+          <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            {jobLine(template)}
           </span>
         ) : (
           <span className="mt-0.5 line-clamp-1 block text-xs text-muted-foreground">
@@ -49,7 +80,9 @@ export function BotRankRow({
           </span>
         )}
       </span>
-      <span className="relative z-10">
+      <span
+        className={cn("relative z-10", leader ? "pt-1" : undefined)}
+      >
         {showVote ? (
           <VoteButtons
             templateId={template.id}
@@ -63,6 +96,27 @@ export function BotRankRow({
             {points}
           </span>
         )}
+      </span>
+    </div>
+  );
+}
+
+export function VacantRankRow({ rank }: { rank: number }) {
+  return (
+    <div className="relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-white/5">
+      <Link
+        href="/upload"
+        className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
+        aria-label="Share a bot"
+      />
+      <span className="relative z-10 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+        {String(rank).padStart(2, "0")}
+      </span>
+      <span className="relative z-10 min-w-0 pointer-events-none truncate text-[15px] leading-tight text-muted-foreground">
+        Next listing
+      </span>
+      <span className="relative z-10 font-mono text-[11px] tracking-wide text-foreground uppercase">
+        Share
       </span>
     </div>
   );

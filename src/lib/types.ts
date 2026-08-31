@@ -62,6 +62,5 @@ export type BotPreview = {
 export type TemplateFilters = {
   q?: string;
   category?: string;
-  origin?: "all" | TemplateOrigin;
   sort?: SortMode;
 };

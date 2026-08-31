@@ -27,6 +27,4 @@ Production is a Cloudflare Worker on [https://grokdex.net](https://grokdex.net).
 2. Paste it on `/upload`. Grokdex looks up the name, author, and description from x.ai.
 3. Pick a job category. The bot appears on the board immediately. No account.
 
-Staff picks live in `src/data/seed.ts`.
-
 This project is not affiliated with SpaceXAI or xAI.

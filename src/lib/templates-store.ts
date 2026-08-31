@@ -86,19 +86,18 @@ function mergeSeed(store: StoreFile): StoreFile {
   const byId = new Map(store.templates.map((template) => [template.id, template]));
 
   for (const seed of SEED_TEMPLATES) {
-    const existing = byId.get(seed.id);
-    if (!existing) {
-      store.templates.push(seed);
-      byId.set(seed.id, seed);
-      continue;
-    }
-    if (existing.origin === "curated") {
-      const index = store.templates.findIndex((template) => template.id === seed.id);
-      store.templates[index] = {
-        ...seed,
-        adds: existing.adds,
-        createdAt: existing.createdAt,
-      };
+    if (byId.has(seed.id)) continue;
+    store.templates.push(seed);
+    byId.set(seed.id, seed);
+  }
+
+  store.templates = store.templates.filter(
+    (template) => template.id !== "seed-jarvis"
+  );
+  for (const template of store.templates) {
+    if (template.origin === "curated") {
+      template.origin = "community";
+      template.featured = false;
     }
   }
 
@@ -212,6 +211,13 @@ async function ensureNeon() {
           ON CONFLICT (voter_id, template_id) DO NOTHING
         `;
       }
+
+      await db`DELETE FROM templates WHERE id = 'seed-jarvis'`;
+      await db`
+        UPDATE templates
+        SET origin = 'community', featured = false
+        WHERE origin = 'curated'
+      `;
     })().catch((error) => {
       schemaReady = null;
       throw error;

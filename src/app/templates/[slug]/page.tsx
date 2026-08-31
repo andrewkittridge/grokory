@@ -128,13 +128,6 @@ export default async function TemplateDetailPage({
               />
               <div className="px-5 py-6 sm:px-8 sm:py-8">
                 <div className="flex flex-wrap gap-1.5">
-                  <Badge
-                    variant={
-                      template.origin === "curated" ? "default" : "outline"
-                    }
-                  >
-                    {template.origin === "curated" ? "Staff pick" : "Community"}
-                  </Badge>
                   <Badge variant="secondary">{template.category}</Badge>
                   {template.tags.map((tag) => (
                     <Badge key={tag} variant="ghost">
