@@ -114,9 +114,34 @@ body {
 @keyframes motion-fade-up {
   from {
     opacity: 0;
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes motion-board-in {
+  from {
+    opacity: 0;
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes live-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sunset) 50%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sunset) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sunset) 0%, transparent);
   }
 }
 
@@ -125,11 +150,53 @@ body {
   width: 5px;
   height: 5px;
   background: var(--sunset);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--sunset) 50%, transparent);
+  animation: live-pulse 2.4s ease-out infinite;
 }
 
 .motion-enter {
-  animation: motion-fade-up 0.4s ease backwards;
-  animation-delay: calc(var(--d, 0) * 50ms);
+  animation: motion-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--d, 0) * 70ms);
+}
+
+.motion-view {
+  animation: motion-fade-up 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 40%;
+}
+
+.motion-board {
+  animation: motion-board-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--d, 0) * 70ms);
+}
+
+.motion-row {
+  animation: motion-fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--d, 0) * 70ms);
+}
+
+.rank-row {
+  transition: background-color 150ms ease;
+}
+
+.rank-row::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 11;
+  width: 1px;
+  pointer-events: none;
+  background: var(--sunset);
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform 150ms ease;
+}
+
+.rank-row:hover::before,
+.rank-row:focus-within::before {
+  transform: scaleY(1);
 }
 
 .copy-share .copy-share-done {
@@ -168,7 +235,20 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .motion-enter {
+  .motion-enter,
+  .motion-board,
+  .motion-row,
+  .motion-view,
+  .live-dot {
     animation: none;
+  }
+
+  .live-dot {
+    box-shadow: none;
+  }
+
+  .rank-row,
+  .rank-row::before {
+    transition: none;
   }
 }

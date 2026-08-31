@@ -1,13 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { motionDelay } from "@/lib/utils";
 
 export function LandingCta() {
   return (
-    <section
-      className="motion-enter border-y border-border"
-      style={motionDelay(5)}
-    >
+    <section className="motion-view border-y border-border">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-12">
         <div className="max-w-xl">
           <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">

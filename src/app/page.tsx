@@ -18,6 +18,7 @@ export default async function HomePage() {
   const templates = await listTemplates(await readVoterId());
   const ranked = sortTemplates(templates, "hot").slice(0, 5);
   const jobs = populatedCategories(templates);
+  const taglineDelay = templates.length === 0 ? 6 : 7 + ranked.length;
 
   return (
     <main>
@@ -26,7 +27,7 @@ export default async function HomePage() {
 
         <p
           className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-muted-foreground sm:mt-12"
-          style={motionDelay(2)}
+          style={motionDelay(taglineDelay)}
         >
           Custom Grok agents
           <span aria-hidden="true"> · </span>
@@ -38,7 +39,7 @@ export default async function HomePage() {
         {jobs.length > 0 ? (
           <p
             className="motion-enter mt-6 text-sm leading-7 text-muted-foreground"
-            style={motionDelay(3)}
+            style={motionDelay(taglineDelay + 1)}
           >
             <span className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
               Jobs

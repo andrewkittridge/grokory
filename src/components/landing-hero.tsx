@@ -16,61 +16,71 @@ export function LandingHero({
 
   return (
     <section>
-      <div className="motion-enter" style={motionDelay(0)}>
-        <p className="inline-flex items-center gap-2.5 font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase">
-          <span className="live-dot" aria-hidden="true" />
-          Ranked Grok Bot catalog
-        </p>
-        <h1 className="mt-5 max-w-4xl text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl">
-          Ready-made Grok Bots you can add.
-        </h1>
-        <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
-          Grok Bots are custom agents on x.ai. Grokdex ranks the public ones.
-          Upvote the useful ones, then Add — it copies the template onto your
-          Grok account, not the author’s computer.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          {empty ? (
-            <>
-              <Button
-                size="lg"
-                nativeButton={false}
-                render={<Link href="/upload" />}
-              >
-                Share a bot
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                nativeButton={false}
-                render={<Link href="/templates" />}
-              >
-                Browse bots
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                size="lg"
-                nativeButton={false}
-                render={<Link href="/templates" />}
-              >
-                Browse bots
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                nativeButton={false}
-                render={<Link href="/upload" />}
-              >
-                Share a bot
-              </Button>
-            </>
-          )}
-        </div>
+      <p
+        className="motion-enter inline-flex items-center gap-2.5 font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
+        style={motionDelay(0)}
+      >
+        <span className="live-dot" aria-hidden="true" />
+        Ranked Grok Bot catalog
+      </p>
+      <h1
+        className="motion-enter mt-5 max-w-4xl text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl"
+        style={motionDelay(1)}
+      >
+        Ready-made Grok Bots you can add.
+      </h1>
+      <p
+        className="motion-enter mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg"
+        style={motionDelay(2)}
+      >
+        Grok Bots are custom agents on x.ai. Grokdex ranks the public ones.
+        Upvote the useful ones, then Add — it copies the template onto your
+        Grok account, not the author’s computer.
+      </p>
+      <div
+        className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
+        style={motionDelay(3)}
+      >
+        {empty ? (
+          <>
+            <Button
+              size="lg"
+              nativeButton={false}
+              render={<Link href="/upload" />}
+            >
+              Share a bot
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/templates" />}
+            >
+              Browse bots
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              size="lg"
+              nativeButton={false}
+              render={<Link href="/templates" />}
+            >
+              Browse bots
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              nativeButton={false}
+              render={<Link href="/upload" />}
+            >
+              Share a bot
+            </Button>
+          </>
+        )}
       </div>
 
-      <div className="motion-enter mt-10 sm:mt-12" style={motionDelay(1)}>
+      <div className="motion-board mt-10 sm:mt-12" style={motionDelay(4)}>
         <div className="border border-border bg-card">
           <div className="flex flex-row items-baseline justify-between gap-3 border-b border-border px-4 py-3">
             <p className="inline-flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
@@ -114,7 +124,11 @@ export function LandingHero({
           ) : (
             <ol className="divide-y divide-border">
               {ranked.map((template, index) => (
-                <li key={template.id}>
+                <li
+                  key={template.id}
+                  className="motion-row"
+                  style={motionDelay(5 + index)}
+                >
                   <BotRankRow
                     rank={index + 1}
                     template={template}
@@ -123,7 +137,10 @@ export function LandingHero({
                   />
                 </li>
               ))}
-              <li>
+              <li
+                className="motion-row"
+                style={motionDelay(5 + ranked.length)}
+              >
                 <VacantRankRow rank={ranked.length + 1} />
               </li>
             </ol>
