@@ -257,12 +257,13 @@ async function readStore(): Promise<StoreFile> {
   }
 }
 
-async function writeStore(store: StoreFile) {
+async function writeStore(store: StoreFile): Promise<boolean> {
   try {
     await mkdir(DATA_DIR, { recursive: true });
     await writeFile(DATA_FILE, JSON.stringify(store, null, 2));
+    return true;
   } catch {
-    // Read-only filesystems (Vercel) keep the in-memory result for this request.
+    return false;
   }
 }
 
@@ -352,7 +353,14 @@ export async function addTemplate(
     }
     const saved = { ...template, slug };
     store.templates.push(saved);
-    await writeStore(store);
+    const written = await writeStore(store);
+    if (!written) {
+      return {
+        ok: false as const,
+        error:
+          "This host cannot save listings. Set DATABASE_URL to a Neon pooled connection string.",
+      };
+    }
     return {
       ok: true as const,
       template: { ...saved, score: 0, userVote: 0 as const },

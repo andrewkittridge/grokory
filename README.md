@@ -17,11 +17,9 @@ npm run dev
 
 Open [http://127.0.0.1:43127](http://127.0.0.1:43127).
 
-Copy `.env.example` to `.env.local` and set `DATABASE_URL` to your Neon pooled connection string so votes and new listings persist. Without it, the app uses `data/templates.json` on this machine (fine for local; it will not stick on Vercel).
+Copy `.env.example` to `.env.local` and set `DATABASE_URL` to your Neon pooled connection string so votes and new listings persist. Without it, the app uses `data/templates.json` on this machine (fine for local; it will not stick on Cloudflare Workers).
 
-On Vercel, add `DATABASE_URL` as an environment variable.
-
-Production: [https://grokdex.net](https://grokdex.net).
+Production is a Cloudflare Worker on [https://grokdex.net](https://grokdex.net). Set `DATABASE_URL` as a Worker secret (`npx wrangler secret put DATABASE_URL`). Deploys use `--keep-vars` so that secret is not wiped.
 
 ## How listing works
 
