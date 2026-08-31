@@ -21,7 +21,7 @@ export function LandingHero({
           <span className="live-dot" aria-hidden="true" />
           Ranked Grok Bot catalog
         </p>
-        <h1 className="mt-5 max-w-4xl text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-6xl lg:text-7xl">
+        <h1 className="mt-5 max-w-4xl text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl">
           Ready-made Grok Bots you can add.
         </h1>
         <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg">
@@ -70,7 +70,7 @@ export function LandingHero({
         </div>
       </div>
 
-      <div className="motion-enter mt-12 sm:mt-16" style={motionDelay(1)}>
+      <div className="motion-enter mt-10 sm:mt-12" style={motionDelay(1)}>
         <div className="border border-border bg-card">
           <div className="flex flex-row items-baseline justify-between gap-3 border-b border-border px-4 py-3">
             <p className="inline-flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">

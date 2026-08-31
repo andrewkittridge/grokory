@@ -16,7 +16,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <LandingHero ranked={ranked} count={templates.length} />
 
         <p
@@ -24,13 +24,9 @@ export default async function HomePage() {
           style={motionDelay(2)}
         >
           Custom Grok agents
-          <span className="text-border" aria-hidden="true">
-            {" · "}
-          </span>
+          <span aria-hidden="true"> · </span>
           Ranked in public
-          <span className="text-border" aria-hidden="true">
-            {" · "}
-          </span>
+          <span aria-hidden="true"> · </span>
           Add copies your own
         </p>
 
