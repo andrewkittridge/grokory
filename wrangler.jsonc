@@ -1,0 +1,32 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "grokdex",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-28",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+  },
+  "kv_namespaces": [
+    {
+      "binding": "TEMPLATES",
+      "id": "f0e09dc10eb648c584f3fb77604ad031",
+    },
+  ],
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "grokdex",
+    },
+  ],
+  "routes": [
+    { "pattern": "grokdex.net", "custom_domain": true },
+    { "pattern": "www.grokdex.net", "custom_domain": true },
+  ],
+}
