@@ -5,7 +5,7 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-        <div className="flex flex-col gap-4 border-b border-border py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-border py-8 sm:flex-row sm:items-center sm:justify-between">
           <Link href="/" className="flex items-center gap-2.5 text-foreground">
             <BrandMark className="size-4" />
             <span className="text-sm tracking-tight">Grokdex</span>

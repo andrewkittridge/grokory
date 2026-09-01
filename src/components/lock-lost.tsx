@@ -22,10 +22,10 @@ export function LockLost({
         className="motion-enter mt-6 font-mono text-sm tracking-[0.18em] text-muted-foreground"
         style={motionDelay(1)}
       >
-        NO LOCK · 404
+        Not found
       </p>
       <h1
-        className="motion-enter mt-4 text-4xl font-normal tracking-tight"
+        className="display-page motion-enter mt-4"
         style={motionDelay(2)}
       >
         {title}

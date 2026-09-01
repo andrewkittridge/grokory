@@ -22,7 +22,7 @@ export function LandingSectionHeading({
       <div className={kicker ? "mt-3" : undefined}>
         <div className="flex items-end justify-between gap-4">
           <div className="min-w-0">
-            <h2 className="text-3xl font-normal tracking-tight">{title}</h2>
+            <h2 className="display-section">{title}</h2>
             {description ? (
               <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                 {description}

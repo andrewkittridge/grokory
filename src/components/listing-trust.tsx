@@ -90,7 +90,7 @@ function LabeledList({ label, items }: { label: string; items: string[] }) {
         {items.map((item) => (
           <li
             key={item}
-            className="border border-border px-2 py-1 font-mono text-[11px] text-foreground"
+            className="rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground"
           >
             {item}
           </li>

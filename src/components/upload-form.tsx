@@ -107,7 +107,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
       {lookupError ? (
         <p
           role="alert"
-          className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive"
         >
           {lookupError}
           {lookupState.soft
@@ -156,7 +156,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
           id="category"
           name="category"
           defaultValue="Work"
-          className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+          className="h-10 w-full rounded-lg border border-input bg-canvas-soft px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
         >
           {CATEGORIES.map((category) => (
             <option key={category} value={category}>
@@ -166,7 +166,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
         </select>
       </div>
 
-      <details className="border border-border">
+      <details className="rounded-lg border border-border">
         <summary className="cursor-pointer px-3 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
           Tags, note, your name
         </summary>
@@ -204,7 +204,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
       {state.error ? (
         <p
           role="alert"
-          className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+          className="rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive"
         >
           {state.error}
           {state.slug ? (

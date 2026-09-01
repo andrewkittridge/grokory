@@ -5,7 +5,6 @@ import {
   BotRankRowSkeleton,
   VacantRankRow,
 } from "@/components/bot-rank-row";
-import { HeroField } from "@/components/hero-field";
 import { CountTick, MissionClock, RankTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
@@ -14,7 +13,6 @@ import type { ListedTemplate } from "@/lib/types";
 export function LandingHero({ children }: { children: ReactNode }) {
   return (
     <section className="relative isolate">
-      <HeroField />
       <div className="relative z-10">
         <p
           className="motion-enter inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
@@ -30,14 +28,14 @@ export function LandingHero({ children }: { children: ReactNode }) {
           <MissionClock />
         </p>
         <h1
-          className="motion-lock mt-5 max-w-4xl overflow-hidden text-4xl leading-[1.05] font-normal tracking-[-0.04em] text-balance sm:text-5xl lg:text-6xl"
+          className="display-hero motion-lock mt-6 max-w-4xl overflow-hidden text-balance"
           style={motionDelay(1)}
         >
           Ready-made Grok Bots you can add.
           <span className="motion-lock-scan" aria-hidden="true" />
         </h1>
         <p
-          className="motion-enter mt-6 max-w-xl text-base leading-7 text-muted-foreground sm:text-lg"
+          className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
           style={motionDelay(2)}
         >
           Grok Bots are custom agents on x.ai. Grokdex ranks the public ones.
@@ -81,8 +79,8 @@ export function LandingBoard({
 
   return (
     <div className="motion-board mt-10 sm:mt-12" style={motionDelay(4)}>
-      <div className="border border-border bg-card">
-        <div className="flex flex-row items-baseline justify-between gap-3 border-b border-border px-4 py-3">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-3">
           <p className="inline-flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
             <span className="inline-flex items-center gap-2">
               <span className="live-dot" aria-hidden="true" />
@@ -97,7 +95,8 @@ export function LandingBoard({
             href="/templates"
             className="shrink-0 font-mono text-[10px] tracking-wide text-muted-foreground uppercase sm:text-[11px] hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
           >
-            Open the full board
+            <span className="sm:hidden">Board</span>
+            <span className="hidden sm:inline">Open the full board</span>
           </Link>
         </div>
         {empty ? (
@@ -151,7 +150,7 @@ export function LandingBoard({
 
 export function LandingBoardSkeleton() {
   return (
-    <div className="mt-10 border border-border bg-card sm:mt-12">
+    <div className="mt-10 overflow-hidden rounded-lg border border-border bg-card sm:mt-12">
       <div className="flex h-11 items-center border-b border-border px-4">
         <div className="h-3 w-28 animate-pulse bg-canvas-soft" />
       </div>

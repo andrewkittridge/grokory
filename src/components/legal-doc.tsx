@@ -21,7 +21,7 @@ export function LegalDoc({
         {kicker}
       </p>
       <h1
-        className="motion-enter mt-4 text-4xl font-normal tracking-tight sm:text-5xl"
+        className="display-page motion-enter mt-4"
         style={motionDelay(1)}
       >
         {title}
@@ -33,7 +33,7 @@ export function LegalDoc({
         Last updated {updated}
       </p>
       <div
-        className="motion-enter mt-8 space-y-6 text-sm leading-7 text-muted-foreground [&_a]:text-foreground [&_a]:underline-offset-4 [&_a]:hover:underline [&_h2]:mt-10 [&_h2]:text-lg [&_h2]:font-normal [&_h2]:tracking-tight [&_h2]:text-foreground [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
+        className="motion-enter mt-8 space-y-6 text-sm leading-7 text-body [&_a]:text-foreground [&_a]:underline-offset-4 [&_a]:hover:underline [&_h2]:mt-10 [&_h2]:text-lg [&_h2]:font-normal [&_h2]:tracking-tight [&_h2]:text-foreground [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5"
         style={motionDelay(3)}
       >
         {children}

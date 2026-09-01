@@ -11,14 +11,14 @@ const buttonVariants = cva(
         default:
           "btn-shine relative overflow-hidden rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
-          "rounded-none border-border bg-transparent text-foreground hover:bg-white/5 aria-expanded:bg-white/5",
+          "rounded-full border-pill-border bg-transparent text-foreground hover:bg-canvas-soft aria-expanded:bg-canvas-soft",
         secondary:
-          "rounded-none bg-secondary text-secondary-foreground hover:bg-white/5 aria-expanded:bg-secondary",
+          "rounded-full bg-secondary text-secondary-foreground hover:bg-canvas-soft aria-expanded:bg-secondary",
         ghost:
-          "rounded-none text-muted-foreground hover:bg-white/5 hover:text-foreground aria-expanded:bg-white/5 aria-expanded:text-foreground",
+          "rounded-full text-muted-foreground hover:bg-canvas-soft hover:text-foreground aria-expanded:bg-canvas-soft aria-expanded:text-foreground",
         destructive:
-          "rounded-none bg-destructive/15 text-destructive hover:bg-destructive/25",
-        link: "rounded-none text-foreground underline-offset-4 hover:underline",
+          "rounded-full border border-destructive/40 bg-transparent text-destructive hover:bg-destructive/10",
+        link: "rounded-full text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default:

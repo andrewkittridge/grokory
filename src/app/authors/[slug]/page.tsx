@@ -54,13 +54,13 @@ export default async function AuthorPage({
         Author
       </p>
       <h1
-        className="motion-enter mt-4 text-4xl font-normal tracking-tight sm:text-5xl"
+        className="display-page motion-enter mt-4"
         style={motionDelay(1)}
       >
         {name}
       </h1>
       <p
-        className="motion-enter mt-4 max-w-2xl text-sm leading-7 text-muted-foreground"
+        className="motion-enter mt-4 max-w-2xl text-sm leading-7 text-body"
         style={motionDelay(2)}
       >
         {templates.length} {templates.length === 1 ? "bot" : "bots"} on the

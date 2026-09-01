@@ -33,7 +33,7 @@ function VoteSubmit({
       aria-pressed={active}
       disabled={pending}
       className={cn(
-        "inline-flex items-center justify-center rounded-none transition-colors hover:bg-white/5 disabled:opacity-50 focus-visible:ring-1 focus-visible:ring-foreground motion-reduce:transition-none touch-manipulation",
+        "inline-flex items-center justify-center rounded-full transition-colors hover:bg-canvas-soft disabled:opacity-50 focus-visible:ring-1 focus-visible:ring-foreground motion-reduce:transition-none touch-manipulation",
         compact ? "size-7" : "size-8",
         active
           ? "text-sunset [&_svg]:stroke-[2.5]"

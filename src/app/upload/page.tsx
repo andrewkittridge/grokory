@@ -20,13 +20,13 @@ export default function UploadPage() {
         No account required
       </p>
       <h1
-        className="motion-enter mt-4 text-4xl font-normal tracking-tight sm:text-5xl"
+        className="display-page motion-enter mt-4"
         style={motionDelay(1)}
       >
         Share a bot.
       </h1>
       <p
-        className="motion-enter mt-5 text-muted-foreground leading-7"
+        className="motion-enter mt-5 text-body leading-7"
         style={motionDelay(2)}
       >
         Grok Bot templates travel as public URLs —{" "}

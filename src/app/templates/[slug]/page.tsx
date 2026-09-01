@@ -117,7 +117,7 @@ export default async function TemplateDetailPage({
                     size="lg"
                   />
                 ) : (
-                  <p className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  <p className="rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive">
                     This share link is down on x.ai. It is hidden from the
                     board until the preview comes back.
                   </p>
@@ -193,7 +193,7 @@ export default async function TemplateDetailPage({
                     </Badge>
                   ))}
                 </div>
-                <h1 className="mt-5 text-4xl font-normal tracking-tight sm:text-5xl">
+                <h1 className="display-page mt-5">
                   {template.title}
                 </h1>
                 <p className="mt-2 text-muted-foreground">
@@ -203,7 +203,7 @@ export default async function TemplateDetailPage({
                     className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
                   />
                 </p>
-                <p className="mt-5 max-w-2xl text-base leading-7 text-secondary-foreground">
+                <p className="mt-5 max-w-2xl text-base leading-7 text-body">
                   {template.description}
                 </p>
                 {template.note ? (
@@ -229,7 +229,7 @@ export default async function TemplateDetailPage({
 
       {related.length > 0 ? (
         <section className="mt-16">
-          <h2 className="text-2xl font-normal tracking-tight">Same job</h2>
+          <h2 className="display-section">Same job</h2>
           <ol className="mt-5 divide-y divide-border border-y border-border">
             {related.map((item, index) => (
               <li key={item.id}>

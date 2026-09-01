@@ -13,7 +13,7 @@ export function CopyLinkButton({
     <label
       data-copy-url={url}
       className={cn(
-        "copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-none border border-border bg-transparent px-4 text-sm font-normal hover:bg-white/5 focus-within:ring-1 focus-within:ring-foreground",
+        "copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-full border border-pill-border bg-transparent px-4 text-sm font-normal hover:bg-canvas-soft focus-within:ring-1 focus-within:ring-foreground",
         className
       )}
     >

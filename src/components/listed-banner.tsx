@@ -19,7 +19,7 @@ export function ListedBanner({
       <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
         Listed
       </p>
-      <p className="mt-2 text-lg tracking-tight">On the board.</p>
+      <p className="mt-2 text-lg tracking-[-0.02em]">On the board.</p>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
         Copy a post for X, or list another bot.
       </p>

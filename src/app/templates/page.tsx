@@ -49,16 +49,16 @@ export default async function TemplatesPage({
   const emptyBoard = !q && !tag && (!category || category === "all");
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
       <JsonLd data={itemListJson(templates, "/templates")} />
       <h1
-        className="motion-enter text-4xl font-normal tracking-tight sm:text-5xl"
+        className="display-page motion-enter"
         style={motionDelay(0)}
       >
         The board
       </h1>
       <p
-        className="motion-enter mt-4 max-w-2xl text-muted-foreground leading-7"
+        className="motion-enter mt-4 max-w-2xl text-body leading-7"
         style={motionDelay(1)}
       >
         Every listing is a public Grok Bot share URL. Upvote the ones worth

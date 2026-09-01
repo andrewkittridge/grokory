@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 export function LandingCta() {
   return (
     <section className="motion-view border-y border-border">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-12">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-16 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-20">
         <div className="max-w-xl">
           <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
             Next listing
           </p>
-          <h2 className="mt-3 text-3xl font-normal tracking-tight">
+          <h2 className="display-section mt-3">
             Share a Grok Bot.
           </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          <p className="mt-2 text-sm leading-6 text-body">
             Paste a public share link. It lands on the board for everyone else.
             No account.
           </p>

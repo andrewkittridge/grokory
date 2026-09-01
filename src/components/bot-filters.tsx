@@ -53,7 +53,7 @@ export function BotFilters({
           placeholder="Search names, authors, jobs…"
           className="h-10 font-mono"
         />
-        <Button type="submit" variant="outline" className="h-10 rounded-none sm:w-auto">
+        <Button type="submit" variant="outline" className="h-10 sm:w-auto">
           Search
         </Button>
       </form>

@@ -25,7 +25,7 @@ export function BotRankRow({
   return (
     <div
       className={cn(
-        "rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 hover:bg-white/5",
+        "rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 hover:bg-canvas-soft",
         leader && "rank-row-leader",
         leader
           ? "items-start px-3 py-4 sm:px-4 sm:py-5"
@@ -113,7 +113,7 @@ export function VacantRankRow({
   scramble?: boolean;
 }) {
   return (
-    <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-white/5">
+    <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-canvas-soft">
       <Link
         href="/upload"
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"

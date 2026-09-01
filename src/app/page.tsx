@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main>
-      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <LandingHero>
           <Suspense fallback={<LandingBoardSkeleton />}>
             <HomeBoard />
@@ -52,7 +52,7 @@ async function HomeBoard() {
       <JsonLd data={itemListJson(ranked, "/")} />
       <LandingBoard ranked={ranked} count={templates.length} />
       <p
-        className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-muted-foreground sm:mt-12"
+        className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-body sm:mt-12"
         style={motionDelay(taglineDelay)}
       >
         Custom Grok agents
@@ -63,7 +63,7 @@ async function HomeBoard() {
       </p>
       {jobs.length > 0 ? (
         <p
-          className="motion-enter mt-6 text-sm leading-7 text-muted-foreground"
+          className="motion-enter mt-6 text-sm leading-7 text-body"
           style={motionDelay(taglineDelay + 1)}
         >
           <span className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
