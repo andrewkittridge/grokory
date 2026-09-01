@@ -41,7 +41,7 @@ export function LandingHero({ children }: { children: ReactNode }) {
             >
               Grok Bots are custom agents on x.ai. Grokdex ranks the public
               ones. Upvote the useful ones, then Add — it copies the template
-              onto your Grok account, not the author’s computer.
+              onto your Grok account.
             </p>
             <div
               className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
