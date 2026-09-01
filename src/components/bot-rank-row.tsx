@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { cn } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
@@ -15,12 +16,14 @@ export function BotRankRow({
   showVote = false,
   size = "default",
   detail,
+  scramble = false,
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
   detail?: "summary" | "job";
+  scramble?: boolean;
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
@@ -31,6 +34,7 @@ export function BotRankRow({
     <div
       className={cn(
         "rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 hover:bg-white/5",
+        leader && "rank-row-leader",
         leader
           ? "items-start px-3 py-4 sm:px-4 sm:py-5"
           : "items-center px-2 py-2.5"
@@ -41,15 +45,26 @@ export function BotRankRow({
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={template.title}
       />
-      <span
-        className={cn(
-          "relative z-10 font-mono text-xs tabular-nums tracking-wide",
-          leader ? "pt-1" : undefined,
-          rank === 1 ? "text-sunset" : "text-muted-foreground"
-        )}
-      >
-        {String(rank).padStart(2, "0")}
-      </span>
+      {scramble ? (
+        <RankTick
+          rank={rank}
+          className={cn(
+            "relative z-10",
+            leader ? "pt-1" : undefined,
+            rank === 1 ? "text-sunset" : "text-muted-foreground"
+          )}
+        />
+      ) : (
+        <span
+          className={cn(
+            "relative z-10 font-mono text-xs tabular-nums tracking-wide",
+            leader ? "pt-1" : undefined,
+            rank === 1 ? "text-sunset" : "text-muted-foreground"
+          )}
+        >
+          {String(rank).padStart(2, "0")}
+        </span>
+      )}
       <span className="relative z-10 min-w-0 pointer-events-none">
         <span
           className={cn(
@@ -101,7 +116,13 @@ export function BotRankRow({
   );
 }
 
-export function VacantRankRow({ rank }: { rank: number }) {
+export function VacantRankRow({
+  rank,
+  scramble = false,
+}: {
+  rank: number;
+  scramble?: boolean;
+}) {
   return (
     <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-white/5">
       <Link
@@ -109,9 +130,13 @@ export function VacantRankRow({ rank }: { rank: number }) {
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label="Share a bot"
       />
-      <span className="relative z-10 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
-        {String(rank).padStart(2, "0")}
-      </span>
+      {scramble ? (
+        <RankTick rank={rank} className="relative z-10 text-muted-foreground" />
+      ) : (
+        <span className="relative z-10 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+          {String(rank).padStart(2, "0")}
+        </span>
+      )}
       <span className="relative z-10 min-w-0 pointer-events-none truncate text-[15px] leading-tight text-muted-foreground">
         Next listing
       </span>

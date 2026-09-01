@@ -8,7 +8,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
+        default:
+          "btn-shine relative overflow-hidden rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
           "rounded-none border-border bg-transparent text-foreground hover:bg-white/5 aria-expanded:bg-white/5",
         secondary:

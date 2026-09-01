@@ -6,7 +6,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background">
       <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5">
+        <Link href="/" className="group/mark flex min-w-0 items-center gap-2.5">
           <BrandMark className="size-[1.15rem] text-foreground" />
           <span className="text-[15px] font-normal tracking-tight">Grokdex</span>
           <span className="hidden font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
