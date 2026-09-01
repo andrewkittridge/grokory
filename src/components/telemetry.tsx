@@ -24,7 +24,7 @@ export function RankTick({
 
     let frame = 0;
     let timer = 0;
-    const frames = 11;
+    const frames = 16;
     const tick = () => {
       frame += 1;
       if (frame >= frames) {
@@ -34,7 +34,7 @@ export function RankTick({
       setText(
         `${GLYPHS[(Math.random() * 10) | 0]}${GLYPHS[(Math.random() * 10) | 0]}`
       );
-      timer = window.setTimeout(tick, 28);
+      timer = window.setTimeout(tick, 36);
     };
     timer = window.setTimeout(tick, 0);
     return () => window.clearTimeout(timer);

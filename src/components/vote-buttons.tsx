@@ -54,7 +54,7 @@ function VoteScore({ score, compact }: { score: number; compact?: boolean }) {
     if (previous.current === score) return;
     previous.current = score;
     const start = window.setTimeout(() => setTick(true), 0);
-    const stop = window.setTimeout(() => setTick(false), 380);
+    const stop = window.setTimeout(() => setTick(false), 520);
     return () => {
       window.clearTimeout(start);
       window.clearTimeout(stop);
@@ -95,7 +95,7 @@ export function VoteButtons({
     if (previousVote.current === userVote) return;
     previousVote.current = userVote;
     const start = window.setTimeout(() => setFlash(userVote), 0);
-    const stop = window.setTimeout(() => setFlash(0), 500);
+    const stop = window.setTimeout(() => setFlash(0), 700);
     return () => {
       window.clearTimeout(start);
       window.clearTimeout(stop);

@@ -41,11 +41,11 @@ export default function HeroFieldCanvas() {
     if (!ctx) return;
 
     const rand = mulberry32(0x67a1d);
-    const stars: Star[] = Array.from({ length: 60 }, () => ({
+    const stars: Star[] = Array.from({ length: 70 }, () => ({
       x: rand(),
-      y: rand(),
+      y: rand() * 0.52,
       depth: 0.25 + rand() * 0.75,
-      alpha: 0.12 + rand() * 0.38,
+      alpha: 0.45 + rand() * 0.5,
     }));
 
     let meteor: Meteor | null = null;
@@ -99,8 +99,11 @@ export default function HeroFieldCanvas() {
         if (star.x > 1) star.x -= 1;
         const twinkle =
           0.72 + Math.sin(elapsed * 0.0014 * star.depth + star.y * 14) * 0.28;
-        ctx.fillStyle = `rgba(255,255,255,${star.alpha * twinkle})`;
-        const size = star.depth > 0.72 ? 1.35 : 1;
+        const sunset = star.depth > 0.82 && star.x < 0.22;
+        ctx.fillStyle = sunset
+          ? `rgba(255,122,23,${0.7 * twinkle})`
+          : `rgba(255,255,255,${star.alpha * twinkle})`;
+        const size = star.depth > 0.55 ? 2.25 : 1.5;
         ctx.fillRect(star.x * width, star.y * height, size, size);
       }
 
@@ -127,8 +130,8 @@ export default function HeroFieldCanvas() {
             : t > 0.68
               ? Math.max(0, 1 - (t - 0.68) / 0.32)
               : 1;
-        ctx.strokeStyle = `rgba(255,255,255,${0.42 * alpha})`;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(255,255,255,${0.7 * alpha})`;
+        ctx.lineWidth = 1.15;
         ctx.beginPath();
         ctx.moveTo(meteor.x, meteor.y);
         ctx.lineTo(meteor.x - meteor.vx * 52, meteor.y - meteor.vy * 52);
