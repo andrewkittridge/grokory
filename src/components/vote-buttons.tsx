@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { useEffect, useOptimistic, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { castVote } from "@/lib/actions";
+import { nextBallot, scoreAfter } from "@/lib/vote";
 import { cn } from "@/lib/utils";
 import type { VoteValue } from "@/lib/types";
 
@@ -152,10 +153,10 @@ export function VoteButtons({
   const [optimistic, addOptimistic] = useOptimistic(
     { score, userVote },
     (state, value: VoteValue) => {
-      const next = state.userVote === value ? 0 : value;
+      const next = nextBallot(state.userVote, value);
       return {
-        userVote: next as 0 | VoteValue,
-        score: state.score - state.userVote + next,
+        userVote: next,
+        score: scoreAfter(state.score, state.userVote, next),
       };
     }
   );

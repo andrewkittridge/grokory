@@ -87,3 +87,12 @@ test("hotRank prefers a recent score over a stale one", () => {
   });
   assert.ok(hotRank(recent) > hotRank(stale));
 });
+
+test("hotRank is negative when the score is negative", () => {
+  const down = bot({
+    score: -4,
+    createdAt: new Date().toISOString(),
+  });
+  assert.ok(hotRank(down) < 0);
+  assert.equal(hotRank(bot({ score: 0 })), 0);
+});

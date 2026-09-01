@@ -1,4 +1,4 @@
-import { authorSlug } from "./bot-url";
+import { authorSlug, grokbotTemplateUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
 import { filterTemplates } from "./templates";
 import { parseSort, sortTemplates } from "./rank";
@@ -43,7 +43,7 @@ export const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "How do I add a Grok Bot from Grokdex to my Grok account?",
-    a: "Open a listing on grokdex.net, preview the share link on x.ai, then click Add. That opens the public x.ai/bot URL so Grok can copy the template onto your account. Adds count clicks, not confirmed installs.",
+    a: "Open a listing on grokdex.net, preview the share link on x.ai, then click Add. Add opens the Grok Bot app so it can copy the template onto your account. If you don’t have the app, use Preview on x.ai. Adds count clicks, not confirmed installs.",
   },
   {
     q: "How do I list a Grok Bot on Grokdex?",
@@ -283,14 +283,16 @@ ${botList(ranked)}
 
 function listingMarkdown(template: ListedTemplate) {
   const bot = publicBot(template);
+  const missingLists =
+    "_Not listed on the public x.ai share page. Preview there before you add._";
   const skills =
     bot.skills.length > 0
       ? bot.skills.map((item) => `- ${item}`).join("\n")
-      : "_None listed._";
+      : missingLists;
   const routines =
     bot.routines.length > 0
       ? bot.routines.map((item) => `- ${item}`).join("\n")
-      : "_None listed._";
+      : missingLists;
   return `# ${bot.title}
 
 > ${bot.summary}
@@ -318,8 +320,10 @@ ${routines}
 ## Add this bot
 
 1. Preview the share link on x.ai: ${bot.botUrl}
-2. Add from the listing: ${bot.listingUrl}
-3. Grok copies the template onto your account.
+2. Add in the Grok Bot app: ${grokbotTemplateUrl(template.botId)}
+3. Or open the listing and use Add: ${bot.listingUrl}
+
+Third-party template. Bots on your account share one computer. Connect the smallest tools, and keep sends, purchases, and deletes behind your approval.
 
 Tags: ${bot.tags.length ? bot.tags.join(", ") : "none"}
 `;
@@ -888,8 +892,9 @@ Use when a user wants to copy a listed template onto their Grok account.
 ## Steps
 
 1. Resolve the listing with MCP \`get_bot\` or GET ${absUrl("/api/bots/{slug}")}.
-2. Give them the \`botUrl\`. Adding on x.ai copies identity, description, skills, and routines.
-3. It does not share the author’s computer, logins, or chats.
+2. Give them the \`botUrl\` to preview on x.ai.
+3. Add opens the Grok Bot app (\`grokbot://app/v1/bot-template?id=…\`). That copies identity, description, skills, and routines. It does not share the author’s computer, logins, or chats.
+4. Third-party template. Bots on an account share one computer — connect the smallest tools, and keep sends, purchases, and deletes behind approval.
 
 If \`live\` is false, the share link is down — do not send them to Add.
 `,

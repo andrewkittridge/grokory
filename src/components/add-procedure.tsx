@@ -52,7 +52,7 @@ export function AddProcedure({
             {template.live ? (
               <AddBotButton
                 slug={template.slug}
-                botUrl={template.botUrl}
+                botId={template.botId}
                 size="lg"
               />
             ) : (
@@ -61,6 +61,14 @@ export function AddProcedure({
                 until the preview comes back.
               </p>
             )}
+            {template.live ? (
+              <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                Opens the Grok Bot app. If you don’t have it, preview on x.ai.
+                Third-party template: bots share one computer — connect the
+                smallest tools, and keep sends, buys, and deletes behind your
+                approval.
+              </p>
+            ) : null}
           </div>
         </li>
       </ol>

@@ -2,6 +2,10 @@
 // OpenNext generates `.open-next/worker.js` at build time.
 import { default as handler } from "./.open-next/worker.js";
 import { HOME_HTML_CACHE_URL } from "./src/lib/edge-cache";
+import {
+  LEGACY_VOTER_COOKIE,
+  VOTER_COOKIE,
+} from "./src/lib/vote";
 
 function prefersMarkdown(accept) {
   if (!accept) return false;
@@ -12,12 +16,32 @@ function prefersMarkdown(accept) {
   return markdown < html;
 }
 
+function hasVoterCookie(cookie) {
+  if (!cookie) return false;
+  return (
+    cookie.includes(`${VOTER_COOKIE}=`) ||
+    cookie.includes(`${LEGACY_VOTER_COOKIE}=`)
+  );
+}
+
+function isRscRequest(request) {
+  const rsc = request.headers.get("rsc");
+  if (rsc === "1") return true;
+  if (request.headers.get("next-router-prefetch")) return true;
+  if (request.headers.get("next-router-state-tree")) return true;
+  const accept = request.headers.get("accept") || "";
+  return accept.includes("text/x-component");
+}
+
 async function fetchHome(request, env, ctx) {
   const url = new URL(request.url);
   if (
     (request.method !== "GET" && request.method !== "HEAD") ||
     url.pathname !== "/" ||
-    prefersMarkdown(request.headers.get("accept"))
+    url.search !== "" ||
+    prefersMarkdown(request.headers.get("accept")) ||
+    isRscRequest(request) ||
+    hasVoterCookie(request.headers.get("cookie"))
   ) {
     return handler.fetch(request, env, ctx);
   }

@@ -20,6 +20,7 @@ import { populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { CATEGORIES } from "@/lib/types";
 import { motionDelay } from "@/lib/utils";
+import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +61,7 @@ function HomeFallback() {
 }
 
 async function Home() {
-  const templates = await listTemplates();
+  const templates = await listTemplates(await readVoterId());
   const founding = isFoundingBoard(templates.length);
   const { featured, organic } = partitionFeatured(templates);
   const ranked = sortTemplates(organic, "hot").slice(0, 5);
@@ -91,7 +92,7 @@ async function Home() {
           className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-body sm:mt-12"
           style={motionDelay(taglineDelay)}
         >
-          {founding ? "Just opened" : "Public share links"}
+          Public share links
           <span aria-hidden="true"> · </span>
           Ranked by votes
           <span aria-hidden="true"> · </span>

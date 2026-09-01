@@ -3,12 +3,20 @@ import { test } from "node:test";
 import {
   authorSlug,
   formatAdds,
+  grokbotTemplateUrl,
   isGoneError,
   listingPostText,
   parseShareUrl,
   parseTags,
   slugify,
 } from "./bot-url";
+
+test("grokbotTemplateUrl is the app add deep link", () => {
+  assert.equal(
+    grokbotTemplateUrl("Q6NiveEqmhIiYir_ZQG-4"),
+    "grokbot://app/v1/bot-template?id=Q6NiveEqmhIiYir_ZQG-4"
+  );
+});
 
 test("parseShareUrl accepts a canonical x.ai/bot link", () => {
   const parsed = parseShareUrl("https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN");

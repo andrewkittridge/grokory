@@ -1,4 +1,4 @@
-import { parseShareUrl } from "./bot-url";
+import { grokbotTemplateUrl, parseShareUrl } from "./bot-url";
 import type { BotPreview } from "./types";
 
 const PREVIEW_TTL = 60 * 60 * 6;
@@ -75,9 +75,47 @@ export type ParsedBotPage = {
   authorName?: string;
   description?: string;
   ogImage?: string;
+  addHref?: string;
   skills: string[];
   routines: string[];
 };
+
+const GROKBOT_HREF =
+  /grokbot:\/\/app\/v1\/bot-template\?id=([A-Za-z0-9_-]+)/i;
+
+function unescapeJsonString(value: string) {
+  return value
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) =>
+      String.fromCharCode(Number.parseInt(hex, 16))
+    )
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\r")
+    .replace(/\\t/g, "\t")
+    .replace(/\\"/g, '"')
+    .replace(/\\\\/g, "\\");
+}
+
+function jsonStringField(source: string, key: string) {
+  const match = source.match(
+    new RegExp(`"${key}":"((?:\\\\.|[^"\\\\])*)"`)
+  );
+  return match?.[1] ? unescapeJsonString(match[1]) : undefined;
+}
+
+/** Live x.ai share pages embed identity in an RSC payload, not Skills/Routines lists. */
+export function extractSharePayload(html: string) {
+  const marker = html.search(/addHref\\?":\\?"grokbot:/i);
+  if (marker < 0) return null;
+  const snippet = html
+    .slice(Math.max(0, marker - 900), marker + 500)
+    .replace(/\\"/g, '"');
+  const sharerName = jsonStringField(snippet, "sharerName");
+  const botName = jsonStringField(snippet, "botName");
+  const description = jsonStringField(snippet, "description");
+  const addHref = jsonStringField(snippet, "addHref");
+  if (!botName && !sharerName && !description && !addHref) return null;
+  return { sharerName, botName, description, addHref };
+}
 
 export function parseBotHtml(html: string): ParsedBotPage {
   const ogTitle = metaContent(html, "og:title");
@@ -92,14 +130,23 @@ export function parseBotHtml(html: string): ParsedBotPage {
     html,
     /<p title="([^"]+)" class="text-secondary mt-3/i
   );
+  const payload = extractSharePayload(html);
+  const grokbot = html.match(GROKBOT_HREF);
+  const addHref =
+    payload?.addHref?.startsWith("grokbot://")
+      ? payload.addHref
+      : grokbot
+        ? `grokbot://app/v1/bot-template?id=${grokbot[1]}`
+        : undefined;
 
   const gone =
     html.includes("Page not found") &&
     !pageTitle &&
+    !payload?.botName &&
     !ogTitle?.includes(" by ");
 
-  let title = pageTitle;
-  let authorName = byline;
+  let title = payload?.botName || pageTitle;
+  let authorName = payload?.sharerName || byline;
   if (!title && ogTitle) {
     const split = ogTitle.match(/^(.*) by (.+)$/);
     if (split) {
@@ -110,7 +157,8 @@ export function parseBotHtml(html: string): ParsedBotPage {
     }
   }
 
-  const description = fullDescription || ogDescription;
+  const description =
+    payload?.description || fullDescription || ogDescription;
 
   return {
     gone,
@@ -118,6 +166,7 @@ export function parseBotHtml(html: string): ParsedBotPage {
     authorName,
     description,
     ogImage,
+    addHref,
     skills: extractSectionList(html, "Skills"),
     routines: extractSectionList(html, "Routines"),
   };
@@ -141,6 +190,7 @@ function previewFromParsed(
     summary,
     description: description.slice(0, 2000),
     ogImage: page.ogImage,
+    addHref: page.addHref ?? grokbotTemplateUrl(parsed.botId),
     skills: page.skills,
     routines: page.routines,
   };

@@ -30,6 +30,10 @@ export async function refreshDueListings(limit = 15) {
         ogImage: result.preview.ogImage,
         skills: result.preview.skills,
         routines: result.preview.routines,
+        title: result.preview.title,
+        authorName: result.preview.authorName,
+        description: result.preview.description,
+        summary: result.preview.summary,
       });
       checked.push({ slug: template.slug, live: true });
     } else if (result.gone || isGoneError(result.error)) {

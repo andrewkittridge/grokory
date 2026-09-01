@@ -1,17 +1,17 @@
 import { cookies } from "next/headers";
+import {
+  LEGACY_VOTER_COOKIE,
+  validVoterId,
+  VOTER_COOKIE,
+} from "./vote";
 
-const COOKIE = "grokdex_voter";
-const LEGACY_COOKIE = "grokory_voter";
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-function validId(value: string | undefined) {
-  return value && UUID.test(value) ? value : undefined;
-}
+export { validVoterId };
 
 export async function readVoterId() {
   const jar = await cookies();
   return (
-    validId(jar.get(COOKIE)?.value) ?? validId(jar.get(LEGACY_COOKIE)?.value)
+    validVoterId(jar.get(VOTER_COOKIE)?.value) ??
+    validVoterId(jar.get(LEGACY_VOTER_COOKIE)?.value)
   );
 }
 
@@ -19,13 +19,13 @@ export async function getVoterId() {
   const existing = await readVoterId();
   const jar = await cookies();
   if (existing) {
-    if (!validId(jar.get(COOKIE)?.value)) {
-      jar.set(COOKIE, existing, cookieOptions());
+    if (!validVoterId(jar.get(VOTER_COOKIE)?.value)) {
+      jar.set(VOTER_COOKIE, existing, cookieOptions());
     }
     return existing;
   }
   const id = crypto.randomUUID();
-  jar.set(COOKIE, id, cookieOptions());
+  jar.set(VOTER_COOKIE, id, cookieOptions());
   return id;
 }
 

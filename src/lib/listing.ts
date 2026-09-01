@@ -11,6 +11,7 @@ import {
   parseTags,
   slugify,
 } from "./bot-url";
+import { consumeKvRate, headerIp } from "./rate-limit";
 import { absUrl } from "./site";
 import type { BotPreview, BotTemplate } from "./types";
 
@@ -55,49 +56,16 @@ export type PublishListingDeps = {
   revalidate?: (path: string) => void | Promise<void>;
 };
 
-type RateRecord = { n: number; resetAt: number };
-
 export function clientIp(request: Request) {
-  return (
-    request.headers.get("cf-connecting-ip")?.trim() ||
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    "unknown"
-  );
-}
-
-async function templatesKv() {
-  try {
-    const { getCloudflareContext } = await import(
-      "@opennextjs/cloudflare"
-    );
-    const { env } = await getCloudflareContext({ async: true });
-    return env.TEMPLATES;
-  } catch {
-    return undefined;
-  }
+  return headerIp(request.headers);
 }
 
 export async function consumeListRate(ip: string) {
-  const kv = await templatesKv();
-  if (!kv) return true;
-  const key = `list-rate:v1:${ip || "unknown"}`;
-  const now = Date.now();
-  try {
-    const raw = await kv.get(key, "text");
-    let data: RateRecord = raw
-      ? (JSON.parse(raw) as RateRecord)
-      : { n: 0, resetAt: now + LIST_RATE_WINDOW_MS };
-    if (!data.resetAt || now >= data.resetAt) {
-      data = { n: 0, resetAt: now + LIST_RATE_WINDOW_MS };
-    }
-    if (data.n >= LIST_RATE_LIMIT) return false;
-    data.n += 1;
-    const ttl = Math.max(60, Math.ceil((data.resetAt - now) / 1000));
-    await kv.put(key, JSON.stringify(data), { expirationTtl: ttl });
-    return true;
-  } catch {
-    return true;
-  }
+  return consumeKvRate(
+    `list-rate:v1:${ip || "unknown"}`,
+    LIST_RATE_LIMIT,
+    LIST_RATE_WINDOW_MS
+  );
 }
 
 function listingUrlFor(slug: string) {

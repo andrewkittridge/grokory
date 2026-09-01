@@ -7,6 +7,10 @@ const BARE_ID = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_-]{12,64}$/;
 
 export const ALREADY_LISTED = "That Grok Bot is already listed.";
 
+export function grokbotTemplateUrl(botId: string) {
+  return `grokbot://app/v1/bot-template?id=${encodeURIComponent(botId)}`;
+}
+
 export function parseShareUrl(
   input: string
 ): { botId: string; botUrl: string } | null {

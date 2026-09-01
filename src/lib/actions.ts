@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { incrementAdds as bumpAdds, setVote } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import { parseShareUrl } from "./bot-url";
 import { publishListing } from "./listing";
+import { consumeVoteRate, headerIp } from "./rate-limit";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
 import type { BotPreview, VoteValue } from "./types";
@@ -81,10 +83,15 @@ export async function castVote(formData: FormData) {
   const raw = String(formData.get("value") ?? "");
   if (!templateId || (raw !== "1" && raw !== "-1")) return;
 
+  const allowed = await consumeVoteRate(headerIp(await headers()));
+  if (!allowed) return;
+
   const value = Number(raw) as VoteValue;
   const voterId = await getVoterId();
   const updated = await setVote(voterId, templateId, value);
+  if (!updated) return;
   revalidatePath("/");
   revalidatePath("/templates");
-  if (updated) revalidatePath(`/templates/${updated.slug}`);
+  revalidatePath(`/templates/${updated.slug}`);
+  revalidatePath("/authors/[slug]", "page");
 }

@@ -63,6 +63,7 @@ export type BotPreview = {
   summary: string;
   description: string;
   ogImage?: string;
+  addHref?: string;
   skills: string[];
   routines: string[];
 };

@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
-import { fetchBotPreview, parseBotHtml } from "./fetch-bot";
+import {
+  extractSharePayload,
+  fetchBotPreview,
+  parseBotHtml,
+} from "./fetch-bot";
 
 const originalFetch = globalThis.fetch;
 
@@ -39,6 +43,10 @@ test("fetchBotPreview reads title, author, and description from x.ai html", asyn
     result.preview.ogImage,
     "https://x.ai/bot/Ub3T7usX-c6yRQibQq83P/og.png"
   );
+  assert.equal(
+    result.preview.addHref,
+    "grokbot://app/v1/bot-template?id=Ub3T7usX-c6yRQibQq83P"
+  );
 });
 
 test("fetchBotPreview reports a 404", async () => {
@@ -65,8 +73,37 @@ test("parseBotHtml reads the live x.ai preview shape and optional lists", () => 
   assert.equal(page.gone, false);
   assert.equal(page.title, "Research");
   assert.equal(page.authorName, "Andrew");
+  assert.equal(
+    page.addHref,
+    "grokbot://app/v1/bot-template?id=Q6NiveEqmhIiYir_ZQG-4"
+  );
   assert.deepEqual(page.skills, ["Web search", "Citations"]);
   assert.deepEqual(page.routines, ["Morning brief"]);
+});
+
+const LIVE_RSC = String.raw`<script>self.__next_f.push([1,"2c:{\"state\":{\"data\":{\"id\":\"Q6NiveEqmhIiYir_ZQG-4\",\"ownerType\":\"USER\",\"sharerName\":\"Andrew Kittridge\",\"botName\":\"Research\",\"description\":\"Primary-source research for anyone who needs cited answers.\",\"addHref\":\"grokbot://app/v1/bot-template?id=Q6NiveEqmhIiYir_ZQG-4\"}}}"])</script>`;
+
+test("parseBotHtml reads identity from the live x.ai RSC payload", () => {
+  const html = `<!doctype html>
+    <meta property="og:title" content="Research by Andrew" />
+    <h1 title="Research">Research</h1>
+    <p class="text-secondary text-sm">by Andrew</p>
+    <a href="grokbot://app/v1/bot-template?id=Q6NiveEqmhIiYir_ZQG-4">Add to Grok Bot</a>
+    ${LIVE_RSC}
+  `;
+  const payload = extractSharePayload(html);
+  assert.equal(payload?.sharerName, "Andrew Kittridge");
+  assert.equal(payload?.botName, "Research");
+  const page = parseBotHtml(html);
+  assert.equal(page.title, "Research");
+  assert.equal(page.authorName, "Andrew Kittridge");
+  assert.match(page.description ?? "", /cited answers/);
+  assert.equal(
+    page.addHref,
+    "grokbot://app/v1/bot-template?id=Q6NiveEqmhIiYir_ZQG-4"
+  );
+  assert.deepEqual(page.skills, []);
+  assert.deepEqual(page.routines, []);
 });
 
 test("parseBotHtml marks a missing bot as gone", () => {

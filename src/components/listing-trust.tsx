@@ -76,6 +76,12 @@ export function WhatTravels({
       {routines.length > 0 ? (
         <LabeledList label="Routines" items={routines} />
       ) : null}
+      {skills.length === 0 && routines.length === 0 ? (
+        <p className="mt-4 text-sm leading-6 text-muted-foreground">
+          x.ai does not list skills or routines on the public share page.
+          Preview the template there before you add.
+        </p>
+      ) : null}
     </div>
   );
 }

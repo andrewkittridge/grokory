@@ -1,21 +1,22 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { recordAdd } from "@/lib/actions";
 import { trackConversion } from "@/lib/analytics";
+import { grokbotTemplateUrl } from "@/lib/bot-url";
 
 export function AddBotButton({
   slug,
-  botUrl,
+  botId,
   size = "default",
 }: {
   slug: string;
-  botUrl: string;
+  botId: string;
   size?: "default" | "lg" | "sm";
 }) {
   const [pending, start] = useTransition();
+  const addHref = grokbotTemplateUrl(botId);
 
   return (
     <Button
@@ -25,8 +26,7 @@ export function AddBotButton({
       disabled={pending}
       render={
         <a
-          href={botUrl}
-          target="_blank"
+          href={addHref}
           rel="noopener noreferrer"
           onClick={() => {
             trackConversion("add_bot");
@@ -36,7 +36,6 @@ export function AddBotButton({
       }
     >
       Add to Grok Bot
-      <ExternalLink data-icon="inline-end" />
     </Button>
   );
 }

@@ -73,6 +73,8 @@ test("homepage and listing markdown are citable", () => {
   assert.equal(listing?.status, 200);
   assert.match(listing?.body ?? "", /^# Research/m);
   assert.match(listing?.body ?? "", /https:\/\/x\.ai\/bot\//);
+  assert.match(listing?.body ?? "", /grokbot:\/\/app\/v1\/bot-template\?id=/);
+  assert.match(listing?.body ?? "", /share one computer/);
 
   const home = pageMarkdown("/", [bot()]);
   assert.equal(home?.status, 200);

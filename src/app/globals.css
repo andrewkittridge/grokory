@@ -648,6 +648,37 @@ body {
   bottom: 0;
 }
 
+.hero-wordmark {
+  font-size: clamp(3rem, 8vw, 5.5rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.hero-letter {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  animation: motion-lock-in 0.5s var(--motion-ease) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+.hero-letter::after {
+  content: "";
+  position: absolute;
+  top: 0.08em;
+  bottom: 0.08em;
+  left: 0;
+  width: 2px;
+  background: var(--sunset);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--sunset) 70%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  animation: motion-lock-scan 0.5s var(--motion-ease) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+
 .motion-scan-fail {
   position: absolute;
   top: 0;
@@ -1307,6 +1338,8 @@ body {
   .motion-lock,
   .motion-acquire,
   .motion-lock-scan,
+  .hero-letter,
+  .hero-letter::after,
   .motion-scan-fail,
   .motion-scan-lost,
   .live-dot,

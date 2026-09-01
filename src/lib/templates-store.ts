@@ -11,6 +11,8 @@ import {
   LIVE_TEMPLATES_MEMORY_MS,
 } from "./edge-cache";
 import { extendFeaturedUntil } from "./featured";
+import { applyBallot } from "./vote";
+import type { VoteResult } from "./vote";
 import type {
   BotTemplate,
   Category,
@@ -19,6 +21,8 @@ import type {
   Vote,
   VoteValue,
 } from "./types";
+
+export type { VoteResult };
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const DATA_FILE = path.join(DATA_DIR, "templates.json");
@@ -73,6 +77,10 @@ export type ListingCheckUpdate = {
   ogImage?: string;
   skills?: string[];
   routines?: string[];
+  title?: string;
+  authorName?: string;
+  description?: string;
+  summary?: string;
 };
 
 let queue: Promise<unknown> = Promise.resolve();
@@ -373,6 +381,7 @@ async function ensureNeon() {
           value smallint NOT NULL CHECK (value IN (-1, 1)),
           PRIMARY KEY (voter_id, template_id)
         )`,
+        db`CREATE INDEX IF NOT EXISTS votes_template_id_idx ON votes (template_id)`,
       ];
 
       for (const seed of SEED_TEMPLATES) {
@@ -579,32 +588,8 @@ export async function listTemplates(
   options: { includeDown?: boolean } = {}
 ) {
   const includeDown = options.includeDown === true;
-  if (includeDown) return loadListed(voterId, true);
-  const listed = await loadLiveListed();
-  if (!voterId) return listed;
-  if (getDatabaseUrl()) {
-    try {
-      return applyUserVotes(
-        listed,
-        (await neonVoterVotes(voterId)).map((vote) => ({
-          templateId: vote.template_id,
-          value: vote.value as VoteValue,
-        }))
-      );
-    } catch (error) {
-      if (!isMissingRelation(error)) throw error;
-      return applyUserVotes(listed, []);
-    }
-  }
-  return applyUserVotes(
-    listed,
-    (await fileList(voterId, false))
-      .filter((template) => template.userVote !== 0)
-      .map((template) => ({
-        templateId: template.id,
-        value: template.userVote as VoteValue,
-      }))
-  );
+  if (includeDown || voterId) return loadListed(voterId, includeDown);
+  return loadLiveListed();
 }
 
 export async function getTemplate(slug: string, voterId?: string) {
@@ -721,58 +706,98 @@ export async function incrementAdds(slug: string) {
   });
 }
 
+type VoteRow = {
+  slug: string;
+  score: number | string | null;
+  user_vote: number | string | null;
+};
+
+function voteResult(row: VoteRow | undefined): VoteResult | null {
+  if (!row) return null;
+  const userVote = Number(row.user_vote) || 0;
+  return {
+    slug: row.slug,
+    score: Number(row.score) || 0,
+    userVote: userVote === 1 || userVote === -1 ? userVote : 0,
+  };
+}
+
+async function neonSetVote(
+  voterId: string,
+  templateId: string,
+  value: VoteValue
+): Promise<VoteResult | null> {
+  const db = sql();
+  const results = (await db.transaction([
+    db`
+      WITH deleted AS (
+        DELETE FROM votes
+        WHERE voter_id = ${voterId}
+          AND template_id = ${templateId}
+          AND value = ${value}
+        RETURNING 1
+      )
+      INSERT INTO votes (voter_id, template_id, value)
+      SELECT ${voterId}, ${templateId}, ${value}
+      WHERE NOT EXISTS (SELECT 1 FROM deleted)
+        AND EXISTS (SELECT 1 FROM templates WHERE id = ${templateId})
+      ON CONFLICT (voter_id, template_id) DO UPDATE SET value = EXCLUDED.value
+    `,
+    db`
+      SELECT
+        t.slug,
+        COALESCE(v.score, 0)::int AS score,
+        COALESCE(mine.value, 0)::int AS user_vote
+      FROM templates t
+      LEFT JOIN (
+        SELECT SUM(value)::int AS score
+        FROM votes
+        WHERE template_id = ${templateId}
+      ) v ON true
+      LEFT JOIN votes mine
+        ON mine.template_id = t.id AND mine.voter_id = ${voterId}
+      WHERE t.id = ${templateId}
+      LIMIT 1
+    `,
+  ])) as [unknown, VoteRow[]];
+  return voteResult(results[1]?.[0]);
+}
+
 export async function setVote(
   voterId: string,
   templateId: string,
   value: VoteValue
-) {
+): Promise<VoteResult | null> {
   if (getDatabaseUrl()) {
-    await ensureNeon();
-    const db = sql();
-    const exists = (await db`
-      SELECT slug FROM templates WHERE id = ${templateId} LIMIT 1
-    `) as { slug: string }[];
-    if (!exists[0]) return null;
-    const current = (await db`
-      SELECT value FROM votes
-      WHERE voter_id = ${voterId} AND template_id = ${templateId}
-      LIMIT 1
-    `) as { value: number }[];
-    if (current[0]?.value === value) {
-      await db`
-        DELETE FROM votes WHERE voter_id = ${voterId} AND template_id = ${templateId}
-      `;
-    } else {
-      await db`
-        INSERT INTO votes (voter_id, template_id, value)
-        VALUES (${voterId}, ${templateId}, ${value})
-        ON CONFLICT (voter_id, template_id) DO UPDATE SET value = EXCLUDED.value
-      `;
+    try {
+      await ensureNeon();
+      const updated = await neonSetVote(voterId, templateId, value);
+      if (updated) await invalidateTemplateListCache();
+      return updated;
+    } catch (error) {
+      if (!isMissingRelation(error)) throw error;
+      await ensureNeon();
+      const updated = await neonSetVote(voterId, templateId, value);
+      if (updated) await invalidateTemplateListCache();
+      return updated;
     }
-    await invalidateTemplateListCache();
-    const listed = await listTemplates(voterId);
-    return listed.find((template) => template.id === templateId) ?? null;
   }
 
   return withLock(async () => {
     const store = await readStore();
-    if (!store.templates.some((template) => template.id === templateId)) {
-      return null;
-    }
-    const index = store.votes.findIndex(
-      (vote) => vote.voterId === voterId && vote.templateId === templateId
-    );
-    if (index >= 0 && store.votes[index].value === value) {
-      store.votes.splice(index, 1);
-    } else if (index >= 0) {
-      store.votes[index] = { voterId, templateId, value };
-    } else {
-      store.votes.push({ voterId, templateId, value });
-    }
+    const template = store.templates.find((item) => item.id === templateId);
+    if (!template) return null;
+    store.votes = applyBallot(store.votes, voterId, templateId, value);
     await writeStore(store);
     await invalidateTemplateListCache();
     const listed = toListed(store.templates, store.votes, voterId);
-    return listed.find((template) => template.id === templateId) ?? null;
+    const item = listed.find((row) => row.id === templateId);
+    if (!item) return null;
+    return {
+      slug: item.slug,
+      score: item.score,
+      userVote: item.userVote,
+    };
   });
 }
 
@@ -797,11 +822,30 @@ export async function listDueForCheck(limit = 15): Promise<BotTemplate[]> {
     .slice(0, limit);
 }
 
+function checkedIdentity(update: ListingCheckUpdate) {
+  const title = update.title?.trim();
+  const authorName = update.authorName?.trim();
+  const description = update.description?.trim();
+  const summary = update.summary?.trim();
+  return {
+    title: title && title !== "Untitled bot" ? title : undefined,
+    authorName:
+      authorName && authorName !== "Unknown" ? authorName : undefined,
+    description: description || undefined,
+    summary: summary || undefined,
+  };
+}
+
 export async function applyListingCheck(update: ListingCheckUpdate) {
+  const identity = checkedIdentity(update);
   if (getDatabaseUrl()) {
     await ensureNeon();
     const db = sql();
     const ogImage = update.ogImage ?? null;
+    const title = identity.title ?? null;
+    const authorName = identity.authorName ?? null;
+    const description = identity.description ?? null;
+    const summary = identity.summary ?? null;
     if (update.skills && update.routines) {
       await db`
         UPDATE templates
@@ -810,7 +854,11 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
           last_checked_at = ${update.lastCheckedAt},
           og_image = COALESCE(${ogImage}, og_image),
           skills = ${update.skills},
-          routines = ${update.routines}
+          routines = ${update.routines},
+          title = COALESCE(${title}, title),
+          author_name = COALESCE(${authorName}, author_name),
+          description = COALESCE(${description}, description),
+          summary = COALESCE(${summary}, summary)
         WHERE id = ${update.id}
       `;
       await invalidateTemplateListCache();
@@ -818,7 +866,13 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
     }
     await db`
       UPDATE templates
-      SET live = ${update.live}, last_checked_at = ${update.lastCheckedAt}
+      SET
+        live = ${update.live},
+        last_checked_at = ${update.lastCheckedAt},
+        title = COALESCE(${title}, title),
+        author_name = COALESCE(${authorName}, author_name),
+        description = COALESCE(${description}, description),
+        summary = COALESCE(${summary}, summary)
       WHERE id = ${update.id}
     `;
     await invalidateTemplateListCache();
@@ -839,6 +893,10 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
       ogImage: update.ogImage ?? current.ogImage,
       skills: update.skills ?? current.skills,
       routines: update.routines ?? current.routines,
+      title: identity.title ?? current.title,
+      authorName: identity.authorName ?? current.authorName,
+      description: identity.description ?? current.description,
+      summary: identity.summary ?? current.summary,
     };
     await writeStore(store);
     await invalidateTemplateListCache();
