@@ -1,7 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { fulfillCheckoutSession } from "@/lib/checkout";
-import { getStripe } from "@/lib/stripe";
+import { getStripe, stripeCryptoProvider } from "@/lib/stripe";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +31,13 @@ export async function POST(request: Request) {
   const stripe = getStripe();
   let event;
   try {
-    event = stripe.webhooks.constructEvent(body, signature, secret);
+    event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      secret,
+      undefined,
+      stripeCryptoProvider()
+    );
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Invalid signature";

@@ -10,7 +10,15 @@ export function getStripe() {
   if (!key) {
     throw new Error("STRIPE_SECRET_KEY is not set");
   }
-  return new Stripe(key);
+  return new Stripe(key, {
+    httpClient: Stripe.createFetchHttpClient(),
+    timeout: 20_000,
+    maxNetworkRetries: 1,
+  });
+}
+
+export function stripeCryptoProvider() {
+  return Stripe.createSubtleCryptoProvider();
 }
 
 export function checkoutOrigin(request: Request) {
