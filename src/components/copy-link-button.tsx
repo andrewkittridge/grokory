@@ -1,17 +1,17 @@
 import { cn } from "@/lib/utils";
 
-export function CopyLinkButton({
-  url,
-  label = "Copy share link",
+export function CopyText({
+  text,
+  label = "Copy",
   className,
 }: {
-  url: string;
+  text: string;
   label?: string;
   className?: string;
 }) {
   return (
     <label
-      data-copy-url={url}
+      data-copy={text}
       className={cn(
         "copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-full border border-pill-border bg-transparent px-4 text-sm font-normal hover:bg-canvas-soft focus-within:ring-1 focus-within:ring-foreground",
         className
@@ -22,4 +22,16 @@ export function CopyLinkButton({
       <span className="copy-share-done">Copied</span>
     </label>
   );
+}
+
+export function CopyLinkButton({
+  url,
+  label = "Copy share link",
+  className,
+}: {
+  url: string;
+  label?: string;
+  className?: string;
+}) {
+  return <CopyText text={url} label={label} className={className} />;
 }

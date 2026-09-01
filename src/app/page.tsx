@@ -8,7 +8,7 @@ import {
   LandingBoardSkeleton,
   LandingHero,
 } from "@/components/landing-hero";
-import { itemListJson } from "@/lib/json-ld";
+import { faqJson, itemListJson } from "@/lib/json-ld";
 import { partitionFeatured } from "@/lib/featured";
 import {
   HOME_BOARD_SLOTS,
@@ -20,7 +20,6 @@ import { populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { CATEGORIES } from "@/lib/types";
 import { motionDelay } from "@/lib/utils";
-import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
@@ -61,7 +60,7 @@ function HomeFallback() {
 }
 
 async function Home() {
-  const templates = await listTemplates(await readVoterId());
+  const templates = await listTemplates();
   const founding = isFoundingBoard(templates.length);
   const { featured, organic } = partitionFeatured(templates);
   const ranked = sortTemplates(organic, "hot").slice(0, 5);
@@ -79,6 +78,7 @@ async function Home() {
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <LandingHero founding={founding}>
           <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
+          <JsonLd data={faqJson()} />
           <LandingBoard
             ranked={ranked}
             featured={featured}

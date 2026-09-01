@@ -1,3 +1,4 @@
+import { BotListPaste } from "@/components/bot-list-paste";
 import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { UploadForm } from "@/components/upload-form";
@@ -54,6 +55,11 @@ export default async function UploadPage({
             siteKey={turnstileSiteKey()}
             defaultCategory={defaultCategory}
           />
+        </Frame>
+      </div>
+      <div className="motion-enter mt-6" style={motionDelay(4)}>
+        <Frame staticFrame matClassName="p-5 sm:p-8">
+          <BotListPaste />
         </Frame>
       </div>
     </main>

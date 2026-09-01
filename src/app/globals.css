@@ -872,6 +872,18 @@ body {
   transform-origin: left center;
 }
 
+.rank-row-roster .rank-spark {
+  right: 4.75rem;
+  left: 2.75rem;
+}
+
+@media (min-width: 640px) {
+  .rank-row-roster .rank-spark {
+    right: 5.25rem;
+    left: 3.25rem;
+  }
+}
+
 .rank-row-leader::before {
   animation: rank-leader-in 1.15s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -907,6 +919,25 @@ body {
 
 .rank-row-open.is-live .rank-open-hint {
   color: var(--sunset);
+}
+
+.rank-row-roster.rank-row-open .rank-open-label {
+  color: var(--foreground);
+}
+
+.rank-row-roster.rank-row-open .rank-open-status {
+  color: var(--sunset);
+}
+
+.rank-row-roster.rank-row-open .rank-open-go {
+  color: var(--muted-foreground);
+  transition: color 250ms ease;
+}
+
+.rank-row-roster.rank-row-open:hover .rank-open-go,
+.rank-row-roster.rank-row-open:focus-within .rank-open-go,
+.rank-row-roster.rank-row-open.is-live .rank-open-go {
+  color: var(--body);
 }
 
 .rank-open-scan {

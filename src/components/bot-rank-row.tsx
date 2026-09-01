@@ -18,6 +18,7 @@ export function BotRankRow({
   size = "default",
   scramble = false,
   scoreMax,
+  surface = "board",
 }: {
   rank: number;
   template: ListedTemplate;
@@ -25,23 +26,34 @@ export function BotRankRow({
   size?: "default" | "leader";
   scramble?: boolean;
   scoreMax?: number;
+  surface?: "board" | "roster";
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
   const leader = size === "leader";
+  const roster = surface === "roster";
   const spark =
     scoreMax && scoreMax > 0
       ? Math.max(0, Math.min(1, template.score / scoreMax))
       : 0;
+  const rowPad = leader
+    ? roster
+      ? "items-start px-3 py-5 sm:px-5 sm:py-6"
+      : "items-start px-3 py-4 sm:px-4 sm:py-5"
+    : roster
+      ? "items-center px-3 py-3.5 sm:px-5 sm:py-4"
+      : "items-center px-2 py-2.5";
 
   return (
     <div
       className={cn(
-        "rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 hover:bg-canvas-soft",
+        "rank-row relative hover:bg-canvas-soft",
+        roster
+          ? "flex gap-x-2 sm:gap-x-3"
+          : "grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3",
         leader && "rank-row-leader",
-        leader
-          ? "items-start px-3 py-4 sm:px-4 sm:py-5"
-          : "items-center px-2 py-2.5"
+        roster && "rank-row-roster",
+        rowPad
       )}
     >
       {spark > 0 ? (
@@ -60,7 +72,8 @@ export function BotRankRow({
         <RankTick
           rank={rank}
           className={cn(
-            "relative z-10",
+            "relative z-10 shrink-0",
+            roster && "w-8",
             leader ? "pt-1" : undefined,
             rank === 1 ? "text-sunset" : "text-muted-foreground"
           )}
@@ -68,7 +81,8 @@ export function BotRankRow({
       ) : (
         <span
           className={cn(
-            "relative z-10 font-mono text-xs tabular-nums tracking-wide",
+            "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide",
+            roster && "w-8",
             leader ? "pt-1" : undefined,
             rank === 1 ? "text-sunset" : "text-muted-foreground"
           )}
@@ -76,12 +90,14 @@ export function BotRankRow({
           {String(rank).padStart(2, "0")}
         </span>
       )}
-      <span className="relative z-10 min-w-0 pointer-events-none">
+      <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span
           className={cn(
             "font-normal tracking-tight",
             leader
-              ? "line-clamp-2 text-lg leading-tight sm:text-xl"
+              ? roster
+                ? "line-clamp-2 text-xl leading-tight sm:text-2xl"
+                : "line-clamp-2 text-lg leading-tight sm:text-xl"
               : "block truncate text-[15px] leading-tight"
           )}
         >
@@ -105,17 +121,20 @@ export function BotRankRow({
         </span>
         <span
           className={cn(
-            "block text-muted-foreground",
+            "block",
             leader
-              ? "mt-1.5 line-clamp-2 text-sm leading-6"
-              : "mt-0.5 line-clamp-1 text-xs"
+              ? cn(
+                  "mt-1.5 line-clamp-2 text-sm leading-6 sm:mt-2",
+                  roster ? "max-w-2xl text-body" : "text-muted-foreground"
+                )
+              : "mt-0.5 line-clamp-1 text-xs text-muted-foreground"
           )}
         >
           {template.summary}
         </span>
       </span>
       <span
-        className={cn("relative z-10", leader ? "pt-1" : undefined)}
+        className={cn("relative z-10 shrink-0", leader ? "pt-1" : undefined)}
       >
         {showVote ? (
           <VoteButtons
@@ -144,6 +163,7 @@ export function BotRankList({
   vacancies,
   delay = 0,
   className,
+  surface = "board",
 }: {
   templates: ListedTemplate[];
   showVote?: boolean;
@@ -153,6 +173,7 @@ export function BotRankList({
   vacancies?: BoardVacancy[];
   delay?: number;
   className?: string;
+  surface?: "board" | "roster";
 }) {
   const scoreMax = Math.max(1, ...templates.map((template) => template.score));
   const open =
@@ -178,6 +199,7 @@ export function BotRankList({
             size={leader && index === 0 ? "leader" : "default"}
             scramble={scramble}
             scoreMax={scoreMax}
+            surface={surface}
           />
         </li>
       ))}
@@ -186,14 +208,25 @@ export function BotRankList({
         startRank={templates.length + 1}
         scramble={scramble}
         delay={delay + templates.length}
+        surface={surface}
       />
     </ol>
   );
 }
 
-export function BotRankRowSkeleton() {
+export function BotRankRowSkeleton({
+  surface = "board",
+}: {
+  surface?: "board" | "roster";
+}) {
+  const roster = surface === "roster";
   return (
-    <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_4rem] items-center gap-x-3 px-2 py-3">
+    <div
+      className={cn(
+        "grid grid-cols-[2.25rem_minmax(0,1fr)_4rem] items-center gap-x-3",
+        roster ? "px-3 py-4 sm:px-5" : "px-2 py-3"
+      )}
+    >
       <div className="h-3 w-5 animate-pulse bg-canvas-soft" />
       <div className="space-y-2">
         <div className="h-3.5 w-2/5 max-w-56 animate-pulse bg-canvas-soft" />

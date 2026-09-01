@@ -2,24 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import {
-  addTemplate,
-  findByBotId,
-  incrementAdds as bumpAdds,
-  setVote,
-} from "./templates-store";
+import { incrementAdds as bumpAdds, setVote } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
-import {
-  ALREADY_LISTED,
-  authorSlug as slugifyAuthor,
-  isCategory,
-  parseShareUrl,
-  parseTags,
-  slugify,
-} from "./bot-url";
+import { parseShareUrl } from "./bot-url";
+import { publishListing } from "./listing";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
-import type { BotPreview, BotTemplate, VoteValue } from "./types";
+import type { BotPreview, VoteValue } from "./types";
 
 export type ActionState = {
   error?: string;
@@ -62,101 +51,22 @@ export async function createListing(
 ): Promise<ActionState> {
   const blocked = await verifyTurnstile(formData);
   if (blocked) return { error: blocked };
-  const shareInput = String(formData.get("shareUrl") ?? "");
-  const parsed = parseShareUrl(shareInput);
-  if (!parsed) {
-    return {
-      error:
-        "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN",
-    };
+
+  const result = await publishListing({
+    shareUrl: String(formData.get("shareUrl") ?? ""),
+    category: String(formData.get("category") ?? ""),
+    tags: String(formData.get("tags") ?? ""),
+    note: String(formData.get("note") ?? ""),
+    submittedBy: String(formData.get("submittedBy") ?? ""),
+    title: String(formData.get("title") ?? ""),
+    authorName: String(formData.get("authorName") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    source: "form",
+  });
+  if (!result.ok) {
+    return { error: result.error, slug: result.slug };
   }
-
-  let slug: string;
-  try {
-    const existing = await findByBotId(parsed.botId);
-    if (existing) {
-      return {
-        error: ALREADY_LISTED,
-        slug: existing.slug,
-      };
-    }
-
-    const lookedUp = await fetchBotPreview(parsed.botUrl);
-    const title = String(formData.get("title") ?? "").trim();
-    const authorName = String(formData.get("authorName") ?? "").trim();
-    const description = String(formData.get("description") ?? "").trim();
-    const category = String(formData.get("category") ?? "");
-    const tags = parseTags(String(formData.get("tags") ?? ""));
-    const note = String(formData.get("note") ?? "").trim();
-    const submittedBy = String(formData.get("submittedBy") ?? "").trim();
-
-    if (!isCategory(category)) {
-      return { error: "Pick a category so people can find this bot." };
-    }
-
-    const preview = lookedUp.ok ? lookedUp.preview : null;
-    const resolvedTitle = title || preview?.title || "";
-    const resolvedAuthor = authorName || preview?.authorName || "Unknown";
-    const resolvedDescription =
-      description || preview?.description || preview?.summary || "";
-
-    if (resolvedTitle.length < 2) {
-      return {
-        error: lookedUp.ok ? "Give the bot a name." : lookedUp.error,
-      };
-    }
-    if (resolvedDescription.length < 12) {
-      return {
-        error:
-          "Add a short description so people know what this bot does before they add it.",
-      };
-    }
-
-    const summary =
-      resolvedDescription.length > 180
-        ? `${resolvedDescription.slice(0, 177).trimEnd()}…`
-        : resolvedDescription;
-
-    const template: BotTemplate = {
-      id: crypto.randomUUID(),
-      slug: slugify(resolvedTitle, parsed.botId),
-      botId: parsed.botId,
-      botUrl: parsed.botUrl,
-      title: resolvedTitle.slice(0, 80),
-      authorName: resolvedAuthor.slice(0, 60),
-      summary,
-      description: resolvedDescription.slice(0, 2000),
-      ogImage: preview?.ogImage,
-      category,
-      tags,
-      note: note.slice(0, 400) || undefined,
-      submittedBy: submittedBy.slice(0, 60) || "Anonymous",
-      origin: "community",
-      featured: false,
-      createdAt: new Date().toISOString(),
-      adds: 0,
-      live: !(lookedUp.ok === false && lookedUp.gone),
-      lastCheckedAt: new Date().toISOString(),
-      skills: preview?.skills ?? [],
-      routines: preview?.routines ?? [],
-    };
-
-    const result = await addTemplate(template);
-    if (!result.ok) {
-      return { error: result.error, slug: result.slug };
-    }
-    slug = result.template.slug;
-    revalidatePath("/");
-    revalidatePath("/templates");
-    revalidatePath(`/templates/${slug}`);
-    revalidatePath("/feed.xml");
-    revalidatePath(`/authors/${slugifyAuthor(resolvedAuthor)}`);
-  } catch {
-    return {
-      error: "Could not save this listing. Try again in a moment.",
-    };
-  }
-  redirect(`/templates/${slug}?listed=1`);
+  redirect(`/templates/${result.slug}?listed=1`);
 }
 
 export async function recordAdd(slug: string) {

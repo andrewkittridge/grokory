@@ -1,12 +1,45 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useOptimistic, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { castVote } from "@/lib/actions";
 import { cn } from "@/lib/utils";
 import type { VoteValue } from "@/lib/types";
+
+function ChevronUpIcon({ compact }: { compact?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={compact ? "size-4" : "size-5"}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m18 15-6-6-6 6" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon({ compact }: { compact?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={compact ? "size-4" : "size-5"}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
 
 function VoteSubmit({
   value,
@@ -116,10 +149,26 @@ export function VoteButtons({
 }) {
   const compact = size === "mat";
   const [burst, setBurst] = useState<0 | VoteValue>(0);
+  const [optimistic, addOptimistic] = useOptimistic(
+    { score, userVote },
+    (state, value: VoteValue) => {
+      const next = state.userVote === value ? 0 : value;
+      return {
+        userVote: next as 0 | VoteValue,
+        score: state.score - state.userVote + next,
+      };
+    }
+  );
 
   return (
     <form
-      action={castVote}
+      action={async (formData) => {
+        const raw = String(formData.get("value"));
+        if (raw === "1" || raw === "-1") {
+          addOptimistic(Number(raw) as VoteValue);
+        }
+        await castVote(formData);
+      }}
       onClick={(event) => event.stopPropagation()}
       className={cn(
         "relative z-10 flex items-center gap-0 overflow-visible",
@@ -129,24 +178,24 @@ export function VoteButtons({
       <input type="hidden" name="templateId" value={templateId} />
       <VoteSubmit
         value={1}
-        active={userVote === 1}
+        active={optimistic.userVote === 1}
         burst={burst === 1}
         label="Upvote"
         compact={compact}
         onBurst={setBurst}
       >
-        <ChevronUp className={compact ? "size-4" : "size-5"} />
+        <ChevronUpIcon compact={compact} />
       </VoteSubmit>
-      <VoteScore score={score} compact={compact} />
+      <VoteScore score={optimistic.score} compact={compact} />
       <VoteSubmit
         value={-1}
-        active={userVote === -1}
+        active={optimistic.userVote === -1}
         burst={burst === -1}
         label="Downvote"
         compact={compact}
         onBurst={setBurst}
       >
-        <ChevronDown className={compact ? "size-4" : "size-5"} />
+        <ChevronDownIcon compact={compact} />
       </VoteSubmit>
     </form>
   );

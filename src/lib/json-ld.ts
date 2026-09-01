@@ -1,5 +1,51 @@
-import { SITE_NAME, SITE_URL, absUrl } from "./site";
+import { FAQS } from "./agent";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
 import type { ListedTemplate } from "./types";
+
+export function organizationJson() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+  };
+}
+
+export function websiteJson() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description: SITE_DESCRIPTION,
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE_URL}/templates?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+  };
+}
+
+export function faqJson() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+}
 
 export function itemListJson(templates: ListedTemplate[], path = "/") {
   return {

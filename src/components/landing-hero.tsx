@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { BotListPaste } from "@/components/bot-list-paste";
 import {
   BotRankList,
   BotRankRowSkeleton,
@@ -105,6 +106,12 @@ export function LandingHero({
             </div>
           </div>
         </div>
+        <div
+          className="motion-enter mt-8 border-y border-border py-4 sm:mt-10"
+          style={motionDelay(4)}
+        >
+          <BotListPaste compact />
+        </div>
         {children}
       </div>
     </section>
@@ -127,49 +134,62 @@ export function LandingBoard({
   const empty = count === 0 && vacancies.length === 0;
 
   return (
-    <div className="motion-board mt-10 sm:mt-12" style={motionDelay(4)}>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-border px-4 py-3">
-          <p className="inline-flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
-            <span className="inline-flex items-center gap-2">
-              <span className="live-dot" aria-hidden="true" />
-              <CountTick value={count} singular="bot" plural="bots" />
-            </span>
-            <span className="text-border" aria-hidden="true">
-              ·
-            </span>
-            <span>{founding ? "Just opened" : "Hot"}</span>
-          </p>
-          <Link
-            href="/templates"
-            className="shrink-0 font-mono text-[10px] tracking-wide text-muted-foreground uppercase sm:text-[11px] hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-          >
-            <span className="sm:hidden">Board</span>
-            <span className="hidden sm:inline">Open the full board</span>
-          </Link>
-        </div>
+    <div className="mt-8 sm:mt-10">
+      <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
+        <p className="inline-flex min-w-0 items-baseline gap-x-2.5 overflow-hidden font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
+          <span className="inline-flex items-center gap-2 text-foreground">
+            <span className="live-dot" aria-hidden="true" />
+            <CountTick value={count} singular="bot" plural="bots" />
+          </span>
+          <span className="text-border" aria-hidden="true">
+            ·
+          </span>
+          <span className="truncate">{founding ? "Just opened" : "Hot"}</span>
+        </p>
+        <Button
+          size="sm"
+          variant="outline"
+          nativeButton={false}
+          className="shrink-0"
+          render={<Link href="/templates" aria-label="Open the board" />}
+        >
+          <span className="sm:hidden">Board</span>
+          <span className="hidden sm:inline">Open the board</span>
+          <span aria-hidden="true">→</span>
+        </Button>
+      </div>
+      <div
+        className="motion-board overflow-hidden rounded-lg border border-border bg-card"
+        style={motionDelay(5)}
+      >
         {featured.length > 0 ? (
           <div className="border-b border-border">
-            <p className="px-4 pt-3 font-mono text-[10px] tracking-[0.2em] text-sunset uppercase">
+            <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-sunset uppercase sm:px-5">
               Featured
             </p>
-            <BotRankList templates={featured} showVote scramble delay={5} />
+            <BotRankList
+              templates={featured}
+              showVote
+              scramble
+              surface="roster"
+              delay={5}
+            />
           </div>
         ) : null}
         {empty ? (
-          <div className="empty-scan relative grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 overflow-hidden px-4 py-8 sm:px-5 sm:py-10">
+          <div className="empty-scan relative grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 overflow-hidden px-4 py-10 sm:px-5 sm:py-12">
             <span className="pt-1 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
               01
             </span>
             <div className="min-w-0">
-              <p className="text-lg leading-tight font-normal tracking-tight sm:text-xl">
+              <p className="text-xl leading-tight font-normal tracking-tight sm:text-2xl">
                 Board just opened.
               </p>
-              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
+              <p className="mt-2 max-w-md text-sm leading-6 text-body">
                 Paste a public share link to list the first Grok Bot.
               </p>
               <Button
-                className="mt-5"
+                className="mt-6"
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >
@@ -183,6 +203,7 @@ export function LandingBoard({
             showVote
             scramble
             leader
+            surface="roster"
             vacancies={vacancies}
             delay={5}
           />
@@ -194,13 +215,16 @@ export function LandingBoard({
 
 export function LandingBoardSkeleton() {
   return (
-    <div className="mt-10 overflow-hidden rounded-lg border border-border bg-card sm:mt-12">
-      <div className="flex h-11 items-center border-b border-border px-4">
-        <div className="h-3 w-28 animate-pulse bg-canvas-soft" />
+    <div className="mt-10 sm:mt-12">
+      <div className="mb-3 flex h-8 items-center justify-between sm:mb-4">
+        <div className="h-3 w-36 animate-pulse bg-canvas-soft" />
+        <div className="h-8 w-28 animate-pulse rounded-full bg-canvas-soft" />
       </div>
-      {Array.from({ length: 5 }).map((_, index) => (
-        <BotRankRowSkeleton key={index} />
-      ))}
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <BotRankRowSkeleton key={index} surface="roster" />
+        ))}
+      </div>
     </div>
   );
 }

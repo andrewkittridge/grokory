@@ -4,6 +4,12 @@ import { SEED_TEMPLATES, SEED_VOTES } from "@/data/seed";
 import { ALREADY_LISTED } from "./bot-url";
 import { getDatabaseUrl, sql } from "./db";
 import { extendBoostedUntil } from "./boost";
+import {
+  HOME_HTML_CACHE_URL,
+  LIVE_TEMPLATES_CACHE_KEY,
+  LIVE_TEMPLATES_KV_TTL,
+  LIVE_TEMPLATES_MEMORY_MS,
+} from "./edge-cache";
 import { extendFeaturedUntil } from "./featured";
 import type {
   BotTemplate,
@@ -57,6 +63,7 @@ type TemplateRow = {
   last_checked_at?: string | Date | null;
   skills?: string[] | null;
   routines?: string[] | null;
+  score?: number | string | null;
 };
 
 export type ListingCheckUpdate = {
@@ -70,6 +77,9 @@ export type ListingCheckUpdate = {
 
 let queue: Promise<unknown> = Promise.resolve();
 let schemaReady: Promise<void> | null = null;
+let liveMemory: { at: number; templates: ListedTemplate[] } | null = null;
+let liveInflight: Promise<ListedTemplate[]> | null = null;
+let liveGeneration = 0;
 
 function withLock<T>(fn: () => Promise<T>): Promise<T> {
   const run = queue.then(fn, fn);
@@ -207,53 +217,166 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
   };
 }
 
+export function isMissingRelation(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error);
+  return /42P01/i.test(message) || /relation ".+" does not exist/i.test(message);
+}
+
+export function applyUserVotes(
+  listed: ListedTemplate[],
+  votes: Iterable<{ templateId: string; value: VoteValue }>
+): ListedTemplate[] {
+  const mine = new Map<string, VoteValue>();
+  for (const vote of votes) mine.set(vote.templateId, vote.value);
+  if (mine.size === 0) {
+    return listed.map((template) =>
+      template.userVote === 0 ? template : { ...template, userVote: 0 }
+    );
+  }
+  return listed.map((template) => ({
+    ...template,
+    userVote: mine.get(template.id) ?? 0,
+  }));
+}
+
+function publicListed(listed: ListedTemplate[]): ListedTemplate[] {
+  return listed.map((template) =>
+    template.userVote === 0 ? template : { ...template, userVote: 0 }
+  );
+}
+
+type TemplatesKv = {
+  get: (key: string, type: "text") => Promise<string | null>;
+  put: (
+    key: string,
+    value: string,
+    options?: { expirationTtl?: number }
+  ) => Promise<void>;
+  delete: (key: string) => Promise<void>;
+};
+
+let kvMemo: TemplatesKv | null | "skip" = null;
+
+async function siteKv() {
+  if (kvMemo === "skip") return undefined;
+  if (kvMemo) return kvMemo;
+  // OpenNext's Cloudflare context can hang in `next dev`. Memory cache is enough locally.
+  if (process.env.NODE_ENV !== "production") {
+    kvMemo = "skip";
+    return undefined;
+  }
+  try {
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
+    const ctx = await Promise.race([
+      getCloudflareContext({ async: true }),
+      new Promise<undefined>((resolve) => setTimeout(resolve, 80)),
+    ]);
+    const kv = ctx?.env?.TEMPLATES as TemplatesKv | undefined;
+    kvMemo = kv ?? "skip";
+    return kv;
+  } catch {
+    kvMemo = "skip";
+    return undefined;
+  }
+}
+
+export async function invalidateTemplateListCache() {
+  liveGeneration += 1;
+  liveMemory = null;
+  liveInflight = null;
+  try {
+    const kv = await siteKv();
+    await kv?.delete(LIVE_TEMPLATES_CACHE_KEY);
+  } catch {
+    // Local or missing KV should not fail writes.
+  }
+  try {
+    const edge =
+      typeof caches === "undefined"
+        ? undefined
+        : (caches as unknown as { default?: { delete: (request: Request) => Promise<boolean> } })
+            .default;
+    await edge?.delete(new Request(HOME_HTML_CACHE_URL, { method: "GET" }));
+  } catch {
+    // Cache API is only available in the Worker runtime.
+  }
+}
+
+async function readLiveKvList(): Promise<ListedTemplate[] | null> {
+  try {
+    const kv = await siteKv();
+    const raw = await kv?.get(LIVE_TEMPLATES_CACHE_KEY, "text");
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as ListedTemplate[];
+    if (!Array.isArray(parsed)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+async function writeLiveListCache(listed: ListedTemplate[]) {
+  const templates = publicListed(listed);
+  liveMemory = { at: Date.now(), templates };
+  try {
+    const kv = await siteKv();
+    await kv?.put(LIVE_TEMPLATES_CACHE_KEY, JSON.stringify(templates), {
+      expirationTtl: LIVE_TEMPLATES_KV_TTL,
+    });
+  } catch {
+    // Local or missing KV should not fail reads.
+  }
+}
+
 async function ensureNeon() {
   if (!schemaReady) {
     schemaReady = (async () => {
       const db = sql();
-      await db`CREATE TABLE IF NOT EXISTS templates (
-        id text PRIMARY KEY,
-        slug text NOT NULL UNIQUE,
-        bot_id text NOT NULL UNIQUE,
-        bot_url text NOT NULL,
-        title text NOT NULL,
-        author_name text NOT NULL,
-        summary text NOT NULL,
-        description text NOT NULL,
-        og_image text,
-        category text NOT NULL,
-        tags text[] NOT NULL DEFAULT '{}',
-        note text,
-        submitted_by text NOT NULL,
-        origin text NOT NULL,
-        featured boolean NOT NULL DEFAULT false,
-        created_at timestamptz NOT NULL,
-        adds integer NOT NULL DEFAULT 0
-      )`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS live boolean NOT NULL DEFAULT true`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS last_checked_at timestamptz`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS skills text[] NOT NULL DEFAULT '{}'`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`;
-      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`;
-      await db`CREATE TABLE IF NOT EXISTS stripe_sessions (
-        session_id text PRIMARY KEY,
-        kind text NOT NULL,
-        template_id text,
-        amount integer,
-        currency text NOT NULL DEFAULT 'usd',
-        status text NOT NULL,
-        created_at timestamptz NOT NULL
-      )`;
-      await db`CREATE TABLE IF NOT EXISTS votes (
-        voter_id text NOT NULL,
-        template_id text NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
-        value smallint NOT NULL CHECK (value IN (-1, 1)),
-        PRIMARY KEY (voter_id, template_id)
-      )`;
+      const statements = [
+        db`CREATE TABLE IF NOT EXISTS templates (
+          id text PRIMARY KEY,
+          slug text NOT NULL UNIQUE,
+          bot_id text NOT NULL UNIQUE,
+          bot_url text NOT NULL,
+          title text NOT NULL,
+          author_name text NOT NULL,
+          summary text NOT NULL,
+          description text NOT NULL,
+          og_image text,
+          category text NOT NULL,
+          tags text[] NOT NULL DEFAULT '{}',
+          note text,
+          submitted_by text NOT NULL,
+          origin text NOT NULL,
+          featured boolean NOT NULL DEFAULT false,
+          created_at timestamptz NOT NULL,
+          adds integer NOT NULL DEFAULT 0
+        )`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS live boolean NOT NULL DEFAULT true`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS last_checked_at timestamptz`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS skills text[] NOT NULL DEFAULT '{}'`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`,
+        db`CREATE TABLE IF NOT EXISTS stripe_sessions (
+          session_id text PRIMARY KEY,
+          kind text NOT NULL,
+          template_id text,
+          amount integer,
+          currency text NOT NULL DEFAULT 'usd',
+          status text NOT NULL,
+          created_at timestamptz NOT NULL
+        )`,
+        db`CREATE TABLE IF NOT EXISTS votes (
+          voter_id text NOT NULL,
+          template_id text NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
+          value smallint NOT NULL CHECK (value IN (-1, 1)),
+          PRIMARY KEY (voter_id, template_id)
+        )`,
+      ];
 
       for (const seed of SEED_TEMPLATES) {
-        await db`
+        statements.push(db`
           INSERT INTO templates (
             id, slug, bot_id, bot_url, title, author_name, summary, description,
             og_image, category, tags, note, submitted_by, origin, featured, created_at, adds
@@ -279,23 +402,24 @@ async function ensureNeon() {
             origin = EXCLUDED.origin,
             featured = EXCLUDED.featured
           WHERE templates.origin = 'curated'
-        `;
+        `);
       }
 
       for (const vote of SEED_VOTES) {
-        await db`
+        statements.push(db`
           INSERT INTO votes (voter_id, template_id, value)
           VALUES (${vote.voterId}, ${vote.templateId}, ${vote.value})
           ON CONFLICT (voter_id, template_id) DO NOTHING
-        `;
+        `);
       }
 
-      await db`DELETE FROM templates WHERE id = 'seed-jarvis'`;
-      await db`
+      statements.push(db`DELETE FROM templates WHERE id = 'seed-jarvis'`);
+      statements.push(db`
         UPDATE templates
         SET origin = 'community', featured = false
         WHERE origin = 'curated'
-      `;
+      `);
+      await db.transaction(statements);
     })().catch((error) => {
       schemaReady = null;
       throw error;
@@ -304,31 +428,70 @@ async function ensureNeon() {
   await schemaReady;
 }
 
+async function neonSelectListed(includeDown: boolean) {
+  const db = sql();
+  if (includeDown) {
+    return (await db`
+      SELECT t.*, COALESCE(v.score, 0)::int AS score
+      FROM templates t
+      LEFT JOIN (
+        SELECT template_id, SUM(value)::int AS score
+        FROM votes
+        GROUP BY template_id
+      ) v ON v.template_id = t.id
+    `) as TemplateRow[];
+  }
+  return (await db`
+    SELECT t.*, COALESCE(v.score, 0)::int AS score
+    FROM templates t
+    LEFT JOIN (
+      SELECT template_id, SUM(value)::int AS score
+      FROM votes
+      GROUP BY template_id
+    ) v ON v.template_id = t.id
+    WHERE t.live IS NOT FALSE
+  `) as TemplateRow[];
+}
+
+async function neonVoterVotes(voterId: string) {
+  const db = sql();
+  return (await db`
+    SELECT template_id, value FROM votes WHERE voter_id = ${voterId}
+  `) as { template_id: string; value: number }[];
+}
+
+function rowsToListed(
+  rows: TemplateRow[],
+  voterVotes?: { template_id: string; value: number }[]
+): ListedTemplate[] {
+  const mine = new Map<string, VoteValue>();
+  if (voterVotes) {
+    for (const vote of voterVotes) {
+      mine.set(vote.template_id, vote.value as VoteValue);
+    }
+  }
+  return rows.map((row) => ({
+    ...normalizeTemplate(rowToTemplate(row)),
+    score: Number(row.score) || 0,
+    userVote: mine.get(row.id) ?? 0,
+  }));
+}
+
 async function neonList(
   voterId?: string,
   includeDown = false
 ): Promise<ListedTemplate[]> {
-  await ensureNeon();
-  const db = sql();
-  const templates = (
-    includeDown
-      ? await db`SELECT * FROM templates`
-      : await db`SELECT * FROM templates WHERE live IS NOT FALSE`
-  ) as TemplateRow[];
-  const votes = (await db`SELECT voter_id, template_id, value FROM votes`) as {
-    voter_id: string;
-    template_id: string;
-    value: number;
-  }[];
-  return toListed(
-    templates.map(rowToTemplate),
-    votes.map((vote) => ({
-      voterId: vote.voter_id,
-      templateId: vote.template_id,
-      value: vote.value as VoteValue,
-    })),
-    voterId
-  );
+  try {
+    const rows = await neonSelectListed(includeDown);
+    const votes = voterId ? await neonVoterVotes(voterId) : undefined;
+    return rowsToListed(rows, votes);
+  } catch (error) {
+    if (!isMissingRelation(error)) throw error;
+    await ensureNeon();
+    const rows = await neonSelectListed(includeDown);
+    const votes = voterId ? await neonVoterVotes(voterId) : undefined;
+    return rowsToListed(rows, votes);
+  }
 }
 
 async function readStore(): Promise<StoreFile> {
@@ -371,13 +534,77 @@ async function fileList(voterId?: string, includeDown = false) {
   });
 }
 
+async function loadListed(voterId: string | undefined, includeDown: boolean) {
+  if (getDatabaseUrl()) return neonList(voterId, includeDown);
+  return fileList(voterId, includeDown);
+}
+
+async function loadLiveListed() {
+  const now = Date.now();
+  if (liveMemory && now - liveMemory.at < LIVE_TEMPLATES_MEMORY_MS) {
+    return liveMemory.templates;
+  }
+  if (liveInflight) return liveInflight;
+  const generation = liveGeneration;
+  liveInflight = (async () => {
+    try {
+      const origin = loadListed(undefined, false);
+      const fromKv = await readLiveKvList();
+      if (fromKv) {
+        if (generation === liveGeneration) {
+          liveMemory = { at: Date.now(), templates: fromKv };
+        }
+        void origin.then(
+          (listed) => {
+            if (generation === liveGeneration) {
+              void writeLiveListCache(publicListed(listed));
+            }
+          },
+          () => undefined
+        );
+        return fromKv;
+      }
+      const listed = publicListed(await origin);
+      if (generation === liveGeneration) await writeLiveListCache(listed);
+      return listed;
+    } finally {
+      if (generation === liveGeneration) liveInflight = null;
+    }
+  })();
+  return liveInflight;
+}
+
 export async function listTemplates(
   voterId?: string,
   options: { includeDown?: boolean } = {}
 ) {
   const includeDown = options.includeDown === true;
-  if (getDatabaseUrl()) return neonList(voterId, includeDown);
-  return fileList(voterId, includeDown);
+  if (includeDown) return loadListed(voterId, true);
+  const listed = await loadLiveListed();
+  if (!voterId) return listed;
+  if (getDatabaseUrl()) {
+    try {
+      return applyUserVotes(
+        listed,
+        (await neonVoterVotes(voterId)).map((vote) => ({
+          templateId: vote.template_id,
+          value: vote.value as VoteValue,
+        }))
+      );
+    } catch (error) {
+      if (!isMissingRelation(error)) throw error;
+      return applyUserVotes(listed, []);
+    }
+  }
+  return applyUserVotes(
+    listed,
+    (await fileList(voterId, false))
+      .filter((template) => template.userVote !== 0)
+      .map((template) => ({
+        templateId: template.id,
+        value: template.userVote as VoteValue,
+      }))
+  );
 }
 
 export async function getTemplate(slug: string, voterId?: string) {
@@ -432,6 +659,7 @@ export async function addTemplate(
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
       )
     `;
+    await invalidateTemplateListCache();
     return {
       ok: true as const,
       template: { ...saved, score: 0, userVote: 0 as const },
@@ -464,6 +692,7 @@ export async function addTemplate(
           "This host cannot save listings. Set DATABASE_URL to a Neon pooled connection string.",
       };
     }
+    await invalidateTemplateListCache();
     return {
       ok: true as const,
       template: { ...saved, score: 0, userVote: 0 as const },
@@ -476,6 +705,7 @@ export async function incrementAdds(slug: string) {
     await ensureNeon();
     const db = sql();
     await db`UPDATE templates SET adds = adds + 1 WHERE slug = ${slug}`;
+    await invalidateTemplateListCache();
     return;
   }
   return withLock(async () => {
@@ -487,6 +717,7 @@ export async function incrementAdds(slug: string) {
       adds: store.templates[index].adds + 1,
     };
     await writeStore(store);
+    await invalidateTemplateListCache();
   });
 }
 
@@ -518,7 +749,8 @@ export async function setVote(
         ON CONFLICT (voter_id, template_id) DO UPDATE SET value = EXCLUDED.value
       `;
     }
-    const listed = await neonList(voterId);
+    await invalidateTemplateListCache();
+    const listed = await listTemplates(voterId);
     return listed.find((template) => template.id === templateId) ?? null;
   }
 
@@ -538,6 +770,7 @@ export async function setVote(
       store.votes.push({ voterId, templateId, value });
     }
     await writeStore(store);
+    await invalidateTemplateListCache();
     const listed = toListed(store.templates, store.votes, voterId);
     return listed.find((template) => template.id === templateId) ?? null;
   });
@@ -580,6 +813,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
           routines = ${update.routines}
         WHERE id = ${update.id}
       `;
+      await invalidateTemplateListCache();
       return;
     }
     await db`
@@ -587,6 +821,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
       SET live = ${update.live}, last_checked_at = ${update.lastCheckedAt}
       WHERE id = ${update.id}
     `;
+    await invalidateTemplateListCache();
     return;
   }
 
@@ -606,6 +841,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
       routines: update.routines ?? current.routines,
     };
     await writeStore(store);
+    await invalidateTemplateListCache();
   });
 }
 
@@ -621,6 +857,7 @@ export async function expireFeatured(now = new Date()) {
         AND featured_until IS NOT NULL
         AND featured_until < ${iso}
     `;
+    await invalidateTemplateListCache();
     return;
   }
 
@@ -638,7 +875,10 @@ export async function expireFeatured(now = new Date()) {
       }
       return template;
     });
-    if (changed) await writeStore(store);
+    if (changed) {
+      await writeStore(store);
+      await invalidateTemplateListCache();
+    }
   });
 }
 
@@ -741,6 +981,7 @@ export async function applyPaidCheckout(input: {
         ${record.amount}, ${record.currency}, ${record.status}, ${record.createdAt}
       )
     `;
+    await invalidateTemplateListCache();
     return {
       applied: true,
       kind: input.kind,
@@ -803,6 +1044,7 @@ export async function applyPaidCheckout(input: {
     }
     store.stripeSessions.push(record);
     await writeStore(store);
+    await invalidateTemplateListCache();
     return {
       applied: true,
       kind: input.kind,

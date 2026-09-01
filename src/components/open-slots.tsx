@@ -20,11 +20,13 @@ export function OpenSlots({
   startRank,
   scramble = false,
   delay = 0,
+  surface = "board",
 }: {
   slots: BoardVacancy[];
   startRank: number;
   scramble?: boolean;
   delay?: number;
+  surface?: "board" | "roster";
 }) {
   const hydrated = useHydrated();
   const reduced = usePrefersReducedMotion();
@@ -90,6 +92,7 @@ export function OpenSlots({
             hint={slot.hint}
             href={slot.href}
             live={cycle && index === liveIndex}
+            surface={surface}
           />
         </li>
       ))}
@@ -104,16 +107,24 @@ function VacantRankRow({
   hint,
   href = "/upload",
   live = false,
+  surface = "board",
 }: {
   rank: number;
   scramble?: boolean;
   live?: boolean;
+  surface?: "board" | "roster";
 } & Partial<BoardVacancy>) {
   const listing = Boolean(hint);
+  const roster = surface === "roster";
+  const go = listing ? `List the first ${label} bot` : "Paste a share link";
+
   return (
     <div
       className={cn(
-        "rank-row rank-row-open relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden px-2 py-2.5 hover:bg-canvas-soft",
+        "rank-row rank-row-open relative items-center overflow-hidden hover:bg-canvas-soft",
+        roster
+          ? "rank-row-roster flex gap-x-2 px-3 py-3.5 sm:gap-x-3 sm:px-5 sm:py-4"
+          : "grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 px-2 py-2.5",
         live && "is-live"
       )}
     >
@@ -126,22 +137,46 @@ function VacantRankRow({
         aria-label={listing ? `List the first ${label} bot` : label}
       />
       {scramble ? (
-        <RankTick rank={rank} className="relative z-10 text-muted-foreground" />
+        <RankTick
+          rank={rank}
+          className={cn(
+            "relative z-10 shrink-0 text-muted-foreground",
+            roster && "w-8"
+          )}
+        />
       ) : (
-        <span className="relative z-10 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+        <span
+          className={cn(
+            "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground",
+            roster && "w-8"
+          )}
+        >
           {String(rank).padStart(2, "0")}
         </span>
       )}
-      <span className="relative z-10 min-w-0 pointer-events-none">
+      <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span className="rank-open-label block truncate text-[15px] leading-tight">
           {label}
         </span>
-        {hint ? (
+        {roster ? (
+          <span
+            className="rank-open-go mt-0.5 block truncate text-xs leading-5"
+            aria-hidden="true"
+          >
+            {go}
+            <span> →</span>
+          </span>
+        ) : hint ? (
           <span className="rank-open-hint mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] uppercase">
             {hint}
           </span>
         ) : null}
       </span>
+      {roster && listing ? (
+        <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.16em] uppercase sm:pl-3 sm:text-[10px] sm:tracking-[0.18em]">
+          {hint}
+        </span>
+      ) : null}
     </div>
   );
 }
