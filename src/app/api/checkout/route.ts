@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  if (body.kind !== "tip" && body.kind !== "featured") {
+  if (body.kind !== "tip" && body.kind !== "featured" && body.kind !== "boost") {
     return NextResponse.json({ error: "Unknown checkout kind." }, { status: 400 });
   }
 

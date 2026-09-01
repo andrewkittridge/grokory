@@ -5,7 +5,7 @@ export function itemListJson(templates: ListedTemplate[], path = "/") {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `${SITE_NAME} ranked Grok Bots`,
+    name: `${SITE_NAME} public Grok Bots`,
     url: absUrl(path),
     numberOfItems: templates.length,
     itemListElement: templates.map((template, index) => ({

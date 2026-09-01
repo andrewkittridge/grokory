@@ -27,6 +27,7 @@ Listing stays free. Optional Stripe Checkout (hosted):
 
 - **Tip** — `$5` / `$10` / `$25` or custom (min `$3`) at `/support`. Not tax-deductible. Does not change rank.
 - **Featured** — `$79` for 7 days or `$199` for 30 days from a listing page. Labeled pin on home and the board (max 3 at once). Organic hot/top/new scores are unchanged.
+- **Category boost** — `$29` for 7 days or `$79` for 30 days. Labeled strip on that job’s board (max 2 per category). Not a homepage pin. Organic scores are unchanged.
 
 Fulfillment is the webhook at `/api/webhooks/stripe`, not the success page. Locally: `stripe listen --forward-to 127.0.0.1:43127/api/webhooks/stripe` and put that CLI signing secret in `.env.local` as `STRIPE_WEBHOOK_SECRET`. Prices are looked up by key (`grokdex_tip_5`, `grokdex_featured_week`, …) so the same code works in test and live once those products exist in both modes.
 

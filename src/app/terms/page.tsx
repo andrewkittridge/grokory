@@ -5,7 +5,7 @@ import { LegalDoc } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Terms",
   description:
-    "Terms for using Grokdex, listing public Grok Bot share links, paid featured placement, and using the board.",
+    "Terms for using Grokdex, listing public Grok Bot share links, paid featured placement, category boosts, and using the board.",
   alternates: { canonical: "/terms" },
 };
 
@@ -46,17 +46,19 @@ export default function TermsPage() {
         automate votes or impersonate other listers.
       </p>
 
-      <h2>Tips and featured placement</h2>
+      <h2>Tips, featured placement, and category boosts</h2>
       <p>
         Listing a bot is free. You may optionally send a tip or buy featured
         placement through Stripe. Tips are voluntary support for the site. They
         are not tax-deductible and they do not change rank or unlock a pin.
         Featured placement is paid advertising: a labeled pin on the home board
-        and catalog for a stated number of days. It does not change organic
-        hot, top, or new scores, and it is not an endorsement by Grokdex, xAI,
-        or SpaceXAI. We may refuse, move, or remove a paid pin (including spam,
-        malware, impersonation, or a down share link). Payments are processed
-        by Stripe. Refunds for unused featured time are at our discretion.
+        and catalog for a stated number of days. A category boost is paid
+        advertising in one job filter only; it is not a homepage pin. Neither
+        changes organic hot, top, or new scores, and neither is an endorsement
+        by Grokdex, xAI, or SpaceXAI. We may refuse, move, or remove a paid pin
+        or boost (including spam, malware, impersonation, or a down share
+        link). Payments are processed by Stripe. Refunds for unused featured or
+        boost time are at our discretion.
       </p>
 
       <h2>No official Grok or xAI status</h2>

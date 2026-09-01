@@ -6,10 +6,13 @@ import { EmptyState } from "@/components/empty-state";
 import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
 import { itemListJson } from "@/lib/json-ld";
+import { partitionBoosted } from "@/lib/boost";
 import { partitionFeatured } from "@/lib/featured";
+import { boardVacancies, isFoundingBoard } from "@/lib/founding";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import { filterTemplates, populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
+import { CATEGORIES } from "@/lib/types";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
@@ -18,7 +21,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "The board",
   description:
-    "Ranked public Grok Bot share links. Upvote the ones worth adding, then open the share link on x.ai.",
+    "A public board of Grok Bot share links. List yours, upvote the useful ones, then add a copy on x.ai.",
   alternates: { canonical: "/templates" },
 };
 
@@ -40,16 +43,30 @@ export default async function TemplatesPage({
   const tag = params.tag?.trim().toLowerCase() ?? "";
   const sort = parseSort(params.sort);
   const all = await listTemplates(await readVoterId());
-  const jobs = populatedCategories(all);
+  const founding = isFoundingBoard(all.length);
+  const jobs = founding ? [...CATEGORIES] : populatedCategories(all);
   const filtered = filterTemplates(all, {
     q,
     category,
     tag,
   });
   const { featured, organic } = partitionFeatured(filtered);
-  const templates = sortTemplates(organic, sort);
+  const job =
+    category && category !== "all" ? category : null;
+  const { boosted, rest } = job
+    ? partitionBoosted(organic, job)
+    : { boosted: [] as typeof organic, rest: organic };
+  const templates = sortTemplates(rest, sort);
   const emptyBoard = !q && !tag && (!category || category === "all");
-  const empty = templates.length === 0 && featured.length === 0;
+  const empty =
+    templates.length === 0 && featured.length === 0 && boosted.length === 0;
+  const vacancies = emptyBoard
+    ? boardVacancies(
+        all,
+        featured.length + templates.length,
+        featured.length + templates.length + CATEGORIES.length
+      )
+    : [];
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
@@ -59,8 +76,9 @@ export default async function TemplatesPage({
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
         style={motionDelay(1)}
       >
-        Every listing is a public Grok Bot share URL. Upvote the ones worth
-        adding, then open the share link on x.ai.
+        {founding
+          ? "Just opened. Every listing is a public Grok Bot share URL. Add a copy, or list one of yours."
+          : "Every listing is a public Grok Bot share URL. Upvote the ones worth adding, then open the share link on x.ai."}
       </p>
       <div className="motion-enter mt-8" style={motionDelay(2)}>
         <BotFilters
@@ -71,12 +89,32 @@ export default async function TemplatesPage({
           jobs={jobs}
         />
       </div>
-      <BoardStrip sort={sort} count={filtered.length} />
+      <BoardStrip sort={sort} count={filtered.length} founding={founding} />
       {empty ? (
         <div className="mt-6">
-          {emptyBoard ? (
+          {emptyBoard && vacancies.length > 0 ? (
+            <BotRankList
+              templates={[]}
+              vacancies={vacancies}
+              scramble
+              className="mt-0 border-y border-border"
+            />
+          ) : job ? (
+            <BotRankList
+              templates={[]}
+              vacancies={[
+                {
+                  label: job,
+                  hint: "Open",
+                  href: `/upload?category=${encodeURIComponent(job)}`,
+                },
+              ]}
+              scramble
+              className="mt-0 border-y border-border"
+            />
+          ) : emptyBoard ? (
             <EmptyState
-              title="No bots listed yet"
+              title="Board just opened"
               body="Got a Grok Bot share link? Paste it and it shows up here for everyone else."
               actionHref="/upload"
               actionLabel="Share a bot"
@@ -100,11 +138,20 @@ export default async function TemplatesPage({
               <BotRankList templates={featured} showVote scramble />
             </div>
           ) : null}
-          {templates.length > 0 ? (
+          {boosted.length > 0 ? (
+            <div className="mt-0 border-b border-border">
+              <p className="px-2 py-3 font-mono text-[10px] tracking-[0.2em] text-foreground uppercase sm:px-0">
+                Boosted in {job}
+              </p>
+              <BotRankList templates={boosted} showVote scramble />
+            </div>
+          ) : null}
+          {templates.length > 0 || vacancies.length > 0 ? (
             <BotRankList
               templates={templates}
               showVote
               scramble
+              vacancies={vacancies}
               className="mt-0 border-b border-border"
             />
           ) : null}

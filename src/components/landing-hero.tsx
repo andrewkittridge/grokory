@@ -9,9 +9,16 @@ import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
+import type { BoardVacancy } from "@/lib/founding";
 import type { ListedTemplate } from "@/lib/types";
 
-export function LandingHero({ children }: { children: ReactNode }) {
+export function LandingHero({
+  founding = false,
+  children,
+}: {
+  founding?: boolean;
+  children: ReactNode;
+}) {
   return (
     <section className="relative isolate">
       <div className="relative z-10">
@@ -24,7 +31,7 @@ export function LandingHero({ children }: { children: ReactNode }) {
               >
                 <span className="inline-flex items-center gap-2.5">
                   <span className="live-dot" aria-hidden="true" />
-                  Public Grok Bots
+                  {founding ? "Just opened" : "Public Grok Bots"}
                 </span>
               </p>
               <LockTitle
@@ -32,36 +39,60 @@ export function LandingHero({ children }: { children: ReactNode }) {
                 delay={1}
                 className="mt-6 max-w-4xl text-balance"
               >
-                A ranked board of public Grok Bots.
+                {founding
+                  ? "The board just opened."
+                  : "A ranked board of public Grok Bots."}
               </LockTitle>
             </div>
             <p
               className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
               style={motionDelay(2)}
             >
-              Grok Bots are custom agents on x.ai. Grokdex ranks the public
-              ones. Upvote the useful ones, then Add — it copies the template
-              onto your Grok account.
+              {founding
+                ? "Public Grok Bot share links. List yours — it shows up immediately. Add copies the template onto your Grok account."
+                : "Grok Bots are custom agents on x.ai. Grokdex ranks the public ones. Upvote the useful ones, then Add — it copies the template onto your Grok account."}
             </p>
             <div
               className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
               style={motionDelay(3)}
             >
-              <Button
-                size="lg"
-                nativeButton={false}
-                render={<Link href="/templates" />}
-              >
-                Browse bots
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                nativeButton={false}
-                render={<Link href="/upload" />}
-              >
-                Share a bot
-              </Button>
+              {founding ? (
+                <>
+                  <Button
+                    size="lg"
+                    nativeButton={false}
+                    render={<Link href="/upload" />}
+                  >
+                    Share a bot
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    nativeButton={false}
+                    render={<Link href="/templates" />}
+                  >
+                    Browse bots
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="lg"
+                    nativeButton={false}
+                    render={<Link href="/templates" />}
+                  >
+                    Browse bots
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    nativeButton={false}
+                    render={<Link href="/upload" />}
+                  >
+                    Share a bot
+                  </Button>
+                </>
+              )}
             </div>
           </div>
           <div
@@ -84,12 +115,16 @@ export function LandingBoard({
   ranked,
   featured = [],
   count,
+  founding = false,
+  vacancies = [],
 }: {
   ranked: ListedTemplate[];
   featured?: ListedTemplate[];
   count: number;
+  founding?: boolean;
+  vacancies?: BoardVacancy[];
 }) {
-  const empty = count === 0;
+  const empty = count === 0 && vacancies.length === 0;
 
   return (
     <div className="motion-board mt-10 sm:mt-12" style={motionDelay(4)}>
@@ -103,7 +138,7 @@ export function LandingBoard({
             <span className="text-border" aria-hidden="true">
               ·
             </span>
-            <span>Hot</span>
+            <span>{founding ? "Just opened" : "Hot"}</span>
           </p>
           <Link
             href="/templates"
@@ -128,7 +163,7 @@ export function LandingBoard({
             </span>
             <div className="min-w-0">
               <p className="text-lg leading-tight font-normal tracking-tight sm:text-xl">
-                No bots listed yet.
+                Board just opened.
               </p>
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Paste a public share link to list the first Grok Bot.
@@ -148,7 +183,7 @@ export function LandingBoard({
             showVote
             scramble
             leader
-            vacant
+            vacancies={vacancies}
             delay={5}
           />
         )}

@@ -2,10 +2,13 @@ import type { CSSProperties } from "react";
 import Link from "next/link";
 import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
-import { FeaturedMark } from "@/components/feature-cta";
+import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
+import { OpenSlots } from "@/components/open-slots";
 import { formatAdds } from "@/lib/bot-url";
+import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { cn, motionDelay } from "@/lib/utils";
+import type { BoardVacancy } from "@/lib/founding";
 import type { ListedTemplate } from "@/lib/types";
 
 export function BotRankRow({
@@ -90,6 +93,11 @@ export function BotRankRow({
               <FeaturedMark />
               <span aria-hidden="true"> · </span>
             </>
+          ) : isBoostedActive(template) ? (
+            <>
+              <BoostedMark />
+              <span aria-hidden="true"> · </span>
+            </>
           ) : null}
           {template.category}
           <span aria-hidden="true"> · </span>
@@ -127,41 +135,13 @@ export function BotRankRow({
   );
 }
 
-export function VacantRankRow({
-  rank,
-  scramble = false,
-}: {
-  rank: number;
-  scramble?: boolean;
-}) {
-  return (
-    <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden px-2 py-2.5 hover:bg-canvas-soft">
-      <span className="empty-scan-bar" aria-hidden="true" />
-      <Link
-        href="/upload"
-        className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
-        aria-label="Share a bot"
-      />
-      {scramble ? (
-        <RankTick rank={rank} className="relative z-10 text-muted-foreground" />
-      ) : (
-        <span className="relative z-10 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
-          {String(rank).padStart(2, "0")}
-        </span>
-      )}
-      <span className="relative z-10 min-w-0 pointer-events-none truncate text-[15px] leading-tight text-muted-foreground">
-        Share a bot
-      </span>
-    </div>
-  );
-}
-
 export function BotRankList({
   templates,
   showVote = false,
   scramble = false,
   leader = false,
-  vacant,
+  vacant = false,
+  vacancies,
   delay = 0,
   className,
 }: {
@@ -170,10 +150,13 @@ export function BotRankList({
   scramble?: boolean;
   leader?: boolean;
   vacant?: boolean;
+  vacancies?: BoardVacancy[];
   delay?: number;
   className?: string;
 }) {
   const scoreMax = Math.max(1, ...templates.map((template) => template.score));
+  const open =
+    vacancies ?? (vacant ? [{ label: "Share a bot", href: "/upload" }] : []);
 
   return (
     <ol className={cn("divide-y divide-border", className)}>
@@ -198,14 +181,12 @@ export function BotRankList({
           />
         </li>
       ))}
-      {vacant ? (
-        <li
-          className="motion-row"
-          style={motionDelay(delay + templates.length)}
-        >
-          <VacantRankRow rank={templates.length + 1} scramble={scramble} />
-        </li>
-      ) : null}
+      <OpenSlots
+        slots={open}
+        startRank={templates.length + 1}
+        scramble={scramble}
+        delay={delay + templates.length}
+      />
     </ol>
   );
 }

@@ -35,7 +35,7 @@ export function SiteHeader() {
             Grokdex
           </span>
           <span className="hidden font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
-            Ranked Grok Bots
+            Public Grok Bots
           </span>
         </Link>
         <nav className="hidden items-center gap-1 lg:flex">

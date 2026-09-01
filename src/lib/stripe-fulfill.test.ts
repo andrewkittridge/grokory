@@ -3,6 +3,7 @@ import { test } from "node:test";
 import {
   grokdexMetadata,
   isPaidCheckout,
+  parseBoostFulfillment,
   parseFeaturedFulfillment,
   shouldFulfill,
 } from "./stripe-fulfill";
@@ -65,4 +66,28 @@ test("parseFeaturedFulfillment needs templateId and duration", () => {
     }),
     null
   );
+});
+
+test("parseBoostFulfillment reads duration and template", () => {
+  const paidBoost = {
+    id: "cs_2",
+    payment_status: "paid",
+    amount_total: 2900,
+    metadata: {
+      app: "grokdex",
+      kind: "boost",
+      templateId: "tmpl_2",
+      slug: "coder",
+      duration_days: "7",
+    },
+  };
+  assert.deepEqual(parseBoostFulfillment(paidBoost), {
+    sessionId: "cs_2",
+    templateId: "tmpl_2",
+    slug: "coder",
+    durationDays: 7,
+    amount: 2900,
+  });
+  assert.equal(shouldFulfill(paidBoost), true);
+  assert.equal(parseBoostFulfillment(paidFeatured), null);
 });

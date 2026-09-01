@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createListing, lookupShareLink } from "@/lib/actions";
 import { parseShareUrl } from "@/lib/bot-url";
-import { CATEGORIES, type BotPreview } from "@/lib/types";
+import { CATEGORIES, type BotPreview, type Category } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,13 @@ import { cn } from "@/lib/utils";
 
 const initial: { error?: string; slug?: string } = {};
 
-export function UploadForm({ siteKey }: { siteKey?: string }) {
+export function UploadForm({
+  siteKey,
+  defaultCategory,
+}: {
+  siteKey?: string;
+  defaultCategory?: Category;
+}) {
   const [state, action, pending] = useActionState(createListing, initial);
   const [lookupState, lookupAction, lookupPending] = useActionState(
     lookupShareLink,
@@ -173,7 +179,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
         <select
           id="category"
           name="category"
-          defaultValue="Work"
+          defaultValue={defaultCategory ?? "Work"}
           className="h-10 w-full rounded-lg border border-input bg-canvas-soft px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
         >
           {CATEGORIES.map((category) => (

@@ -18,7 +18,13 @@
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEjDWXVo9ws84fi6",
   },
   "secrets": {
-    "required": ["DATABASE_URL", "TURNSTILE_SECRET", "CRON_SECRET"],
+    "required": [
+      "DATABASE_URL",
+      "TURNSTILE_SECRET",
+      "CRON_SECRET",
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+    ],
   },
   "triggers": {
     "crons": ["17 * * * *"],

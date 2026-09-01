@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 import { AddProcedure } from "@/components/add-procedure";
 import { BotCover } from "@/components/bot-cover";
 import { BotRankList } from "@/components/bot-rank-row";
-import { FeatureCta, FeaturedMark } from "@/components/feature-cta";
+import {
+  BoostCta,
+  BoostedMark,
+  FeatureCta,
+  FeaturedMark,
+} from "@/components/feature-cta";
 import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { JsonLd } from "@/components/json-ld";
@@ -13,6 +18,7 @@ import { ListedConversion } from "@/components/listed-conversion";
 import { AuthorLink, WhatTravels } from "@/components/listing-trust";
 import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
+import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
@@ -64,12 +70,13 @@ export default async function TemplateDetailPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ listed?: string; featured?: string }>;
+  searchParams: Promise<{ listed?: string; featured?: string; boosted?: string }>;
 }) {
   const { slug } = await params;
   const paramsSearch = await searchParams;
   const listed = paramsSearch.listed === "1";
   const justFeatured = paramsSearch.featured === "1";
+  const justBoosted = paramsSearch.boosted === "1";
   const voterId = await readVoterId();
   const template = await getTemplate(slug, voterId);
   if (!template) notFound();
@@ -79,6 +86,7 @@ export default async function TemplateDetailPage({
   const listingHref = await listingUrl(template.slug);
   const payments = isStripeConfigured();
   const featured = isFeaturedActive(template);
+  const boosted = isBoostedActive(template);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
@@ -141,6 +149,13 @@ export default async function TemplateDetailPage({
               enabled={payments}
             />
           </div>
+          <div className="motion-enter" style={motionDelay(4)}>
+            <BoostCta
+              template={template}
+              listings={listings}
+              enabled={payments}
+            />
+          </div>
         </aside>
 
         <article className="order-2 lg:order-1">
@@ -159,6 +174,12 @@ export default async function TemplateDetailPage({
                   {justFeatured && !featured ? (
                     <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
                       Featured pending
+                    </span>
+                  ) : null}
+                  {boosted ? <BoostedMark /> : null}
+                  {justBoosted && !boosted ? (
+                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                      Boost pending
                     </span>
                   ) : null}
                   <Badge

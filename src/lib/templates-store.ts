@@ -3,6 +3,7 @@ import path from "node:path";
 import { SEED_TEMPLATES, SEED_VOTES } from "@/data/seed";
 import { ALREADY_LISTED } from "./bot-url";
 import { getDatabaseUrl, sql } from "./db";
+import { extendBoostedUntil } from "./boost";
 import { extendFeaturedUntil } from "./featured";
 import type {
   BotTemplate,
@@ -18,7 +19,7 @@ const DATA_FILE = path.join(DATA_DIR, "templates.json");
 
 type StripeSessionRecord = {
   sessionId: string;
-  kind: "tip" | "featured";
+  kind: "tip" | "featured" | "boost";
   templateId?: string;
   amount: number;
   currency: string;
@@ -49,6 +50,7 @@ type TemplateRow = {
   origin: string;
   featured: boolean;
   featured_until?: string | Date | null;
+  boosted_until?: string | Date | null;
   created_at: string | Date;
   adds: number;
   live?: boolean | null;
@@ -118,6 +120,7 @@ function normalizeTemplate(template: BotTemplate): BotTemplate {
     routines: template.routines ?? [],
     featuredUntil: template.featuredUntil,
     featured: template.featured,
+    boostedUntil: template.boostedUntil,
   };
 }
 
@@ -181,6 +184,12 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
         : row.featured_until
           ? new Date(row.featured_until).toISOString()
           : undefined,
+    boostedUntil:
+      row.boosted_until instanceof Date
+        ? row.boosted_until.toISOString()
+        : row.boosted_until
+          ? new Date(row.boosted_until).toISOString()
+          : undefined,
     createdAt:
       row.created_at instanceof Date
         ? row.created_at.toISOString()
@@ -226,6 +235,7 @@ async function ensureNeon() {
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS skills text[] NOT NULL DEFAULT '{}'`;
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`;
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`;
       await db`CREATE TABLE IF NOT EXISTS stripe_sessions (
         session_id text PRIMARY KEY,
         kind text NOT NULL,
@@ -412,13 +422,13 @@ export async function addTemplate(
     await db`
       INSERT INTO templates (
         id, slug, bot_id, bot_url, title, author_name, summary, description,
-        og_image, category, tags, note, submitted_by, origin, featured, featured_until, created_at, adds,
+        og_image, category, tags, note, submitted_by, origin, featured, featured_until, boosted_until, created_at, adds,
         live, last_checked_at, skills, routines
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
         ${saved.authorName}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
         ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
-        ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.createdAt}, ${saved.adds},
+        ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.boostedUntil ?? null}, ${saved.createdAt}, ${saved.adds},
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
       )
     `;
@@ -634,11 +644,11 @@ export async function expireFeatured(now = new Date()) {
 
 export type AppliedCheckout =
   | { applied: false; reason: string }
-  | { applied: true; kind: "tip" | "featured"; templateId?: string };
+  | { applied: true; kind: "tip" | "featured" | "boost"; templateId?: string };
 
 export async function applyPaidCheckout(input: {
   sessionId: string;
-  kind: "tip" | "featured";
+  kind: "tip" | "featured" | "boost";
   templateId?: string;
   durationDays?: number;
   amount: number;
@@ -695,6 +705,34 @@ export async function applyPaidCheckout(input: {
       `;
     }
 
+    if (input.kind === "boost") {
+      if (!input.templateId || !input.durationDays) {
+        return { applied: false, reason: "missing-boost-fields" };
+      }
+      const rows = (await db`
+        SELECT boosted_until FROM templates WHERE id = ${input.templateId} LIMIT 1
+      `) as { boosted_until: string | Date | null }[];
+      if (!rows[0]) {
+        return { applied: false, reason: "missing-listing" };
+      }
+      const currentUntil =
+        rows[0].boosted_until instanceof Date
+          ? rows[0].boosted_until.toISOString()
+          : rows[0].boosted_until
+            ? new Date(rows[0].boosted_until).toISOString()
+            : undefined;
+      const nextUntil = extendBoostedUntil(
+        currentUntil,
+        input.durationDays,
+        now
+      );
+      await db`
+        UPDATE templates
+        SET boosted_until = ${nextUntil}
+        WHERE id = ${input.templateId}
+      `;
+    }
+
     await db`
       INSERT INTO stripe_sessions (
         session_id, kind, template_id, amount, currency, status, created_at
@@ -740,6 +778,27 @@ export async function applyPaidCheckout(input: {
         ...current,
         featured: true,
         featuredUntil: nextUntil,
+      };
+    }
+    if (input.kind === "boost") {
+      if (!input.templateId || !input.durationDays) {
+        return { applied: false, reason: "missing-boost-fields" };
+      }
+      const index = store.templates.findIndex(
+        (template) => template.id === input.templateId
+      );
+      if (index === -1) {
+        return { applied: false, reason: "missing-listing" };
+      }
+      const current = normalizeTemplate(store.templates[index]);
+      const nextUntil = extendBoostedUntil(
+        current.boostedUntil,
+        input.durationDays,
+        now
+      );
+      store.templates[index] = {
+        ...current,
+        boostedUntil: nextUntil,
       };
     }
     store.stripeSessions.push(record);

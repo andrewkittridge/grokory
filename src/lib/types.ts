@@ -41,6 +41,7 @@ export type BotTemplate = {
   origin: TemplateOrigin;
   featured: boolean;
   featuredUntil?: string;
+  boostedUntil?: string;
   createdAt: string;
   adds: number;
   live: boolean;
