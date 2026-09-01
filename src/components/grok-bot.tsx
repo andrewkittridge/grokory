@@ -4,9 +4,6 @@ import { useEffect, useId, useRef } from "react";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-const BODY = "M100 28 176 110 100 192 24 110 100 28Z";
-const INNER = "M100 138 128 154 100 170 72 154 100 138Z";
-
 export function GrokBot({ className }: { className?: string }) {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLButtonElement>(null);
@@ -31,7 +28,7 @@ export function GrokBot({ className }: { className?: string }) {
       );
       el.style.setProperty("--gaze-x", nx.toFixed(3));
       el.style.setProperty("--gaze-y", ny.toFixed(3));
-      el.style.setProperty("--yaw", (nx * 7.5).toFixed(2));
+      el.style.setProperty("--yaw", (nx * 6).toFixed(2));
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -50,7 +47,7 @@ export function GrokBot({ className }: { className?: string }) {
     <button
       ref={rootRef}
       type="button"
-      aria-label="Grokdex bot"
+      aria-label="Grok Bot"
       onClick={hop}
       onAnimationEnd={(event) => {
         if (event.animationName === "bot-hop") {
@@ -58,7 +55,7 @@ export function GrokBot({ className }: { className?: string }) {
         }
       }}
       className={cn(
-        "grok-bot group/bot relative block w-full cursor-pointer touch-manipulation appearance-none overflow-visible border-0 bg-transparent p-0 text-foreground outline-none select-none focus-visible:ring-1 focus-visible:ring-foreground",
+        "grok-bot group/bot relative block w-full cursor-pointer touch-manipulation appearance-none overflow-visible border-0 bg-transparent p-0 outline-none select-none focus-visible:ring-1 focus-visible:ring-foreground",
         className
       )}
     >
@@ -71,105 +68,46 @@ export function GrokBot({ className }: { className?: string }) {
           className="block size-full overflow-visible"
         >
           <defs>
-            <clipPath id={`${id}-body`}>
-              <path d={BODY} />
-            </clipPath>
+            <radialGradient
+              id={`${id}-ball`}
+              cx="36%"
+              cy="30%"
+              r="72%"
+            >
+              <stop offset="0%" stopColor="#fafafa" />
+              <stop offset="48%" stopColor="#e4e4e7" />
+              <stop offset="100%" stopColor="#71717a" />
+            </radialGradient>
           </defs>
           <g className="grok-bot-yaw">
-            <g clipPath={`url(#${id}-body)`}>
-              <path d={BODY} fill="#0a0a0a" />
-              <path d="M100 28 176 110 100 110Z" fill="white" fillOpacity="0.28" />
-              <path d="M100 110 176 110 100 192Z" fill="white" fillOpacity="0.1" />
-              <path d="M100 28 100 110 24 110Z" fill="white" fillOpacity="0.06" />
-              <path d="M100 110 24 110 100 192Z" fill="black" fillOpacity="0.55" />
-              <path
-                className="grok-bot-inner"
-                d={INNER}
-                stroke="currentColor"
-                strokeWidth="1.15"
-                strokeLinejoin="miter"
-                opacity="0.4"
-              />
-              <g className="grok-bot-eyes">
-                <Eye cx={76} cy={98} />
-                <Eye cx={124} cy={98} />
+            <circle cx="100" cy="104" r="80" fill={`url(#${id}-ball)`} />
+            <g className="grok-bot-eyes">
+              <g transform="translate(86 102) rotate(24)">
+                <rect
+                  className="grok-bot-lid"
+                  x="-12"
+                  y="-26"
+                  width="24"
+                  height="52"
+                  rx="12"
+                  fill="#0a0a0a"
+                />
               </g>
-              <circle
-                className="grok-bot-core-halo"
-                cx="100"
-                cy="154"
-                r="14"
-                fill="var(--sunset)"
-                fillOpacity="0.22"
-              />
-              <circle
-                className="grok-bot-core"
-                cx="100"
-                cy="154"
-                r="6.6"
-                fill="var(--sunset)"
-              />
-              <rect
-                className="grok-bot-scan grok-bot-scan-enter"
-                x="24"
-                y="28"
-                width="2.4"
-                height="164"
-                fill="var(--sunset)"
-              />
-              <rect
-                className="grok-bot-scan grok-bot-scan-hum"
-                x="24"
-                y="28"
-                width="2.4"
-                height="164"
-                fill="var(--sunset)"
-              />
-            </g>
-            <path
-              d={BODY}
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinejoin="miter"
-            />
-            <g className="grok-bot-sparks" fill="var(--sunset)">
-              <path
-                className="grok-bot-spark grok-bot-spark-a"
-                d="M100 132 106 138 100 144 94 138Z"
-              />
-              <path
-                className="grok-bot-spark grok-bot-spark-b"
-                d="M100 132 106 138 100 144 94 138Z"
-              />
-              <path
-                className="grok-bot-spark grok-bot-spark-c"
-                d="M100 132 106 138 100 144 94 138Z"
-              />
+              <g transform="translate(124 86) rotate(30)">
+                <rect
+                  className="grok-bot-lid"
+                  x="-9.5"
+                  y="-23"
+                  width="19"
+                  height="46"
+                  rx="9.5"
+                  fill="#0a0a0a"
+                />
+              </g>
             </g>
           </g>
         </svg>
       </span>
     </button>
-  );
-}
-
-function Eye({ cx, cy }: { cx: number; cy: number }) {
-  return (
-    <g className="grok-bot-eye" transform={`translate(${cx} ${cy})`}>
-      <ellipse rx="20" ry="25.5" fill="white" />
-      <g className="grok-bot-pupils">
-        <circle r="9.2" fill="#0a0a0a" />
-        <circle
-          r="9.2"
-          fill="none"
-          stroke="var(--sunset)"
-          strokeWidth="1.35"
-          strokeOpacity="0.92"
-        />
-        <circle cx="3.1" cy="-3.5" r="2.7" fill="white" />
-        <circle cx="-3.9" cy="2.3" r="1.1" fill="white" fillOpacity="0.72" />
-      </g>
-      <ellipse className="grok-bot-lid" rx="20" ry="25.5" fill="#0a0a0a" />
-    </g>
   );
 }
