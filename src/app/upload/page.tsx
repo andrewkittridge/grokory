@@ -27,11 +27,11 @@ export default function UploadPage() {
         className="motion-enter mt-5 text-body leading-7"
         style={motionDelay(2)}
       >
-        Grok Bot templates travel as public URLs —{" "}
+        Grok Bot templates are public URLs —{" "}
         <span className="font-mono text-sm text-foreground">
           https://x.ai/bot/…
         </span>
-        . Drop yours here, add a category, and it lands on the board.
+        . Paste it, pick a job, and it shows up on the board.
       </p>
       <div className="motion-enter mt-10" style={motionDelay(3)}>
         <Frame staticFrame matClassName="p-5 sm:p-8">

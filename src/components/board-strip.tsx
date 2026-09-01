@@ -1,4 +1,4 @@
-import { CountTick, MissionClock } from "@/components/telemetry";
+import { CountTick } from "@/components/telemetry";
 
 export function BoardStrip({
   sort,
@@ -7,20 +7,18 @@ export function BoardStrip({
   sort: string;
   count: number;
 }) {
+  const label = sort ? sort.charAt(0).toUpperCase() + sort.slice(1) : "Hot";
+
   return (
     <p className="board-strip mt-8 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
       <span className="inline-flex items-center gap-2 text-foreground">
         <span className="live-dot" aria-hidden="true" />
-        Mode {sort}
+        {label}
       </span>
       <span className="text-border" aria-hidden="true">
         ·
       </span>
       <CountTick value={count} singular="bot" plural="bots" />
-      <span className="text-border" aria-hidden="true">
-        ·
-      </span>
-      <MissionClock />
     </p>
   );
 }

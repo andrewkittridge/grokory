@@ -150,10 +150,7 @@ export function VacantRankRow({
         </span>
       )}
       <span className="relative z-10 min-w-0 pointer-events-none truncate text-[15px] leading-tight text-muted-foreground">
-        Next listing
-      </span>
-      <span className="relative z-10 font-mono text-[11px] tracking-wide text-foreground uppercase">
-        Share
+        Share a bot
       </span>
     </div>
   );

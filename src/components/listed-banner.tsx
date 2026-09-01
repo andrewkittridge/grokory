@@ -2,7 +2,6 @@ import Link from "next/link";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
-import { MissionClock } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { listingPostText } from "@/lib/bot-url";
 
@@ -20,18 +19,12 @@ export function ListedBanner({
 
   return (
     <Frame staticFrame matClassName="p-5 sm:p-6">
-      <p className="inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        <span className="inline-flex items-center gap-2 text-foreground">
-          <span className="live-dot" aria-hidden="true" />
-          Listed
-        </span>
-        <span className="text-border" aria-hidden="true">
-          ·
-        </span>
-        <MissionClock />
+      <p className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+        <span className="live-dot" aria-hidden="true" />
+        Listed
       </p>
       <LockTitle as="p" display="section" className="mt-2">
-        On the board.
+        Listed.
       </LockTitle>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
         Copy a post for X, or list another bot.
@@ -68,7 +61,7 @@ export function ListedBanner({
           nativeButton={false}
           render={<Link href="/upload" />}
         >
-          Share another
+          Share a bot
         </Button>
       </div>
     </Frame>

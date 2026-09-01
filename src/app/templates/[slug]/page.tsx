@@ -158,7 +158,7 @@ export default async function TemplateDetailPage({
                   {featured ? <FeaturedMark /> : null}
                   {justFeatured && !featured ? (
                     <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      Placement pending
+                      Featured pending
                     </span>
                   ) : null}
                   <Badge

@@ -75,7 +75,7 @@ export function SiteFooter() {
             href="/upload"
             className="shrink-0 font-mono tracking-wide text-foreground uppercase hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
           >
-            Share yours
+            Share a bot
           </Link>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { motionDelay } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Support Grokdex",
   description:
-    "Optional tip to keep the Grokdex board up. Not tax-deductible. Listing a bot stays free.",
+    "Optional tip. Not tax-deductible. Listing a bot stays free.",
   alternates: { canonical: "/support" },
 };
 
@@ -28,7 +28,7 @@ export default async function SupportPage({
         Optional
       </p>
       <h1 className="display-page motion-enter mt-4" style={motionDelay(1)}>
-        Keep the board up.
+        Support Grokdex.
       </h1>
       <p
         className="motion-enter mt-5 text-body leading-7"
@@ -41,7 +41,7 @@ export default async function SupportPage({
         <Frame staticFrame matClassName="p-5 sm:p-8">
           {tipped ? (
             <p className="text-sm leading-6 text-body">
-              Tip received. Thank you — the board stays public.
+              Tip received. Thank you.
             </p>
           ) : null}
           {enabled ? (

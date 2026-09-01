@@ -23,7 +23,7 @@ export function AddProcedure({
           data-step="01"
         >
           <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-            Acquire
+            Share link
           </p>
           <p className="mt-1.5 break-all font-mono text-xs text-foreground">
             {template.botUrl}
@@ -46,7 +46,7 @@ export function AddProcedure({
           data-step="03"
         >
           <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-            Ignite
+            Add
           </p>
           <div className="mt-2">
             {template.live ? (

@@ -8,12 +8,11 @@ export function LandingCta() {
         <div className="max-w-xl">
           <p className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
             <span className="live-dot" aria-hidden="true" />
-            Next listing
+            Share
           </p>
           <h2 className="display-section mt-3">Share a Grok Bot.</h2>
           <p className="mt-2 text-sm leading-6 text-body">
-            Paste a public share link. It lands on the board for everyone else.
-            No account.
+            Paste a public share link. It shows up on the board. No account.
           </p>
         </div>
         <Button

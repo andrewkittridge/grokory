@@ -61,11 +61,11 @@ async function HomeBoard() {
         className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-body sm:mt-12"
         style={motionDelay(taglineDelay)}
       >
-        Custom Grok agents
+        Public share links
         <span aria-hidden="true"> · </span>
-        Ranked in public
+        Ranked by votes
         <span aria-hidden="true"> · </span>
-        Add copies your own
+        Add copies the template
       </p>
       {jobs.length > 0 ? (
         <p
@@ -97,7 +97,7 @@ async function HomeBoard() {
             href="/upload"
             className="hover:text-foreground hover:underline"
           >
-            Share a bot in another job
+            Share a bot
           </Link>
         </p>
       ) : null}

@@ -5,7 +5,7 @@ import {
   BotRankRowSkeleton,
 } from "@/components/bot-rank-row";
 import { LockTitle } from "@/components/lock-title";
-import { CountTick, MissionClock } from "@/components/telemetry";
+import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
@@ -20,15 +20,11 @@ export function LandingHero({ children }: { children: ReactNode }) {
         >
           <span className="inline-flex items-center gap-2.5">
             <span className="live-dot" aria-hidden="true" />
-            Ranked Grok Bot catalog
+            Public Grok Bots
           </span>
-          <span className="text-border" aria-hidden="true">
-            ·
-          </span>
-          <MissionClock />
         </p>
         <LockTitle display="hero" delay={1} className="mt-6 max-w-4xl text-balance">
-          Ready-made Grok Bots you can add.
+          A ranked board of public Grok Bots.
         </LockTitle>
         <p
           className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
@@ -82,16 +78,12 @@ export function LandingBoard({
           <p className="inline-flex min-w-0 flex-wrap items-baseline gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
             <span className="inline-flex items-center gap-2">
               <span className="live-dot" aria-hidden="true" />
-              Live
+              <CountTick value={count} singular="bot" plural="bots" />
             </span>
             <span className="text-border" aria-hidden="true">
               ·
             </span>
-            <CountTick value={count} singular="bot" plural="bots" />
-            <span className="text-border" aria-hidden="true">
-              ·
-            </span>
-            <span>Mode hot</span>
+            <span>Hot</span>
           </p>
           <Link
             href="/templates"
@@ -116,7 +108,7 @@ export function LandingBoard({
             </span>
             <div className="min-w-0">
               <p className="text-lg leading-tight font-normal tracking-tight sm:text-xl">
-                The board is open.
+                No bots listed yet.
               </p>
               <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Paste a public share link to list the first Grok Bot.

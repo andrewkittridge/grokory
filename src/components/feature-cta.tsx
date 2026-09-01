@@ -46,7 +46,7 @@ export function FeatureCta({
         id="feature"
         className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase"
       >
-        Placement
+        Featured
       </p>
       <p className="mt-2 text-lg tracking-[-0.02em]">
         {until ? `Featured through ${until}.` : "Feature this bot."}

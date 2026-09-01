@@ -63,7 +63,7 @@ export function WhatTravels({
   return (
     <div className="mt-8 border-t border-border pt-6">
       <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        What travels
+        What gets copied
       </p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
         A template copies identity, description, skills, and routines onto your

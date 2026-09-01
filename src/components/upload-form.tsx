@@ -104,7 +104,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
             disabled={lookupPending}
             onClick={() => runLookup(shareUrl, true)}
           >
-            {lookupPending ? "Acquiring…" : "Look up"}
+            {lookupPending ? "Looking up…" : "Look up"}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -245,7 +245,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
         disabled={pending}
         className="btn-ignite h-10 w-full sm:w-auto"
       >
-        {pending ? "Locking…" : "Publish to Grokdex"}
+        {pending ? "Publishing…" : "Publish to Grokdex"}
       </Button>
     </form>
   );

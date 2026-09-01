@@ -14,10 +14,7 @@ export function EmptyState({
 }) {
   return (
     <div className="empty-scan relative overflow-hidden rounded-lg border border-border bg-card px-6 py-16 text-center">
-      <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
-        Scanning
-      </p>
-      <h3 className="display-section mt-3">{title}</h3>
+      <h3 className="display-section">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
         {body}
       </p>

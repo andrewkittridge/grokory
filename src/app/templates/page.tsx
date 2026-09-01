@@ -76,7 +76,7 @@ export default async function TemplatesPage({
         <div className="mt-6">
           {emptyBoard ? (
             <EmptyState
-              title="The next listing lands here"
+              title="No bots listed yet"
               body="Got a Grok Bot share link? Paste it and it shows up here for everyone else."
               actionHref="/upload"
               actionLabel="Share a bot"
