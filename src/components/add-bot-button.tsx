@@ -20,7 +20,7 @@ export function AddBotButton({
   return (
     <Button
       size={size}
-      className="w-full"
+      className="btn-ignite w-full"
       nativeButton={false}
       disabled={pending}
       render={

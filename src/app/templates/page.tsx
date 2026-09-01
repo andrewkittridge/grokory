@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { BoardStrip } from "@/components/board-strip";
 import { BotFilters } from "@/components/bot-filters";
-import { BotRankRow } from "@/components/bot-rank-row";
+import { BotRankList } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
 import { JsonLd } from "@/components/json-ld";
+import { LockTitle } from "@/components/lock-title";
 import { itemListJson } from "@/lib/json-ld";
+import { partitionFeatured } from "@/lib/featured";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import { filterTemplates, populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
@@ -38,25 +41,20 @@ export default async function TemplatesPage({
   const sort = parseSort(params.sort);
   const all = await listTemplates(await readVoterId());
   const jobs = populatedCategories(all);
-  const templates = sortTemplates(
-    filterTemplates(all, {
-      q,
-      category,
-      tag,
-    }),
-    sort
-  );
+  const filtered = filterTemplates(all, {
+    q,
+    category,
+    tag,
+  });
+  const { featured, organic } = partitionFeatured(filtered);
+  const templates = sortTemplates(organic, sort);
   const emptyBoard = !q && !tag && (!category || category === "all");
+  const empty = templates.length === 0 && featured.length === 0;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-      <JsonLd data={itemListJson(templates, "/templates")} />
-      <h1
-        className="display-page motion-enter"
-        style={motionDelay(0)}
-      >
-        The board
-      </h1>
+      <JsonLd data={itemListJson([...featured, ...templates], "/templates")} />
+      <LockTitle delay={0}>The board</LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
         style={motionDelay(1)}
@@ -73,10 +71,8 @@ export default async function TemplatesPage({
           jobs={jobs}
         />
       </div>
-      <p className="mt-8 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        {templates.length} {templates.length === 1 ? "bot" : "bots"} · {sort}
-      </p>
-      {templates.length === 0 ? (
+      <BoardStrip sort={sort} count={filtered.length} />
+      {empty ? (
         <div className="mt-6">
           {emptyBoard ? (
             <EmptyState
@@ -95,13 +91,24 @@ export default async function TemplatesPage({
           )}
         </div>
       ) : (
-        <ol className="mt-3 divide-y divide-border border-y border-border">
-          {templates.map((template, index) => (
-            <li key={template.id}>
-              <BotRankRow rank={index + 1} template={template} showVote />
-            </li>
-          ))}
-        </ol>
+        <>
+          {featured.length > 0 ? (
+            <div className="mt-0 border-b border-border">
+              <p className="px-2 py-3 font-mono text-[10px] tracking-[0.2em] text-sunset uppercase sm:px-0">
+                Featured
+              </p>
+              <BotRankList templates={featured} showVote scramble />
+            </div>
+          ) : null}
+          {templates.length > 0 ? (
+            <BotRankList
+              templates={templates}
+              showVote
+              scramble
+              className="mt-0 border-b border-border"
+            />
+          ) : null}
+        </>
       )}
     </main>
   );

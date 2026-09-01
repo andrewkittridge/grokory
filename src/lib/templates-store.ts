@@ -3,6 +3,7 @@ import path from "node:path";
 import { SEED_TEMPLATES, SEED_VOTES } from "@/data/seed";
 import { ALREADY_LISTED } from "./bot-url";
 import { getDatabaseUrl, sql } from "./db";
+import { extendFeaturedUntil } from "./featured";
 import type {
   BotTemplate,
   Category,
@@ -15,9 +16,20 @@ import type {
 const DATA_DIR = path.join(process.cwd(), "data");
 const DATA_FILE = path.join(DATA_DIR, "templates.json");
 
+type StripeSessionRecord = {
+  sessionId: string;
+  kind: "tip" | "featured";
+  templateId?: string;
+  amount: number;
+  currency: string;
+  status: string;
+  createdAt: string;
+};
+
 type StoreFile = {
   templates: BotTemplate[];
   votes: Vote[];
+  stripeSessions?: StripeSessionRecord[];
 };
 
 type TemplateRow = {
@@ -36,6 +48,7 @@ type TemplateRow = {
   submitted_by: string;
   origin: string;
   featured: boolean;
+  featured_until?: string | Date | null;
   created_at: string | Date;
   adds: number;
   live?: boolean | null;
@@ -103,6 +116,8 @@ function normalizeTemplate(template: BotTemplate): BotTemplate {
     lastCheckedAt: template.lastCheckedAt,
     skills: template.skills ?? [],
     routines: template.routines ?? [],
+    featuredUntil: template.featuredUntil,
+    featured: template.featured,
   };
 }
 
@@ -160,6 +175,12 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
     submittedBy: row.submitted_by,
     origin: row.origin as TemplateOrigin,
     featured: row.featured,
+    featuredUntil:
+      row.featured_until instanceof Date
+        ? row.featured_until.toISOString()
+        : row.featured_until
+          ? new Date(row.featured_until).toISOString()
+          : undefined,
     createdAt:
       row.created_at instanceof Date
         ? row.created_at.toISOString()
@@ -204,6 +225,16 @@ async function ensureNeon() {
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS last_checked_at timestamptz`;
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS skills text[] NOT NULL DEFAULT '{}'`;
       await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`;
+      await db`CREATE TABLE IF NOT EXISTS stripe_sessions (
+        session_id text PRIMARY KEY,
+        kind text NOT NULL,
+        template_id text,
+        amount integer,
+        currency text NOT NULL DEFAULT 'usd',
+        status text NOT NULL,
+        created_at timestamptz NOT NULL
+      )`;
       await db`CREATE TABLE IF NOT EXISTS votes (
         voter_id text NOT NULL,
         template_id text NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
@@ -301,6 +332,9 @@ async function readStore(): Promise<StoreFile> {
     return mergeSeed({
       templates: parsed.templates,
       votes: Array.isArray(parsed.votes) ? parsed.votes : [],
+      stripeSessions: Array.isArray(parsed.stripeSessions)
+        ? parsed.stripeSessions
+        : [],
     });
   } catch {
     return emptyStore();
@@ -378,13 +412,13 @@ export async function addTemplate(
     await db`
       INSERT INTO templates (
         id, slug, bot_id, bot_url, title, author_name, summary, description,
-        og_image, category, tags, note, submitted_by, origin, featured, created_at, adds,
+        og_image, category, tags, note, submitted_by, origin, featured, featured_until, created_at, adds,
         live, last_checked_at, skills, routines
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
         ${saved.authorName}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
         ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
-        ${saved.origin}, ${saved.featured}, ${saved.createdAt}, ${saved.adds},
+        ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.createdAt}, ${saved.adds},
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
       )
     `;
@@ -562,5 +596,158 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
       routines: update.routines ?? current.routines,
     };
     await writeStore(store);
+  });
+}
+
+export async function expireFeatured(now = new Date()) {
+  const iso = now.toISOString();
+  if (getDatabaseUrl()) {
+    await ensureNeon();
+    const db = sql();
+    await db`
+      UPDATE templates
+      SET featured = false
+      WHERE featured = true
+        AND featured_until IS NOT NULL
+        AND featured_until < ${iso}
+    `;
+    return;
+  }
+
+  return withLock(async () => {
+    const store = await readStore();
+    let changed = false;
+    store.templates = store.templates.map((template) => {
+      if (
+        template.featured &&
+        template.featuredUntil &&
+        Date.parse(template.featuredUntil) < now.getTime()
+      ) {
+        changed = true;
+        return { ...template, featured: false };
+      }
+      return template;
+    });
+    if (changed) await writeStore(store);
+  });
+}
+
+export type AppliedCheckout =
+  | { applied: false; reason: string }
+  | { applied: true; kind: "tip" | "featured"; templateId?: string };
+
+export async function applyPaidCheckout(input: {
+  sessionId: string;
+  kind: "tip" | "featured";
+  templateId?: string;
+  durationDays?: number;
+  amount: number;
+  now?: Date;
+}): Promise<AppliedCheckout> {
+  const now = input.now ?? new Date();
+  const record: StripeSessionRecord = {
+    sessionId: input.sessionId,
+    kind: input.kind,
+    templateId: input.templateId,
+    amount: input.amount,
+    currency: "usd",
+    status: "paid",
+    createdAt: now.toISOString(),
+  };
+
+  if (getDatabaseUrl()) {
+    await ensureNeon();
+    const db = sql();
+    const existing = (await db`
+      SELECT session_id FROM stripe_sessions
+      WHERE session_id = ${input.sessionId}
+      LIMIT 1
+    `) as { session_id: string }[];
+    if (existing[0]) {
+      return { applied: false, reason: "already" };
+    }
+
+    if (input.kind === "featured") {
+      if (!input.templateId || !input.durationDays) {
+        return { applied: false, reason: "missing-featured-fields" };
+      }
+      const rows = (await db`
+        SELECT featured_until FROM templates WHERE id = ${input.templateId} LIMIT 1
+      `) as { featured_until: string | Date | null }[];
+      if (!rows[0]) {
+        return { applied: false, reason: "missing-listing" };
+      }
+      const currentUntil =
+        rows[0].featured_until instanceof Date
+          ? rows[0].featured_until.toISOString()
+          : rows[0].featured_until
+            ? new Date(rows[0].featured_until).toISOString()
+            : undefined;
+      const nextUntil = extendFeaturedUntil(
+        currentUntil,
+        input.durationDays,
+        now
+      );
+      await db`
+        UPDATE templates
+        SET featured = true, featured_until = ${nextUntil}
+        WHERE id = ${input.templateId}
+      `;
+    }
+
+    await db`
+      INSERT INTO stripe_sessions (
+        session_id, kind, template_id, amount, currency, status, created_at
+      ) VALUES (
+        ${record.sessionId}, ${record.kind}, ${record.templateId ?? null},
+        ${record.amount}, ${record.currency}, ${record.status}, ${record.createdAt}
+      )
+    `;
+    return {
+      applied: true,
+      kind: input.kind,
+      templateId: input.templateId,
+    };
+  }
+
+  return withLock(async () => {
+    const store = await readStore();
+    store.stripeSessions ??= [];
+    if (
+      store.stripeSessions.some(
+        (session) => session.sessionId === input.sessionId
+      )
+    ) {
+      return { applied: false, reason: "already" };
+    }
+    if (input.kind === "featured") {
+      if (!input.templateId || !input.durationDays) {
+        return { applied: false, reason: "missing-featured-fields" };
+      }
+      const index = store.templates.findIndex(
+        (template) => template.id === input.templateId
+      );
+      if (index === -1) {
+        return { applied: false, reason: "missing-listing" };
+      }
+      const current = normalizeTemplate(store.templates[index]);
+      const nextUntil = extendFeaturedUntil(
+        current.featuredUntil,
+        input.durationDays,
+        now
+      );
+      store.templates[index] = {
+        ...current,
+        featured: true,
+        featuredUntil: nextUntil,
+      };
+    }
+    store.stripeSessions.push(record);
+    await writeStore(store);
+    return {
+      applied: true,
+      kind: input.kind,
+      templateId: input.templateId,
+    };
   });
 }

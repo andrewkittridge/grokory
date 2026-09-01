@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BotRankRow } from "@/components/bot-rank-row";
+import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
+import { LockTitle } from "@/components/lock-title";
+import { CountTick } from "@/components/telemetry";
 import { authorSlug } from "@/lib/bot-url";
 import { itemListJson } from "@/lib/json-ld";
 import { sortTemplates } from "@/lib/rank";
@@ -53,26 +55,26 @@ export default async function AuthorPage({
       >
         Author
       </p>
-      <h1
-        className="display-page motion-enter mt-4"
-        style={motionDelay(1)}
-      >
+      <LockTitle delay={1} className="mt-4">
         {name}
-      </h1>
+      </LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-sm leading-7 text-body"
         style={motionDelay(2)}
       >
-        {templates.length} {templates.length === 1 ? "bot" : "bots"} on the
-        board.
+        <CountTick
+          value={templates.length}
+          singular="bot"
+          plural="bots"
+        />{" "}
+        on the board.
       </p>
-      <ol className="mt-10 divide-y divide-border border-y border-border">
-        {templates.map((template, index) => (
-          <li key={template.id}>
-            <BotRankRow rank={index + 1} template={template} showVote />
-          </li>
-        ))}
-      </ol>
+      <BotRankList
+        templates={templates}
+        showVote
+        scramble
+        className="mt-10 border-y border-border"
+      />
     </main>
   );
 }

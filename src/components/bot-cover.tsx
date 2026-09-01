@@ -4,16 +4,25 @@ export function BotCover({
   title,
   ogImage,
   className,
+  acquire = false,
 }: {
   botId: string;
   title: string;
   ogImage?: string;
   className?: string;
+  acquire?: boolean;
 }) {
   return (
     <div
-      className={cn("bot-cover relative overflow-hidden", className ?? "h-36")}
+      className={cn(
+        "bot-cover relative overflow-hidden",
+        acquire && "motion-acquire",
+        className ?? "h-36"
+      )}
     >
+      {acquire ? (
+        <span className="motion-lock-scan" aria-hidden="true" />
+      ) : null}
       {ogImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

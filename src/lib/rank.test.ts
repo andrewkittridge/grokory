@@ -58,6 +58,23 @@ test("sortTemplates new and top", () => {
   );
 });
 
+test("sortTemplates ignores featured flags", () => {
+  const featured = bot({
+    id: "pin",
+    featured: true,
+    featuredUntil: "2026-12-01T00:00:00.000Z",
+    score: 1,
+    createdAt: "2026-08-01T00:00:00.000Z",
+  });
+  const hotter = bot({
+    id: "hot",
+    score: 12,
+    createdAt: "2026-09-01T00:00:00.000Z",
+  });
+  assert.equal(sortTemplates([featured, hotter], "top")[0]?.id, "hot");
+  assert.equal(sortTemplates([featured, hotter], "hot")[0]?.id, "hot");
+});
+
 test("hotRank prefers a recent score over a stale one", () => {
   const now = Date.now();
   const recent = bot({

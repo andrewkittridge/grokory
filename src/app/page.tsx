@@ -9,6 +9,7 @@ import {
   LandingHero,
 } from "@/components/landing-hero";
 import { itemListJson } from "@/lib/json-ld";
+import { partitionFeatured } from "@/lib/featured";
 import { sortTemplates } from "@/lib/rank";
 import { populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
@@ -43,14 +44,19 @@ export default function HomePage() {
 
 async function HomeBoard() {
   const templates = await listTemplates(await readVoterId());
-  const ranked = sortTemplates(templates, "hot").slice(0, 5);
+  const { featured, organic } = partitionFeatured(templates);
+  const ranked = sortTemplates(organic, "hot").slice(0, 5);
   const jobs = populatedCategories(templates);
   const taglineDelay = templates.length === 0 ? 6 : 7 + ranked.length;
 
   return (
     <>
-      <JsonLd data={itemListJson(ranked, "/")} />
-      <LandingBoard ranked={ranked} count={templates.length} />
+      <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
+      <LandingBoard
+        ranked={ranked}
+        featured={featured}
+        count={templates.length}
+      />
       <p
         className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-body sm:mt-12"
         style={motionDelay(taglineDelay)}

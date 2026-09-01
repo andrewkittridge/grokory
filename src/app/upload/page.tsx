@@ -1,4 +1,5 @@
 import { Frame } from "@/components/frame";
+import { LockTitle } from "@/components/lock-title";
 import { UploadForm } from "@/components/upload-form";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
@@ -19,12 +20,9 @@ export default function UploadPage() {
       >
         No account required
       </p>
-      <h1
-        className="display-page motion-enter mt-4"
-        style={motionDelay(1)}
-      >
+      <LockTitle delay={1} className="mt-4">
         Share a bot.
-      </h1>
+      </LockTitle>
       <p
         className="motion-enter mt-5 text-body leading-7"
         style={motionDelay(2)}

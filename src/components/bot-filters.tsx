@@ -1,5 +1,7 @@
+import { ViewTransition } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ScanField } from "@/components/scan-field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Category } from "@/lib/types";
@@ -46,13 +48,15 @@ export function BotFilters({
         <label className="sr-only" htmlFor="q">
           Search bots
         </label>
-        <Input
-          id="q"
-          name="q"
-          defaultValue={q}
-          placeholder="Search names, authors, jobs…"
-          className="h-10 font-mono"
-        />
+        <ScanField>
+          <Input
+            id="q"
+            name="q"
+            defaultValue={q}
+            placeholder="Search names, authors, jobs…"
+            className="h-10 font-mono"
+          />
+        </ScanField>
         <Button type="submit" variant="outline" className="h-10 sm:w-auto">
           Search
         </Button>
@@ -126,13 +130,18 @@ function FilterTab({
     <Link
       href={href}
       className={cn(
-        "-mb-px border-b px-3 py-2 font-mono text-xs tracking-[0.16em] uppercase focus-visible:ring-1 focus-visible:ring-foreground",
+        "relative -mb-px border-b px-3 py-2 font-mono text-xs tracking-[0.16em] uppercase focus-visible:ring-1 focus-visible:ring-foreground",
         active
-          ? "border-foreground text-foreground"
+          ? "border-transparent text-foreground"
           : "border-transparent text-muted-foreground hover:text-foreground"
       )}
     >
       {children}
+      {active ? (
+        <ViewTransition name="sort-pip">
+          <span className="nav-pip" aria-hidden="true" />
+        </ViewTransition>
+      ) : null}
     </Link>
   );
 }

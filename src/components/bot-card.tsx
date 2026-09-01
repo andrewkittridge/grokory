@@ -3,7 +3,9 @@ import { Badge } from "@/components/ui/badge";
 import { BotCover } from "@/components/bot-cover";
 import { Frame } from "@/components/frame";
 import { VoteButtons } from "@/components/vote-buttons";
+import { FeaturedMark } from "@/components/feature-cta";
 import { formatCount } from "@/lib/bot-url";
+import { isFeaturedActive } from "@/lib/featured";
 import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
@@ -41,6 +43,7 @@ export function BotCard({
         </div>
         <div className="flex min-w-0 flex-1 flex-col px-3 pt-3 pb-3">
           <div className="flex flex-wrap items-center gap-1.5">
+            {isFeaturedActive(template) ? <FeaturedMark /> : null}
             {rank != null ? (
               <span
                 className={

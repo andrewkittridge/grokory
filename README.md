@@ -19,7 +19,16 @@ Open [http://127.0.0.1:43127](http://127.0.0.1:43127).
 
 Copy `.env.example` to `.env.local` and set `DATABASE_URL` to your Neon pooled connection string so votes and new listings persist. Without it, the app uses `data/templates.json` on this machine (fine for local; it will not stick on Cloudflare Workers).
 
-Production is a Cloudflare Worker on [https://grokdex.net](https://grokdex.net). Set `DATABASE_URL` as a Worker secret (`npx wrangler secret put DATABASE_URL`). Deploys use `--keep-vars` so that secret is not wiped. Upload protection also needs `TURNSTILE_SECRET` (`npx wrangler secret put TURNSTILE_SECRET`). Optional Google measurement IDs are Worker vars: `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_AW_ID`, `NEXT_PUBLIC_AW_ADD_LABEL`, `NEXT_PUBLIC_AW_LIST_LABEL`.
+Production is a Cloudflare Worker on [https://grokdex.net](https://grokdex.net). Set `DATABASE_URL` as a Worker secret (`npx wrangler secret put DATABASE_URL`). Deploys use `--keep-vars` so that secret is not wiped. Upload protection also needs `TURNSTILE_SECRET` (`npx wrangler secret put TURNSTILE_SECRET`). Tips and featured placement need `STRIPE_SECRET_KEY` (restricted `rk_…` key) and `STRIPE_WEBHOOK_SECRET` from a grokdex-only endpoint at `/api/webhooks/stripe`. Optional Google measurement IDs are Worker vars: `NEXT_PUBLIC_GA_ID`, `NEXT_PUBLIC_AW_ID`, `NEXT_PUBLIC_AW_ADD_LABEL`, `NEXT_PUBLIC_AW_LIST_LABEL`.
+
+## Tips and featured
+
+Listing stays free. Optional Stripe Checkout (hosted):
+
+- **Tip** — `$5` / `$10` / `$25` or custom (min `$3`) at `/support`. Not tax-deductible. Does not change rank.
+- **Featured** — `$79` for 7 days or `$199` for 30 days from a listing page. Labeled pin on home and the board (max 3 at once). Organic hot/top/new scores are unchanged.
+
+Fulfillment is the webhook at `/api/webhooks/stripe`, not the success page. Locally: `stripe listen --forward-to 127.0.0.1:43127/api/webhooks/stripe` and put that CLI signing secret in `.env.local` as `STRIPE_WEBHOOK_SECRET`. Prices are looked up by key (`grokdex_tip_5`, `grokdex_featured_week`, …) so the same code works in test and live once those products exist in both modes.
 
 ## How listing works
 

@@ -40,6 +40,7 @@ export type BotTemplate = {
   submittedBy: string;
   origin: TemplateOrigin;
   featured: boolean;
+  featuredUntil?: string;
   createdAt: string;
   adds: number;
   live: boolean;

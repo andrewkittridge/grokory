@@ -1,8 +1,11 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
+import { FeaturedMark } from "@/components/feature-cta";
 import { formatAdds } from "@/lib/bot-url";
-import { cn } from "@/lib/utils";
+import { isFeaturedActive } from "@/lib/featured";
+import { cn, motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
 export function BotRankRow({
@@ -11,16 +14,22 @@ export function BotRankRow({
   showVote = false,
   size = "default",
   scramble = false,
+  scoreMax,
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
   scramble?: boolean;
+  scoreMax?: number;
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
   const leader = size === "leader";
+  const spark =
+    scoreMax && scoreMax > 0
+      ? Math.max(0, Math.min(1, template.score / scoreMax))
+      : 0;
 
   return (
     <div
@@ -32,6 +41,13 @@ export function BotRankRow({
           : "items-center px-2 py-2.5"
       )}
     >
+      {spark > 0 ? (
+        <span
+          className="rank-spark"
+          style={{ "--spark": spark } as CSSProperties}
+          aria-hidden="true"
+        />
+      ) : null}
       <Link
         href={`/templates/${template.slug}`}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
@@ -69,6 +85,12 @@ export function BotRankRow({
           {template.title}
         </span>
         <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          {isFeaturedActive(template) ? (
+            <>
+              <FeaturedMark />
+              <span aria-hidden="true"> · </span>
+            </>
+          ) : null}
           {template.category}
           <span aria-hidden="true"> · </span>
           {formatAdds(template.adds)}
@@ -113,7 +135,8 @@ export function VacantRankRow({
   scramble?: boolean;
 }) {
   return (
-    <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 hover:bg-canvas-soft">
+    <div className="rank-row relative grid grid-cols-[2.25rem_minmax(0,1fr)_auto] items-center gap-x-3 overflow-hidden px-2 py-2.5 hover:bg-canvas-soft">
+      <span className="empty-scan-bar" aria-hidden="true" />
       <Link
         href="/upload"
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
@@ -133,6 +156,60 @@ export function VacantRankRow({
         Share
       </span>
     </div>
+  );
+}
+
+export function BotRankList({
+  templates,
+  showVote = false,
+  scramble = false,
+  leader = false,
+  vacant,
+  delay = 0,
+  className,
+}: {
+  templates: ListedTemplate[];
+  showVote?: boolean;
+  scramble?: boolean;
+  leader?: boolean;
+  vacant?: boolean;
+  delay?: number;
+  className?: string;
+}) {
+  const scoreMax = Math.max(1, ...templates.map((template) => template.score));
+
+  return (
+    <ol className={cn("divide-y divide-border", className)}>
+      {templates.map((template, index) => (
+        <li
+          key={template.id}
+          className="motion-row"
+          style={
+            {
+              ...motionDelay(delay + index),
+              viewTransitionName: `bot-${template.slug}`,
+            } as CSSProperties
+          }
+        >
+          <BotRankRow
+            rank={index + 1}
+            template={template}
+            showVote={showVote}
+            size={leader && index === 0 ? "leader" : "default"}
+            scramble={scramble}
+            scoreMax={scoreMax}
+          />
+        </li>
+      ))}
+      {vacant ? (
+        <li
+          className="motion-row"
+          style={motionDelay(delay + templates.length)}
+        >
+          <VacantRankRow rank={templates.length + 1} scramble={scramble} />
+        </li>
+      ) : null}
+    </ol>
   );
 }
 

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleTag } from "@/components/google-tag";
+import { PageTransition } from "@/components/page-transition";
+import { SiteField } from "@/components/site-field";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import {
@@ -62,15 +64,18 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="relative flex min-h-full flex-col">
         <GoogleTag
           gaId={safeTagId(publicEnv("NEXT_PUBLIC_GA_ID"))}
           awId={safeTagId(publicEnv("NEXT_PUBLIC_AW_ID"))}
           addLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_ADD_LABEL"))}
           listLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_LIST_LABEL"))}
         />
+        <SiteField />
         <SiteHeader />
-        <div className="flex flex-1 flex-col">{children}</div>
+        <div className="relative z-10 flex flex-1 flex-col">
+          <PageTransition>{children}</PageTransition>
+        </div>
         <SiteFooter />
         <script
           dangerouslySetInnerHTML={{

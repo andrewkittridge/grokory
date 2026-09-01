@@ -10,7 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Frame } from "@/components/frame";
 import { BotCover } from "@/components/bot-cover";
+import { ScanField } from "@/components/scan-field";
 import { TurnstileField } from "@/components/turnstile-field";
+import { cn } from "@/lib/utils";
 
 const initial: { error?: string; slug?: string } = {};
 
@@ -74,20 +76,27 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
       className="space-y-6"
     >
       <div className="space-y-2">
-        <Label htmlFor="shareUrl">Grok Bot share link</Label>
+        <Label
+          htmlFor="shareUrl"
+          className={cn(parsedShare && "field-lock")}
+        >
+          Grok Bot share link
+        </Label>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <Input
-            id="shareUrl"
-            name="shareUrl"
-            value={shareUrl}
-            onChange={(event) => setShareUrl(event.target.value)}
-            onBlur={() => {
-              if (parseShareUrl(shareUrl)) runLookup(shareUrl);
-            }}
-            placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
-            className="h-10 font-mono"
-            autoComplete="off"
-          />
+          <ScanField active={lookupPending} failed={!!lookupError}>
+            <Input
+              id="shareUrl"
+              name="shareUrl"
+              value={shareUrl}
+              onChange={(event) => setShareUrl(event.target.value)}
+              onBlur={() => {
+                if (parseShareUrl(shareUrl)) runLookup(shareUrl);
+              }}
+              placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
+              className="h-10 font-mono"
+              autoComplete="off"
+            />
+          </ScanField>
           <Button
             type="button"
             variant="outline"
@@ -95,7 +104,7 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
             disabled={lookupPending}
             onClick={() => runLookup(shareUrl, true)}
           >
-            {lookupPending ? "Looking up…" : "Look up"}
+            {lookupPending ? "Acquiring…" : "Look up"}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
@@ -117,31 +126,38 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
       ) : null}
 
       {preview ? (
-        <Frame staticFrame>
-          <BotCover
-            botId={preview.botId}
-            title={preview.title}
-            ogImage={preview.ogImage}
-            className="h-28"
-          />
-          <div className="px-4 py-3">
-            <p className="text-lg font-normal tracking-tight">{preview.title}</p>
-            <p className="text-sm text-muted-foreground">
-              by {preview.authorName}
-            </p>
-            <button
-              type="button"
-              className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-              onClick={() =>
-                setEditFor((id) => (id === preview.botId ? null : preview.botId))
-              }
-            >
-              {editFor === preview.botId
-                ? "Hide details"
-                : "Edit name and description"}
-            </button>
-          </div>
-        </Frame>
+        <div className="motion-board">
+          <Frame staticFrame>
+            <BotCover
+              botId={preview.botId}
+              title={preview.title}
+              ogImage={preview.ogImage}
+              className="h-28"
+              acquire
+            />
+            <div className="px-4 py-3">
+              <p className="text-lg font-normal tracking-tight">
+                {preview.title}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                by {preview.authorName}
+              </p>
+              <button
+                type="button"
+                className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+                onClick={() =>
+                  setEditFor((id) =>
+                    id === preview.botId ? null : preview.botId
+                  )
+                }
+              >
+                {editFor === preview.botId
+                  ? "Hide details"
+                  : "Edit name and description"}
+              </button>
+            </div>
+          </Frame>
+        </div>
       ) : null}
 
       <IdentityFields
@@ -151,7 +167,9 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
       />
 
       <div className="space-y-2">
-        <Label htmlFor="category">Job category</Label>
+        <Label htmlFor="category" className="field-lock">
+          Job category
+        </Label>
         <select
           id="category"
           name="category"
@@ -222,8 +240,12 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
         <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
       ) : null}
 
-      <Button type="submit" disabled={pending} className="h-10 w-full sm:w-auto">
-        {pending ? "Publishing…" : "Publish to Grokdex"}
+      <Button
+        type="submit"
+        disabled={pending}
+        className="btn-ignite h-10 w-full sm:w-auto"
+      >
+        {pending ? "Locking…" : "Publish to Grokdex"}
       </Button>
     </form>
   );
@@ -254,7 +276,9 @@ function IdentityFields({
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="title">Bot name</Label>
+          <Label htmlFor="title" className={cn(title && "field-lock")}>
+            Bot name
+          </Label>
           <Input
             id="title"
             name="title"
@@ -265,7 +289,12 @@ function IdentityFields({
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="authorName">Made by</Label>
+          <Label
+            htmlFor="authorName"
+            className={cn(authorName && "field-lock")}
+          >
+            Made by
+          </Label>
           <Input
             id="authorName"
             name="authorName"
@@ -278,7 +307,12 @@ function IdentityFields({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">What it does</Label>
+        <Label
+          htmlFor="description"
+          className={cn(description && "field-lock")}
+        >
+          What it does
+        </Label>
         <Textarea
           id="description"
           name="description"

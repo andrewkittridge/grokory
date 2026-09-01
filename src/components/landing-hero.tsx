@@ -1,11 +1,11 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import {
-  BotRankRow,
+  BotRankList,
   BotRankRowSkeleton,
-  VacantRankRow,
 } from "@/components/bot-rank-row";
-import { CountTick, MissionClock, RankTick } from "@/components/telemetry";
+import { LockTitle } from "@/components/lock-title";
+import { CountTick, MissionClock } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
@@ -27,13 +27,9 @@ export function LandingHero({ children }: { children: ReactNode }) {
           </span>
           <MissionClock />
         </p>
-        <h1
-          className="display-hero motion-lock mt-6 max-w-4xl overflow-hidden text-balance"
-          style={motionDelay(1)}
-        >
+        <LockTitle display="hero" delay={1} className="mt-6 max-w-4xl text-balance">
           Ready-made Grok Bots you can add.
-          <span className="motion-lock-scan" aria-hidden="true" />
-        </h1>
+        </LockTitle>
         <p
           className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
           style={motionDelay(2)}
@@ -70,9 +66,11 @@ export function LandingHero({ children }: { children: ReactNode }) {
 
 export function LandingBoard({
   ranked,
+  featured = [],
   count,
 }: {
   ranked: ListedTemplate[];
+  featured?: ListedTemplate[];
   count: number;
 }) {
   const empty = count === 0;
@@ -90,6 +88,10 @@ export function LandingBoard({
               ·
             </span>
             <CountTick value={count} singular="bot" plural="bots" />
+            <span className="text-border" aria-hidden="true">
+              ·
+            </span>
+            <span>Mode hot</span>
           </p>
           <Link
             href="/templates"
@@ -99,9 +101,19 @@ export function LandingBoard({
             <span className="hidden sm:inline">Open the full board</span>
           </Link>
         </div>
+        {featured.length > 0 ? (
+          <div className="border-b border-border">
+            <p className="px-4 pt-3 font-mono text-[10px] tracking-[0.2em] text-sunset uppercase">
+              Featured
+            </p>
+            <BotRankList templates={featured} showVote scramble delay={5} />
+          </div>
+        ) : null}
         {empty ? (
-          <div className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 px-4 py-8 sm:px-5 sm:py-10">
-            <RankTick rank={1} className="pt-1 text-muted-foreground" />
+          <div className="empty-scan relative grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 overflow-hidden px-4 py-8 sm:px-5 sm:py-10">
+            <span className="pt-1 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+              01
+            </span>
             <div className="min-w-0">
               <p className="text-lg leading-tight font-normal tracking-tight sm:text-xl">
                 The board is open.
@@ -119,29 +131,14 @@ export function LandingBoard({
             </div>
           </div>
         ) : (
-          <ol className="divide-y divide-border">
-            {ranked.map((template, index) => (
-              <li
-                key={template.id}
-                className="motion-row"
-                style={motionDelay(5 + index)}
-              >
-                <BotRankRow
-                  rank={index + 1}
-                  template={template}
-                  size={index === 0 ? "leader" : "default"}
-                  showVote
-                  scramble
-                />
-              </li>
-            ))}
-            <li
-              className="motion-row"
-              style={motionDelay(5 + ranked.length)}
-            >
-              <VacantRankRow rank={ranked.length + 1} scramble />
-            </li>
-          </ol>
+          <BotRankList
+            templates={ranked}
+            showVote
+            scramble
+            leader
+            vacant
+            delay={5}
+          />
         )}
       </div>
     </div>

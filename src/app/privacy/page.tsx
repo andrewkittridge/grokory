@@ -5,13 +5,13 @@ import { LegalDoc } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Privacy",
   description:
-    "How Grokdex handles cookies, listings, and optional advertising measurement.",
+    "How Grokdex handles cookies, listings, payments, and optional advertising measurement.",
   alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
   return (
-    <LegalDoc kicker="Legal" title="Privacy" updated="31 August 2026">
+    <LegalDoc kicker="Legal" title="Privacy" updated="1 September 2026">
       <p>
         Grokdex (<a href="https://grokdex.net">grokdex.net</a>) is an independent
         public catalog of Grok Bot share links. It is not affiliated with xAI or
@@ -63,6 +63,14 @@ export default function PrivacyPage() {
           that message.
         </li>
         <li>
+          <strong className="text-foreground">Payments.</strong> Tips and
+          featured placement are processed by Stripe. Stripe receives the
+          payment details you enter on Checkout (typically email and card). We
+          store the Checkout session id, amount, and — for featured placement —
+          which listing was paid for, so we can pin it until it expires. We do
+          not store full card numbers.
+        </li>
+        <li>
           <strong className="text-foreground">Logs.</strong> Standard request
           logs (time, path, coarse location via the CDN) for operating the site.
         </li>
@@ -92,9 +100,10 @@ export default function PrivacyPage() {
 
       <h2>Third parties</h2>
       <p>
-        Bot previews and Add open x.ai. Listings, votes, and add counts are
-        stored in a database we operate (currently Neon) and the site is served
-        by Cloudflare. We do not sell your personal information.
+        Bot previews and Add open x.ai. Payments go through Stripe. Listings,
+        votes, add counts, and paid-placement records are stored in a database
+        we operate (currently Neon) and the site is served by Cloudflare. We do
+        not sell your personal information.
       </p>
 
       <h2>How long we keep it</h2>
