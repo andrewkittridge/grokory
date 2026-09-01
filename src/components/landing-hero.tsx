@@ -15,7 +15,7 @@ export function LandingHero({ children }: { children: ReactNode }) {
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-start sm:gap-6 md:grid-cols-[minmax(0,1fr)_14rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-12">
+        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-start sm:gap-6 md:grid-cols-[minmax(0,1fr)_16rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12">
           <div className="min-w-0">
             <div className="max-sm:pr-[7.6rem]">
               <p
@@ -68,7 +68,10 @@ export function LandingHero({ children }: { children: ReactNode }) {
             className="motion-enter absolute top-5 right-0 w-[7rem] sm:relative sm:top-auto sm:right-auto sm:mt-6 sm:w-full md:mt-0"
             style={motionDelay(1)}
           >
-            <GrokBot />
+            <div className="relative">
+              <span className="grok-bot-rim" aria-hidden="true" />
+              <GrokBot />
+            </div>
           </div>
         </div>
         {children}

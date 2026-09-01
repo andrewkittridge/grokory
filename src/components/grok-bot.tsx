@@ -19,25 +19,97 @@ export function GrokBot({ className }: { className?: string }) {
     const el = rootRef.current;
     if (!el || reduced) return;
 
+    let pointerX = 0;
+    let pointerY = 0;
+    let lastMove = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let currentYaw = 0;
+    let glanceUntil = 0;
+    let nextGlance = performance.now() + 3200;
+    let nextWink = performance.now() + 5600;
+    const lookAtYouUntil = performance.now() + 1900;
+    let frame = 0;
+    let running = true;
+
     const onMove = (event: PointerEvent) => {
+      lastMove = performance.now();
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height * 0.42;
-      const nx = Math.max(
+      pointerX = Math.max(
         -1,
         Math.min(1, (event.clientX - cx) / (rect.width * 1.7))
       );
-      const ny = Math.max(
+      pointerY = Math.max(
         -1,
         Math.min(1, (event.clientY - cy) / (rect.height * 1.7))
       );
-      el.style.setProperty("--gaze-x", nx.toFixed(3));
-      el.style.setProperty("--gaze-y", ny.toFixed(3));
-      el.style.setProperty("--yaw", (nx * 5).toFixed(2));
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
-    return () => window.removeEventListener("pointermove", onMove);
+
+    const tick = (now: number) => {
+      if (!running) return;
+      frame = requestAnimationFrame(tick);
+      if (document.hidden) return;
+
+      const idle = lastMove === 0 || now - lastMove > 1500;
+      const saccadeX = Math.sin(now * 0.00105) * 0.045;
+      const saccadeY = Math.cos(now * 0.00088) * 0.035;
+
+      let tx: number;
+      let ty: number;
+
+      if (now < lookAtYouUntil && idle) {
+        tx = -0.4 + saccadeX * 0.3;
+        ty = -0.06 + saccadeY * 0.3;
+      } else if (idle) {
+        if (glanceUntil === 0 && now > nextGlance) {
+          glanceUntil = now + 1200;
+          nextGlance = now + 6800 + Math.random() * 2400;
+        }
+        if (now < glanceUntil) {
+          tx = -0.62;
+          ty = 0.5;
+        } else {
+          glanceUntil = 0;
+          tx = saccadeX;
+          ty = saccadeY;
+        }
+      } else {
+        glanceUntil = 0;
+        tx = pointerX + saccadeX * 0.35;
+        ty = pointerY + saccadeY * 0.35;
+      }
+
+      if (idle && now > nextWink && now > 2400) {
+        el.classList.remove("grok-bot-winking");
+        void el.offsetWidth;
+        el.classList.add("grok-bot-winking");
+        nextWink = now + 7600 + Math.random() * 4200;
+      }
+
+      const k = 0.14;
+      currentX += (tx - currentX) * k;
+      currentY += (ty - currentY) * k;
+      const yawTarget = currentX * 5.2;
+      currentYaw += (yawTarget - currentYaw) * k;
+
+      el.style.setProperty("--gaze-x", currentX.toFixed(3));
+      el.style.setProperty("--gaze-y", currentY.toFixed(3));
+      el.style.setProperty("--yaw", currentYaw.toFixed(2));
+      el.style.setProperty("--spec-x", currentX.toFixed(3));
+      el.style.setProperty("--spec-y", currentY.toFixed(3));
+    };
+
+    frame = requestAnimationFrame(tick);
+
+    return () => {
+      running = false;
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onMove);
+    };
   }, [reduced]);
 
   const hop = () => {
@@ -57,6 +129,9 @@ export function GrokBot({ className }: { className?: string }) {
       onAnimationEnd={(event) => {
         if (event.animationName === "bot-hop") {
           event.currentTarget.classList.remove("grok-bot-hopping");
+        }
+        if (event.animationName === "bot-wink") {
+          event.currentTarget.classList.remove("grok-bot-winking");
         }
       }}
       className={cn(
@@ -102,6 +177,7 @@ export function GrokBot({ className }: { className?: string }) {
                 fill={`url(#${id}-ball)`}
               />
               <ellipse
+                className="grok-bot-spec"
                 cx="158"
                 cy="78"
                 rx="52"
@@ -109,9 +185,12 @@ export function GrokBot({ className }: { className?: string }) {
                 fill={`url(#${id}-spec)`}
               />
               <g className="grok-bot-eyes">
-                <path className="grok-bot-lid" d={EYE_L} fill="#0a0a0a" />
+                <path className="grok-bot-lid grok-bot-lid-l" d={EYE_L} fill="#0a0a0a" />
                 <path className="grok-bot-lid" d={EYE_R} fill="#0a0a0a" />
               </g>
+            </g>
+            <g className="grok-bot-comet">
+              <path d="M100 20 105.2 25.2 100 30.4 94.8 25.2Z" fill="var(--sunset)" />
             </g>
           </g>
         </svg>
