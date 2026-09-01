@@ -479,7 +479,31 @@ body {
   }
 }
 
-@keyframes vote-tick {
+@keyframes vote-kick-up {
+  0% {
+    transform: scale(0.88);
+  }
+  40% {
+    transform: translateY(-5px) scale(1.14);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes vote-kick-down {
+  0% {
+    transform: scale(0.88);
+  }
+  40% {
+    transform: translateY(5px) scale(1.14);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes vote-tick-up {
   from {
     opacity: 0.25;
     transform: translateY(0.55em);
@@ -490,13 +514,80 @@ body {
   }
 }
 
-@keyframes vote-flash {
+@keyframes vote-tick-down {
+  from {
+    opacity: 0.25;
+    transform: translateY(-0.55em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vote-diamond-up-a {
   0% {
-    color: var(--sunset);
-    filter: brightness(2);
+    opacity: 1;
+    transform: translate(-7px, 2px) scale(0.55);
   }
   100% {
-    filter: brightness(1);
+    opacity: 0;
+    transform: translate(-14px, -22px) scale(0.2);
+  }
+}
+
+@keyframes vote-diamond-up-b {
+  0% {
+    opacity: 1;
+    transform: translate(0, 2px) scale(0.65);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, -26px) scale(0.18);
+  }
+}
+
+@keyframes vote-diamond-up-c {
+  0% {
+    opacity: 1;
+    transform: translate(7px, 2px) scale(0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(14px, -20px) scale(0.2);
+  }
+}
+
+@keyframes vote-diamond-down-a {
+  0% {
+    opacity: 1;
+    transform: translate(-7px, -2px) scale(0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-14px, 22px) scale(0.2);
+  }
+}
+
+@keyframes vote-diamond-down-b {
+  0% {
+    opacity: 1;
+    transform: translate(0, -2px) scale(0.65);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 26px) scale(0.18);
+  }
+}
+
+@keyframes vote-diamond-down-c {
+  0% {
+    opacity: 1;
+    transform: translate(7px, -2px) scale(0.55);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(14px, 20px) scale(0.2);
   }
 }
 
@@ -833,13 +924,89 @@ body {
   animation: motion-ignite var(--motion-ignite);
 }
 
-.vote-tick {
+.vote-tick-up,
+.vote-tick-down {
   display: inline-block;
-  animation: vote-tick 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.vote-flash {
-  animation: vote-flash 0.7s ease;
+.vote-tick-up {
+  animation: vote-tick-up 0.5s var(--motion-ease) both;
+}
+
+.vote-tick-down {
+  animation: vote-tick-down 0.5s var(--motion-ease) both;
+}
+
+.vote-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.vote-diamond {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  background: var(--sunset);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--sunset) 65%, transparent);
+  opacity: 0;
+}
+
+.vote-burst-up {
+  color: var(--sunset);
+}
+
+.vote-burst-down {
+  color: var(--muted-foreground);
+}
+
+.vote-burst-up .vote-icon,
+.vote-burst-down .vote-icon {
+  animation-duration: 0.55s;
+  animation-timing-function: var(--motion-ease);
+  animation-fill-mode: both;
+}
+
+.vote-burst-up .vote-icon {
+  animation-name: vote-kick-up;
+}
+
+.vote-burst-down .vote-icon {
+  animation-name: vote-kick-down;
+}
+
+.vote-burst-up .vote-diamond-a {
+  animation: vote-diamond-up-a 0.55s var(--motion-ease) both;
+}
+
+.vote-burst-up .vote-diamond-b {
+  animation: vote-diamond-up-b 0.6s var(--motion-ease) 30ms both;
+}
+
+.vote-burst-up .vote-diamond-c {
+  animation: vote-diamond-up-c 0.55s var(--motion-ease) 50ms both;
+}
+
+.vote-burst-down .vote-diamond-a {
+  animation: vote-diamond-down-a 0.55s var(--motion-ease) both;
+}
+
+.vote-burst-down .vote-diamond-b {
+  animation: vote-diamond-down-b 0.6s var(--motion-ease) 30ms both;
+}
+
+.vote-burst-down .vote-diamond-c {
+  animation: vote-diamond-down-c 0.55s var(--motion-ease) 50ms both;
+}
+
+.vote-burst-down .vote-diamond {
+  background: var(--muted-foreground);
+  box-shadow: none;
 }
 
 .copy-share .copy-share-done {
@@ -1087,8 +1254,16 @@ body {
   .empty-scan-bar,
   .btn-shine::after,
   .btn-ignite:active,
-  .vote-tick,
-  .vote-flash,
+  .vote-tick-up,
+  .vote-tick-down,
+  .vote-burst-up .vote-icon,
+  .vote-burst-down .vote-icon,
+  .vote-burst-up .vote-diamond-a,
+  .vote-burst-up .vote-diamond-b,
+  .vote-burst-up .vote-diamond-c,
+  .vote-burst-down .vote-diamond-a,
+  .vote-burst-down .vote-diamond-b,
+  .vote-burst-down .vote-diamond-c,
   .site-field,
   .site-field-grid,
   .nav-pip,

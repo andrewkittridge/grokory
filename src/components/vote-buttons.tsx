@@ -11,19 +11,23 @@ import type { VoteValue } from "@/lib/types";
 function VoteSubmit({
   value,
   active,
-  flash,
+  burst,
   label,
   compact,
+  onBurst,
   children,
 }: {
   value: VoteValue;
   active: boolean;
-  flash?: boolean;
+  burst: boolean;
   label: string;
   compact?: boolean;
+  onBurst: (value: 0 | VoteValue) => void;
   children: ReactNode;
 }) {
   const { pending } = useFormStatus();
+  const up = value === 1;
+
   return (
     <button
       type="submit"
@@ -31,30 +35,52 @@ function VoteSubmit({
       value={value}
       aria-label={label}
       aria-pressed={active}
-      disabled={pending}
+      aria-busy={pending}
+      onPointerDown={() => {
+        if (pending) return;
+        onBurst(0);
+        requestAnimationFrame(() => onBurst(value));
+      }}
+      onClick={(event) => {
+        if (pending) event.preventDefault();
+      }}
+      onAnimationEnd={(event) => {
+        if (
+          event.animationName === "vote-kick-up" ||
+          event.animationName === "vote-kick-down"
+        ) {
+          onBurst(0);
+        }
+      }}
       className={cn(
-        "inline-flex items-center justify-center rounded-full transition-colors hover:bg-canvas-soft disabled:opacity-50 focus-visible:ring-1 focus-visible:ring-foreground motion-reduce:transition-none touch-manipulation",
+        "vote-btn relative inline-flex items-center justify-center overflow-visible rounded-full transition-colors hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground motion-reduce:transition-none touch-manipulation",
         compact ? "size-7" : "size-8",
         active
           ? "text-sunset [&_svg]:stroke-[2.5]"
           : "text-muted-foreground hover:text-foreground",
-        flash && "vote-flash"
+        burst && (up ? "vote-burst-up" : "vote-burst-down")
       )}
     >
-      {children}
+      <span className="vote-icon inline-flex">{children}</span>
+      <span className="vote-burst" aria-hidden="true">
+        <span className="vote-diamond vote-diamond-a" />
+        <span className="vote-diamond vote-diamond-b" />
+        <span className="vote-diamond vote-diamond-c" />
+      </span>
     </button>
   );
 }
 
 function VoteScore({ score, compact }: { score: number; compact?: boolean }) {
   const previous = useRef(score);
-  const [tick, setTick] = useState(false);
+  const [dir, setDir] = useState<0 | 1 | -1>(0);
 
   useEffect(() => {
     if (previous.current === score) return;
+    const next = score > previous.current ? 1 : -1;
     previous.current = score;
-    const start = window.setTimeout(() => setTick(true), 0);
-    const stop = window.setTimeout(() => setTick(false), 520);
+    const start = window.setTimeout(() => setDir(next), 0);
+    const stop = window.setTimeout(() => setDir(0), 520);
     return () => {
       window.clearTimeout(start);
       window.clearTimeout(stop);
@@ -66,7 +92,8 @@ function VoteScore({ score, compact }: { score: number; compact?: boolean }) {
       className={cn(
         "inline-block text-center font-mono tabular-nums text-foreground",
         compact ? "min-w-5 text-[11px]" : "min-w-8 text-sm",
-        tick && "vote-tick"
+        dir === 1 && "vote-tick-up",
+        dir === -1 && "vote-tick-down"
       )}
     >
       {score}
@@ -88,26 +115,14 @@ export function VoteButtons({
   size?: "default" | "mat";
 }) {
   const compact = size === "mat";
-  const previousVote = useRef(userVote);
-  const [flash, setFlash] = useState<0 | VoteValue>(0);
-
-  useEffect(() => {
-    if (previousVote.current === userVote) return;
-    previousVote.current = userVote;
-    const start = window.setTimeout(() => setFlash(userVote), 0);
-    const stop = window.setTimeout(() => setFlash(0), 700);
-    return () => {
-      window.clearTimeout(start);
-      window.clearTimeout(stop);
-    };
-  }, [userVote]);
+  const [burst, setBurst] = useState<0 | VoteValue>(0);
 
   return (
     <form
       action={castVote}
       onClick={(event) => event.stopPropagation()}
       className={cn(
-        "flex items-center gap-0",
+        "relative z-10 flex items-center gap-0 overflow-visible",
         layout === "column" ? "flex-col" : "flex-row"
       )}
     >
@@ -115,9 +130,10 @@ export function VoteButtons({
       <VoteSubmit
         value={1}
         active={userVote === 1}
-        flash={flash === 1}
+        burst={burst === 1}
         label="Upvote"
         compact={compact}
+        onBurst={setBurst}
       >
         <ChevronUp className={compact ? "size-4" : "size-5"} />
       </VoteSubmit>
@@ -125,9 +141,10 @@ export function VoteButtons({
       <VoteSubmit
         value={-1}
         active={userVote === -1}
-        flash={flash === -1}
+        burst={burst === -1}
         label="Downvote"
         compact={compact}
+        onBurst={setBurst}
       >
         <ChevronDown className={compact ? "size-4" : "size-5"} />
       </VoteSubmit>
