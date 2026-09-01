@@ -20,6 +20,7 @@ export function filterTemplates(
     const haystack = [
       template.title,
       template.authorName,
+      template.xHandle ?? "",
       template.summary,
       template.description,
       template.note ?? "",

@@ -163,6 +163,79 @@ test("form listings can fill name by hand when preview fails", async () => {
   assert.equal(result.ok, true);
 });
 
+test("publishListing stores an optional X handle", async () => {
+  const result = await publishListing(
+    {
+      shareUrl: SHARE,
+      category: "Work",
+      xHandle: "@andrew",
+      source: "agent",
+    },
+    deps({
+      save: async (template) => {
+        assert.equal(template.xHandle, "andrew");
+        return { ok: true, template: saved(template) };
+      },
+    })
+  );
+  assert.equal(result.ok, true);
+});
+
+test("publishListing rejects a junk X handle", async () => {
+  const result = await publishListing(
+    { shareUrl: SHARE, category: "Work", xHandle: "nope!", source: "form" },
+    deps({
+      save: async () => {
+        throw new Error("should not save");
+      },
+    })
+  );
+  assert.equal(result.ok, false);
+  if (result.ok) return;
+  assert.equal(result.code, "invalid");
+  assert.match(result.error, /X username/);
+});
+
+test("publishListing can attach an X handle to an existing listing", async () => {
+  const result = await publishListing(
+    {
+      shareUrl: SHARE,
+      category: "Work",
+      xHandle: "https://x.com/andrew",
+      source: "form",
+    },
+    deps({
+      findExisting: async () => ({ slug: "jarvis-n92u9t", title: "Jarvis" }),
+      linkHandle: async (botId, handle) => {
+        assert.equal(botId, "N92u9t1nHlL_gtgk2nAeN");
+        assert.equal(handle, "andrew");
+        return { ok: true, slug: "jarvis-n92u9t" };
+      },
+      preview: async () => {
+        throw new Error("should not preview");
+      },
+    })
+  );
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.linked, true);
+  assert.equal(result.slug, "jarvis-n92u9t");
+  assert.equal(result.title, "Jarvis");
+});
+
+test("listBotFromAgent maps a handle link to 200", async () => {
+  const result = await listBotFromAgent(
+    { shareUrl: SHARE, category: "Work", xHandle: "@andrew" },
+    new Request("https://grokdex.net/api/bots", { method: "POST" }),
+    deps({
+      findExisting: async () => ({ slug: "jarvis-n92u9t", title: "Jarvis" }),
+      linkHandle: async () => ({ ok: true, slug: "jarvis-n92u9t" }),
+    })
+  );
+  assert.equal(result.status, 200);
+  assert.equal(result.body.ok, true);
+});
+
 test("listBotFromAgent maps already listed to 409", async () => {
   const result = await listBotFromAgent(
     { shareUrl: SHARE, category: "Work" },

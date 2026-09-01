@@ -18,10 +18,11 @@ export const metadata = {
 export default async function UploadPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; share?: string }>;
 }) {
   const params = await searchParams;
   const category = params.category?.trim() ?? "";
+  const share = params.share?.trim() ?? "";
   const defaultCategory = isCategory(category) ? category : undefined;
   const templates = await listTemplates();
   const founding = isFoundingBoard(templates.length);
@@ -54,6 +55,7 @@ export default async function UploadPage({
           <UploadForm
             siteKey={turnstileSiteKey()}
             defaultCategory={defaultCategory}
+            defaultShareUrl={share || undefined}
           />
         </Frame>
       </div>

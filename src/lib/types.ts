@@ -31,6 +31,7 @@ export type BotTemplate = {
   botUrl: string;
   title: string;
   authorName: string;
+  xHandle?: string;
   summary: string;
   description: string;
   ogImage?: string;

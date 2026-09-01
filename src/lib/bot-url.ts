@@ -6,6 +6,55 @@ const BOT_PATH =
 const BARE_ID = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_-]{12,64}$/;
 
 export const ALREADY_LISTED = "That Grok Bot is already listed.";
+export const HANDLE_ALREADY_SET = "That listing already has an X handle.";
+
+const X_HANDLE = /^[A-Za-z0-9_]{1,15}$/;
+const X_PROFILE =
+  /^(?:https?:\/\/)?(?:www\.)?(?:x\.com|twitter\.com)\/@?([A-Za-z0-9_]{1,15})(?:[/?#].*)?$/i;
+const X_RESERVED = new Set([
+  "about",
+  "compose",
+  "download",
+  "explore",
+  "home",
+  "i",
+  "intent",
+  "jobs",
+  "login",
+  "messages",
+  "notifications",
+  "privacy",
+  "search",
+  "settings",
+  "share",
+  "signup",
+  "tos",
+]);
+
+export function parseXHandle(
+  input?: string
+): { ok: true; handle?: string } | { ok: false; error: string } {
+  const trimmed = (input ?? "").trim();
+  if (!trimmed) return { ok: true };
+
+  const fromUrl = trimmed.match(X_PROFILE);
+  const raw = (fromUrl?.[1] ?? trimmed.replace(/^@/, "")).trim();
+  if (!X_HANDLE.test(raw) || X_RESERVED.has(raw.toLowerCase())) {
+    return {
+      ok: false,
+      error: "Use an X username like @handle.",
+    };
+  }
+  return { ok: true, handle: raw };
+}
+
+export function xHandleUrl(handle: string) {
+  return `https://x.com/${handle}`;
+}
+
+export function xHandleLabel(handle: string) {
+  return `@${handle}`;
+}
 
 export function grokbotTemplateUrl(botId: string) {
   return `grokbot://app/v1/bot-template?id=${encodeURIComponent(botId)}`;

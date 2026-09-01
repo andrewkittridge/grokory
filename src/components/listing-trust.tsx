@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { authorSlug, formatCheckedAt, reportMailto } from "@/lib/bot-url";
+import {
+  authorSlug,
+  formatCheckedAt,
+  reportMailto,
+  xHandleLabel,
+  xHandleUrl,
+} from "@/lib/bot-url";
 import type { ListedTemplate } from "@/lib/types";
 
 export function ListingTrust({
@@ -120,5 +126,53 @@ export function AuthorLink({
     >
       {name}
     </Link>
+  );
+}
+
+export function XHandleLink({
+  handle,
+  className,
+}: {
+  handle: string;
+  className?: string;
+}) {
+  return (
+    <a
+      href={xHandleUrl(handle)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      {xHandleLabel(handle)}
+    </a>
+  );
+}
+
+export function AuthorByline({
+  name,
+  xHandle,
+  className,
+}: {
+  name: string;
+  xHandle?: string;
+  className?: string;
+}) {
+  return (
+    <p className={className}>
+      by{" "}
+      <AuthorLink
+        name={name}
+        className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+      />
+      {xHandle ? (
+        <>
+          {" · "}
+          <XHandleLink
+            handle={xHandle}
+            className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+          />
+        </>
+      ) : null}
+    </p>
   );
 }

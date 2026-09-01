@@ -98,6 +98,7 @@ async function callTool(
           : str(tags),
         note: str(args.note),
         submittedBy: str(args.submittedBy),
+        xHandle: str(args.xHandle),
       },
       request
     );

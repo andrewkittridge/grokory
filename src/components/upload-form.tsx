@@ -19,16 +19,18 @@ const initial: { error?: string; slug?: string } = {};
 export function UploadForm({
   siteKey,
   defaultCategory,
+  defaultShareUrl,
 }: {
   siteKey?: string;
   defaultCategory?: Category;
+  defaultShareUrl?: string;
 }) {
   const [state, action, pending] = useActionState(createListing, initial);
   const [lookupState, lookupAction, lookupPending] = useActionState(
     lookupShareLink,
     {}
   );
-  const [shareUrl, setShareUrl] = useState("");
+  const [shareUrl, setShareUrl] = useState(defaultShareUrl ?? "");
   const [editFor, setEditFor] = useState<string | null>(null);
   const [turnstileReset, setTurnstileReset] = useState(0);
   const lastLookup = useRef("");
@@ -171,6 +173,22 @@ export function UploadForm({
         preview={preview}
         open={showIdentityFields}
       />
+
+      <div className="space-y-2">
+        <Label htmlFor="xHandle">X handle (optional)</Label>
+        <Input
+          id="xHandle"
+          name="xHandle"
+          placeholder="@handle"
+          className="h-10"
+          autoComplete="off"
+        />
+        <p className="text-xs text-muted-foreground">
+          Shown on the listing. Not a login, and we do not verify you own that
+          account. Already listed? Paste the same share link and add a handle —
+          the first one sticks.
+        </p>
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="category" className="field-lock">

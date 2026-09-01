@@ -62,6 +62,7 @@ export function BotCard({
           </h3>
           <p className="mt-0.5 text-sm text-muted-foreground">
             by {template.authorName}
+            {template.xHandle ? ` · @${template.xHandle}` : ""}
           </p>
           <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">
             {template.summary}

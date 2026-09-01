@@ -17,7 +17,9 @@ export default async function Image({
   const summary =
     template?.summary ?? "A public Grok Bot share link on Grokdex.";
   const meta = template
-    ? `${template.category}  ·  ${template.authorName}`
+    ? `${template.category}  ·  ${template.authorName}${
+        template.xHandle ? `  ·  @${template.xHandle}` : ""
+      }`
     : "Ranked Grok Bot catalog";
 
   return new ImageResponse(
