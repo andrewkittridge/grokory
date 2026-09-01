@@ -76,6 +76,11 @@ test("homepage and listing markdown are citable", () => {
   assert.match(listing?.body ?? "", /grokbot:\/\/app\/v1\/bot-template\?id=/);
   assert.match(listing?.body ?? "", /share one computer/);
 
+  const withHandle = pageMarkdown("/templates/research", [
+    bot({ xHandle: "andrew" }),
+  ]);
+  assert.match(withHandle?.body ?? "", /https:\/\/x\.com\/andrew/);
+
   const home = pageMarkdown("/", [bot()]);
   assert.equal(home?.status, 200);
   assert.match(home?.body ?? "", /# Grokdex/);
@@ -151,4 +156,6 @@ test("searchPublicBots filters without voter fields leaking", () => {
   assert.equal(hits.length, 1);
   assert.equal(hits[0]?.slug, "loops");
   assert.equal("userVote" in publicBot(bot()), false);
+  assert.equal(publicBot(bot()).xHandle, null);
+  assert.equal(publicBot(bot({ xHandle: "andrew" })).xUrl, "https://x.com/andrew");
 });

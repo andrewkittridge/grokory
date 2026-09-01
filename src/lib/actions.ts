@@ -62,11 +62,15 @@ export async function createListing(
     submittedBy: String(formData.get("submittedBy") ?? ""),
     title: String(formData.get("title") ?? ""),
     authorName: String(formData.get("authorName") ?? ""),
+    xHandle: String(formData.get("xHandle") ?? ""),
     description: String(formData.get("description") ?? ""),
     source: "form",
   });
   if (!result.ok) {
     return { error: result.error, slug: result.slug };
+  }
+  if (result.linked) {
+    redirect(`/templates/${result.slug}?linked=1`);
   }
   redirect(`/templates/${result.slug}?listed=1`);
 }

@@ -8,7 +8,10 @@ import {
   listingPostText,
   parseShareUrl,
   parseTags,
+  parseXHandle,
   slugify,
+  xHandleLabel,
+  xHandleUrl,
 } from "./bot-url";
 
 test("grokbotTemplateUrl is the app add deep link", () => {
@@ -74,6 +77,33 @@ test("authorSlug and gone detection", () => {
   assert.equal(authorSlug("  "), "unknown");
   assert.equal(isGoneError("x.ai returned 404. That share link may have been taken down."), true);
   assert.equal(isGoneError("Could not reach x.ai"), false);
+});
+
+test("parseXHandle accepts @handle, bare handle, and x.com URLs", () => {
+  assert.deepEqual(parseXHandle(""), { ok: true });
+  assert.deepEqual(parseXHandle("   "), { ok: true });
+  assert.deepEqual(parseXHandle("@Andrew"), { ok: true, handle: "Andrew" });
+  assert.deepEqual(parseXHandle("andrew_k"), { ok: true, handle: "andrew_k" });
+  assert.deepEqual(parseXHandle("https://x.com/grokdex"), {
+    ok: true,
+    handle: "grokdex",
+  });
+  assert.deepEqual(parseXHandle("https://twitter.com/@Ada"), {
+    ok: true,
+    handle: "Ada",
+  });
+});
+
+test("parseXHandle rejects junk and reserved paths", () => {
+  assert.equal(parseXHandle("nope!").ok, false);
+  assert.equal(parseXHandle("thisnameistoolong1").ok, false);
+  assert.equal(parseXHandle("https://x.com/intent/tweet").ok, false);
+  assert.equal(parseXHandle("home").ok, false);
+});
+
+test("xHandleUrl and xHandleLabel", () => {
+  assert.equal(xHandleUrl("Ada"), "https://x.com/Ada");
+  assert.equal(xHandleLabel("Ada"), "@Ada");
 });
 
 test("formatAdds and listingPostText", () => {

@@ -4,7 +4,7 @@ import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
-import { authorSlug } from "@/lib/bot-url";
+import { authorSlug, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
 import { itemListJson } from "@/lib/json-ld";
 import { sortTemplates } from "@/lib/rank";
 import { listTemplates } from "@/lib/templates-store";
@@ -45,6 +45,13 @@ export default async function AuthorPage({
   );
   if (templates.length === 0) notFound();
   const name = templates[0].authorName;
+  const handles = [
+    ...new Set(
+      templates
+        .map((template) => template.xHandle)
+        .filter((handle): handle is string => Boolean(handle))
+    ),
+  ];
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
@@ -68,6 +75,24 @@ export default async function AuthorPage({
           plural="bots"
         />{" "}
         on the board.
+        {handles.length > 0 ? (
+          <>
+            {" "}
+            {handles.map((handle, index) => (
+              <span key={handle}>
+                {index > 0 ? ", " : null}
+                <a
+                  href={xHandleUrl(handle)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                >
+                  {xHandleLabel(handle)}
+                </a>
+              </span>
+            ))}
+          </>
+        ) : null}
       </p>
       <BotRankList
         templates={templates}

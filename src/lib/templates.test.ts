@@ -45,4 +45,9 @@ test("filterTemplates matches category, tag, and query", () => {
   assert.equal(filterTemplates(all, { tag: "citations" })[0]?.id, "id");
   assert.equal(filterTemplates(all, { q: "outer loop" })[0]?.id, "loops");
   assert.equal(filterTemplates(all, { category: "Coding", tag: "citations" }).length, 0);
+  assert.equal(
+    filterTemplates([bot({ xHandle: "kittridge" })], { q: "kittridge" })[0]
+      ?.xHandle,
+    "kittridge"
+  );
 });

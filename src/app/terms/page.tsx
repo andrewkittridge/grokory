@@ -34,6 +34,8 @@ export default function TermsPage() {
       <p>
         Only paste a share link you are allowed to make public. You are
         responsible for the listing text and for the bot behind the link.
+        An optional X handle is a public label, not Sign in with X, and not
+        proof that you own that account.
         Listings are user-generated. We may refuse, edit, or remove a listing
         (including spam, malware, impersonation, or anything that looks like an
         official xAI product). Duplicate share URLs are not listed twice. We

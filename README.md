@@ -35,7 +35,7 @@ Fulfillment is the webhook at `/api/webhooks/stripe`, not the success page. Loca
 
 1. In Grok Bot, copy the bot’s public share link.
 2. Paste it on `/upload`. Grokdex looks up the name, author, and description from x.ai.
-3. Pick a job category. The bot appears on the board immediately. No account.
+3. Pick a job category. Optionally add an X handle (a public label, not a login). The bot appears on the board immediately. No account.
 
 ## Paid traffic
 

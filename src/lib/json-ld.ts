@@ -1,4 +1,5 @@
 import { FAQS } from "./agent";
+import { xHandleUrl } from "./bot-url";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
 import type { ListedTemplate } from "./types";
 
@@ -74,6 +75,9 @@ export function softwareJson(template: ListedTemplate, listingUrl: string) {
     author: {
       "@type": "Person",
       name: template.authorName,
+      ...(template.xHandle
+        ? { sameAs: xHandleUrl(template.xHandle) }
+        : {}),
     },
     offers: {
       "@type": "Offer",

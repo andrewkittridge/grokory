@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { SEED_TEMPLATES, SEED_VOTES } from "@/data/seed";
-import { ALREADY_LISTED } from "./bot-url";
+import { ALREADY_LISTED, HANDLE_ALREADY_SET } from "./bot-url";
 import { getDatabaseUrl, sql } from "./db";
 import { extendBoostedUntil } from "./boost";
 import {
@@ -50,6 +50,7 @@ type TemplateRow = {
   bot_url: string;
   title: string;
   author_name: string;
+  x_handle?: string | null;
   summary: string;
   description: string;
   og_image: string | null;
@@ -139,6 +140,7 @@ function normalizeTemplate(template: BotTemplate): BotTemplate {
     featuredUntil: template.featuredUntil,
     featured: template.featured,
     boostedUntil: template.boostedUntil,
+    xHandle: template.xHandle?.trim() || undefined,
   };
 }
 
@@ -187,6 +189,7 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
     botUrl: row.bot_url,
     title: row.title,
     authorName: row.author_name,
+    xHandle: row.x_handle?.trim() || undefined,
     summary: row.summary,
     description: row.description,
     ogImage: row.og_image ?? undefined,
@@ -366,6 +369,7 @@ async function ensureNeon() {
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS x_handle text`,
         db`CREATE TABLE IF NOT EXISTS stripe_sessions (
           session_id text PRIMARY KEY,
           kind text NOT NULL,
@@ -612,8 +616,8 @@ export async function addTemplate(
     await ensureNeon();
     const db = sql();
     const duplicate = (await db`
-      SELECT slug FROM templates WHERE bot_id = ${template.botId} LIMIT 1
-    `) as { slug: string }[];
+      SELECT slug, x_handle FROM templates WHERE bot_id = ${template.botId} LIMIT 1
+    `) as { slug: string; x_handle?: string | null }[];
     if (duplicate[0]) {
       return {
         ok: false as const,
@@ -633,12 +637,12 @@ export async function addTemplate(
     const saved = normalizeTemplate({ ...template, slug });
     await db`
       INSERT INTO templates (
-        id, slug, bot_id, bot_url, title, author_name, summary, description,
+        id, slug, bot_id, bot_url, title, author_name, x_handle, summary, description,
         og_image, category, tags, note, submitted_by, origin, featured, featured_until, boosted_until, created_at, adds,
         live, last_checked_at, skills, routines
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
-        ${saved.authorName}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
+        ${saved.authorName}, ${saved.xHandle ?? null}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
         ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
         ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.boostedUntil ?? null}, ${saved.createdAt}, ${saved.adds},
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
@@ -682,6 +686,82 @@ export async function addTemplate(
       ok: true as const,
       template: { ...saved, score: 0, userVote: 0 as const },
     };
+  });
+}
+
+export type LinkXHandleResult =
+  | { ok: true; slug: string }
+  | { ok: false; error: string; slug?: string };
+
+function sameHandle(left?: string | null, right?: string | null) {
+  return (left ?? "").trim().toLowerCase() === (right ?? "").trim().toLowerCase();
+}
+
+export async function linkXHandleIfEmpty(
+  botId: string,
+  handle: string
+): Promise<LinkXHandleResult> {
+  if (getDatabaseUrl()) {
+    await ensureNeon();
+    const db = sql();
+    const written = (await db`
+      UPDATE templates
+      SET x_handle = ${handle}
+      WHERE bot_id = ${botId}
+        AND (x_handle IS NULL OR x_handle = '')
+      RETURNING slug
+    `) as { slug: string }[];
+    if (written[0]) {
+      await invalidateTemplateListCache();
+      return { ok: true, slug: written[0].slug };
+    }
+    const current = (await db`
+      SELECT slug, x_handle FROM templates WHERE bot_id = ${botId} LIMIT 1
+    `) as { slug: string; x_handle?: string | null }[];
+    if (!current[0]) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    if (sameHandle(current[0].x_handle, handle)) {
+      return { ok: true, slug: current[0].slug };
+    }
+    return {
+      ok: false,
+      error: HANDLE_ALREADY_SET,
+      slug: current[0].slug,
+    };
+  }
+
+  return withLock(async () => {
+    const store = await readStore();
+    const index = store.templates.findIndex((item) => item.botId === botId);
+    if (index < 0) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    const current = store.templates[index];
+    if (current.xHandle) {
+      if (sameHandle(current.xHandle, handle)) {
+        return { ok: true, slug: current.slug };
+      }
+      return {
+        ok: false,
+        error: HANDLE_ALREADY_SET,
+        slug: current.slug,
+      };
+    }
+    store.templates[index] = normalizeTemplate({
+      ...current,
+      xHandle: handle,
+    });
+    const written = await writeStore(store);
+    if (!written) {
+      return {
+        ok: false,
+        error:
+          "This host cannot save listings. Set DATABASE_URL to a Neon pooled connection string.",
+      };
+    }
+    await invalidateTemplateListCache();
+    return { ok: true, slug: current.slug };
   });
 }
 

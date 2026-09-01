@@ -1,6 +1,7 @@
 import {
   addTemplate,
   findByBotId,
+  linkXHandleIfEmpty,
 } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import {
@@ -9,6 +10,7 @@ import {
   isCategory,
   parseShareUrl,
   parseTags,
+  parseXHandle,
   slugify,
 } from "./bot-url";
 import { consumeKvRate, headerIp } from "./rate-limit";
@@ -28,6 +30,7 @@ export type PublishListingInput = {
   submittedBy?: string;
   title?: string;
   authorName?: string;
+  xHandle?: string;
   description?: string;
   source: "form" | "agent";
 };
@@ -38,6 +41,7 @@ export type PublishListingResult =
       slug: string;
       listingUrl: string;
       title: string;
+      linked?: boolean;
     }
   | {
       ok: false;
@@ -50,9 +54,12 @@ export type PublishListingResult =
 export type PublishListingDeps = {
   findExisting?: (
     botId: string
-  ) => Promise<{ slug: string } | null | undefined>;
+  ) => Promise<
+    { slug: string; title?: string; xHandle?: string } | null | undefined
+  >;
   preview?: typeof fetchBotPreview;
   save?: typeof addTemplate;
+  linkHandle?: typeof linkXHandleIfEmpty;
   revalidate?: (path: string) => void | Promise<void>;
 };
 
@@ -91,33 +98,69 @@ export async function publishListing(
   if (!parsed) {
     return { ok: false, error: INVALID_SHARE, code: "invalid" };
   }
-  if (!isCategory(input.category)) {
-    return {
-      ok: false,
-      error: "Pick a category so people can find this bot.",
-      code: "invalid",
-    };
+
+  const parsedHandle = parseXHandle(input.xHandle);
+  if (!parsedHandle.ok) {
+    return { ok: false, error: parsedHandle.error, code: "invalid" };
   }
+  const xHandle = parsedHandle.handle;
 
   const findExisting =
     deps.findExisting ??
     (async (botId: string) => {
       const existing = await findByBotId(botId);
-      return existing ? { slug: existing.slug } : null;
+      return existing
+        ? {
+            slug: existing.slug,
+            title: existing.title,
+            xHandle: existing.xHandle,
+          }
+        : null;
     });
   const previewFn = deps.preview ?? fetchBotPreview;
   const save = deps.save ?? addTemplate;
+  const linkHandle = deps.linkHandle ?? linkXHandleIfEmpty;
   const revalidate = deps.revalidate ?? defaultRevalidate;
 
   try {
     const existing = await findExisting(parsed.botId);
     if (existing?.slug) {
+      if (!xHandle) {
+        return {
+          ok: false,
+          error: ALREADY_LISTED,
+          code: "already_listed",
+          slug: existing.slug,
+          listingUrl: listingUrlFor(existing.slug),
+        };
+      }
+      const linked = await linkHandle(parsed.botId, xHandle);
+      if (!linked.ok) {
+        return {
+          ok: false,
+          error: linked.error,
+          code: "already_listed",
+          slug: linked.slug ?? existing.slug,
+          listingUrl: listingUrlFor(linked.slug ?? existing.slug),
+        };
+      }
+      await revalidate("/");
+      await revalidate("/templates");
+      await revalidate(`/templates/${linked.slug}`);
+      return {
+        ok: true,
+        slug: linked.slug,
+        listingUrl: listingUrlFor(linked.slug),
+        title: existing.title || linked.slug,
+        linked: true,
+      };
+    }
+
+    if (!isCategory(input.category)) {
       return {
         ok: false,
-        error: ALREADY_LISTED,
-        code: "already_listed",
-        slug: existing.slug,
-        listingUrl: listingUrlFor(existing.slug),
+        error: "Pick a category so people can find this bot.",
+        code: "invalid",
       };
     }
 
@@ -176,6 +219,7 @@ export async function publishListing(
       botUrl: parsed.botUrl,
       title: resolvedTitle.slice(0, 80),
       authorName: resolvedAuthor.slice(0, 60),
+      xHandle,
       summary,
       description: resolvedDescription.slice(0, 2000),
       ogImage: preview?.ogImage,
@@ -233,6 +277,7 @@ export async function listBotFromAgent(
     tags?: string | string[];
     note?: string;
     submittedBy?: string;
+    xHandle?: string;
   },
   request: Request,
   deps: PublishListingDeps = {}
@@ -256,6 +301,7 @@ export async function listBotFromAgent(
       tags: input.tags,
       note: input.note,
       submittedBy: input.submittedBy,
+      xHandle: input.xHandle,
       source: "agent",
     },
     deps
@@ -263,7 +309,7 @@ export async function listBotFromAgent(
 
   if (result.ok) {
     return {
-      status: 201,
+      status: result.linked ? 200 : 201,
       body: result,
     };
   }

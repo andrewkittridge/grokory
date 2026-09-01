@@ -1,4 +1,4 @@
-import { authorSlug, grokbotTemplateUrl } from "./bot-url";
+import { authorSlug, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
 import { filterTemplates } from "./templates";
 import { parseSort, sortTemplates } from "./rank";
@@ -47,7 +47,11 @@ export const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "How do I list a Grok Bot on Grokdex?",
-    a: "Go to https://grokdex.net/upload and paste a public https://x.ai/bot/… share link, or paste the list-on-grokdex skill into your Grok Bot and tell it to list you. Listing is free and does not require an account. Duplicate share URLs are not listed twice.",
+    a: "Go to https://grokdex.net/upload and paste a public https://x.ai/bot/… share link, or paste the list-on-grokdex skill into your Grok Bot and tell it to list you. Listing is free and does not require an account. You can optionally add an X handle; it is a public label, not a login, and Grokdex does not verify that you own that account. Duplicate share URLs are not listed twice.",
+  },
+  {
+    q: "Can I link my X handle?",
+    a: "Yes. Add an X username when you list, or paste the same public share link again with the handle. It shows as @handle on the listing. The first handle sticks. This is not Sign in with X, and Grokdex does not verify that you own that account.",
   },
   {
     q: "Can my Grok Bot list itself?",
@@ -67,6 +71,8 @@ export type PublicBot = {
   slug: string;
   title: string;
   authorName: string;
+  xHandle: string | null;
+  xUrl: string | null;
   summary: string;
   description: string;
   category: string;
@@ -87,6 +93,8 @@ export function publicBot(template: ListedTemplate): PublicBot {
     slug: template.slug,
     title: template.title,
     authorName: template.authorName,
+    xHandle: template.xHandle ?? null,
+    xUrl: template.xHandle ? xHandleUrl(template.xHandle) : null,
     summary: template.summary,
     description: template.description,
     category: template.category,
@@ -298,7 +306,7 @@ function listingMarkdown(template: ListedTemplate) {
 > ${bot.summary}
 
 - Author: ${bot.authorName}
-- Job: ${bot.category}
+${bot.xHandle ? `- X: ${bot.xUrl}\n` : ""}- Job: ${bot.category}
 - Share link: ${bot.botUrl}
 - Grokdex listing: ${bot.listingUrl}
 - Votes: ${bot.score} · Adds: ${bot.adds} · ${bot.live ? "Live share link" : "Share link is down"}
@@ -331,10 +339,21 @@ Tags: ${bot.tags.length ? bot.tags.join(", ") : "none"}
 
 function authorMarkdown(listed: ListedTemplate[]) {
   const name = listed[0].authorName;
+  const handles = [
+    ...new Set(
+      listed
+        .map((item) => item.xHandle)
+        .filter((handle): handle is string => Boolean(handle))
+    ),
+  ];
+  const handleLine =
+    handles.length > 0
+      ? `\n${handles.map((handle) => `- ${xHandleUrl(handle)}`).join("\n")}\n`
+      : "";
   return `# ${name} · Grokdex
 
 Public Grok Bot templates by ${name}.
-
+${handleLine}
 ${botList(sortTemplates(listed, "hot"))}
 `;
 }
@@ -342,7 +361,7 @@ ${botList(sortTemplates(listed, "hot"))}
 function uploadMarkdown() {
   return `# Share a Grok Bot · ${SITE_NAME}
 
-Paste a public share link — \`https://x.ai/bot/…\`. Pick a job, and it lists immediately. Listing is free. No account.
+Paste a public share link — \`https://x.ai/bot/…\`. Pick a job, and it lists immediately. Listing is free. No account. Optional X handle is a public label, not a login.
 
 HTML form: ${absUrl("/upload")}
 
@@ -451,7 +470,7 @@ AI agents and crawlers reading, querying, or listing public Grok Bot share links
 - Browse, search, and fetch listings: no authentication
 - MCP tools at ${absUrl(MCP_PATH)}: no authentication
 - JSON at ${absUrl("/api/bots")}: no authentication
-- List a bot with POST ${absUrl("/api/bots")} or MCP \`list_bot\`: no authentication. Proof is a live public \`https://x.ai/bot/…\` URL that Grokdex can fetch. Duplicate share URLs are rejected.
+- List a bot with POST ${absUrl("/api/bots")} or MCP \`list_bot\`: no authentication. Proof is a live public \`https://x.ai/bot/…\` URL that Grokdex can fetch. Duplicate share URLs are rejected. Optional \`xHandle\` is stored as a public label; it is not an X login.
 - Listing via the HTML form uses Cloudflare Turnstile (human check).
 
 ## Agent registration
@@ -590,6 +609,11 @@ export function openApiSpec() {
                     },
                     note: { type: "string" },
                     submittedBy: { type: "string" },
+                    xHandle: {
+                      type: "string",
+                      description:
+                        "Optional X username. Shown on the listing. Not a login and not verified.",
+                    },
                   },
                 },
               },
@@ -689,6 +713,11 @@ export const MCP_TOOLS = [
         },
         note: { type: "string" },
         submittedBy: { type: "string" },
+        xHandle: {
+          type: "string",
+          description:
+            "Optional X username. Shown on the listing. Not a login and not verified.",
+        },
       },
       required: ["shareUrl", "category"],
     },
@@ -867,19 +896,19 @@ Use when the user wants this bot (or another public Grok Bot they authored) list
 
 1. Get the public share URL (\`https://x.ai/bot/…\`). If you do not have it, ask the user to copy it from the bot share dialog. Never invent a share URL.
 2. Pick a job category: ${CATEGORIES.join(", ")}. Ask if unclear.
-3. Prefer MCP: call \`list_bot\` on ${absUrl(MCP_PATH)} with \`shareUrl\` and \`category\`.
+3. Prefer MCP: call \`list_bot\` on ${absUrl(MCP_PATH)} with \`shareUrl\`, \`category\`, and optional \`xHandle\` (an X username, not a login).
 4. Otherwise POST JSON to ${absUrl("/api/bots")}
 
 \`\`\`http
 POST ${absUrl("/api/bots")}
 Content-Type: application/json
 
-{"shareUrl":"https://x.ai/bot/…","category":"Work"}
+{"shareUrl":"https://x.ai/bot/…","category":"Work","xHandle":"optional"}
 \`\`\`
 
-5. Reply with the \`listingUrl\` from the response. If the bot is already listed (HTTP 409), give them that \`listingUrl\`.
+5. Reply with the \`listingUrl\` from the response. If the bot is already listed (HTTP 409), give them that \`listingUrl\`. If you sent \`xHandle\` and the listing had none, a 200 means the handle was linked.
 
-Do not send the user to the HTML form. Listing is free and needs no Grokdex account.
+Do not send the user to the HTML form. Listing is free and needs no Grokdex account. Do not claim Grokdex verified the X account.
 `,
   },
   "add-a-grok-bot": {

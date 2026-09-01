@@ -4,7 +4,7 @@ import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
 import { OpenSlots } from "@/components/open-slots";
-import { formatAdds } from "@/lib/bot-url";
+import { formatAdds, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { cn, motionDelay } from "@/lib/utils";
@@ -116,6 +116,19 @@ export function BotRankRow({
             </>
           ) : null}
           {template.category}
+          {template.xHandle ? (
+            <>
+              <span aria-hidden="true"> · </span>
+              <a
+                href={xHandleUrl(template.xHandle)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative z-10 pointer-events-auto hover:text-foreground"
+              >
+                {xHandleLabel(template.xHandle)}
+              </a>
+            </>
+          ) : null}
           <span aria-hidden="true"> · </span>
           {formatAdds(template.adds)}
         </span>

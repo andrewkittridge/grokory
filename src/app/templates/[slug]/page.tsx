@@ -15,7 +15,7 @@ import { LockTitle } from "@/components/lock-title";
 import { JsonLd } from "@/components/json-ld";
 import { ListedBanner } from "@/components/listed-banner";
 import { ListedConversion } from "@/components/listed-conversion";
-import { AuthorLink, WhatTravels } from "@/components/listing-trust";
+import { AuthorByline, WhatTravels } from "@/components/listing-trust";
 import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
@@ -70,11 +70,17 @@ export default async function TemplateDetailPage({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ listed?: string; featured?: string; boosted?: string }>;
+  searchParams: Promise<{
+    listed?: string;
+    linked?: string;
+    featured?: string;
+    boosted?: string;
+  }>;
 }) {
   const { slug } = await params;
   const paramsSearch = await searchParams;
   const listed = paramsSearch.listed === "1";
+  const linked = paramsSearch.linked === "1";
   const justFeatured = paramsSearch.featured === "1";
   const justBoosted = paramsSearch.boosted === "1";
   const voterId = await readVoterId();
@@ -92,12 +98,15 @@ export default async function TemplateDetailPage({
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <JsonLd data={softwareJson(template, listingHref)} />
       <ListedConversion listed={listed} />
-      {listed ? (
+      {listed || linked ? (
         <div className="motion-enter mb-10" style={motionDelay(0)}>
           <ListedBanner
             title={template.title}
             listingUrl={listingHref}
             featureHref={payments ? "#feature" : undefined}
+            shareUrl={template.botUrl}
+            xHandle={template.xHandle}
+            justLinked={linked}
           />
         </div>
       ) : null}
@@ -205,13 +214,11 @@ export default async function TemplateDetailPage({
                   ))}
                 </div>
                 <LockTitle className="mt-5">{template.title}</LockTitle>
-                <p className="mt-2 text-muted-foreground">
-                  by{" "}
-                  <AuthorLink
-                    name={template.authorName}
-                    className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
-                  />
-                </p>
+                <AuthorByline
+                  name={template.authorName}
+                  xHandle={template.xHandle}
+                  className="mt-2 text-muted-foreground"
+                />
                 <p className="mt-5 max-w-2xl text-base leading-7 text-body">
                   {template.description}
                 </p>

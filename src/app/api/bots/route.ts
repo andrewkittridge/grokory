@@ -43,6 +43,7 @@ export async function POST(request: Request) {
         : str(tags),
       note: str(payload.note),
       submittedBy: str(payload.submittedBy),
+      xHandle: str(payload.xHandle),
     },
     request
   );
