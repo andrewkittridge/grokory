@@ -616,10 +616,10 @@ body {
 
 .grok-bot-eyes {
   transform-box: view-box;
-  transform-origin: 100px 96px;
+  transform-origin: 160px 72px;
   transform: translate(
-    calc(var(--gaze-x) * 16px),
-    calc(var(--gaze-y) * 14px)
+    calc(var(--gaze-x) * 10px),
+    calc(var(--gaze-y) * 9px)
   );
   transition: transform 220ms var(--motion-ease);
 }
@@ -642,10 +642,10 @@ body {
   .group\/bot:hover .grok-bot-eyes,
   .group\/bot:focus-visible .grok-bot-eyes {
     transform: translate(
-        calc(var(--gaze-x) * 16px),
-        calc(var(--gaze-y) * 14px)
+        calc(var(--gaze-x) * 10px),
+        calc(var(--gaze-y) * 9px)
       )
-      scale(1.06);
+      scale(1.04);
   }
 }
 
