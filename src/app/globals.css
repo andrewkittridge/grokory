@@ -244,6 +244,145 @@ body {
   }
 }
 
+@keyframes bot-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-11px);
+  }
+}
+
+@keyframes bot-blink {
+  0%,
+  84%,
+  93%,
+  100% {
+    transform: scaleY(0.1);
+  }
+  87%,
+  90% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes bot-hop {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  16% {
+    transform: translateY(7px) scale(1.1, 0.84);
+  }
+  44% {
+    transform: translateY(-30px) scale(0.92, 1.1);
+  }
+  68% {
+    transform: translateY(4px) scale(1.08, 0.9);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+
+@keyframes bot-shadow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.32;
+  }
+  16% {
+    transform: scale(1.18, 1);
+    opacity: 0.42;
+  }
+  44% {
+    transform: scale(0.5, 0.7);
+    opacity: 0.1;
+  }
+  68% {
+    transform: scale(1.12, 1);
+    opacity: 0.38;
+  }
+}
+
+@keyframes bot-hum-scan {
+  0%,
+  78% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  96% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(152px);
+    opacity: 0;
+  }
+}
+
+@keyframes bot-enter-scan {
+  from {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(152px);
+    opacity: 0;
+  }
+}
+
+@keyframes bot-spark-a {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  24% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-28px, -46px) scale(0.25);
+  }
+}
+
+@keyframes bot-spark-b {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  24% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(32px, -40px) scale(0.2);
+  }
+}
+
+@keyframes bot-spark-c {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  28% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(4px, -58px) scale(0.18);
+  }
+}
+
 @keyframes field-in {
   from {
     opacity: 0;
@@ -516,6 +655,141 @@ body {
 
 .brand-mark-spin {
   animation: brand-spin 4.5s linear infinite;
+}
+
+.grok-bot {
+  --gaze-x: 0;
+  --gaze-y: 0.08;
+  --yaw: 0;
+}
+
+.grok-bot-ground {
+  position: absolute;
+  left: 50%;
+  bottom: 5.5%;
+  z-index: 0;
+  width: 38%;
+  height: 3.4%;
+  pointer-events: none;
+  border-radius: 999px;
+  background: #000;
+  opacity: 0.32;
+  transform: translateX(-50%);
+  transform-origin: center;
+}
+
+.grok-bot-motion {
+  position: relative;
+  z-index: 1;
+  transform-origin: 50% 88%;
+  animation: bot-bob 3.6s ease-in-out infinite;
+}
+
+.grok-bot-yaw {
+  transform-box: view-box;
+  transform-origin: 100px 118px;
+  transform: rotate(calc(var(--yaw) * 1deg));
+  transition: transform 280ms var(--motion-ease);
+}
+
+.grok-bot-inner {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-breathe 3.6s ease-in-out infinite;
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grok-bot-core,
+.grok-bot-core-halo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brand-core 2.4s ease-out infinite;
+}
+
+.grok-bot-eyes {
+  transform-box: view-box;
+  transform-origin: 100px 98px;
+  transition: transform 280ms var(--motion-ease);
+}
+
+.grok-bot-pupils {
+  transform: translate(
+    calc(var(--gaze-x) * 7.5px),
+    calc(var(--gaze-y) * 6.5px)
+  );
+  transition: transform 180ms var(--motion-ease);
+}
+
+.grok-bot-lid {
+  transform-box: fill-box;
+  transform-origin: center top;
+  transform: scaleY(0.1);
+  animation: bot-blink 4.4s ease-in-out 0.8s infinite;
+}
+
+.grok-bot-scan {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 24px 110px;
+}
+
+.grok-bot-scan-enter {
+  animation: bot-enter-scan var(--motion-acquire) 0.15s both;
+}
+
+.grok-bot-scan-hum {
+  animation: bot-hum-scan 8.4s var(--motion-ease) 2.2s infinite;
+}
+
+.grok-bot-spark {
+  opacity: 0;
+  transform-box: view-box;
+  transform-origin: 100px 138px;
+}
+
+.grok-bot-hopping .grok-bot-motion {
+  animation: bot-hop 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.grok-bot-hopping .grok-bot-ground {
+  animation: bot-shadow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.grok-bot-hopping .grok-bot-spark-a {
+  animation: bot-spark-a 0.7s var(--motion-ease) both;
+}
+
+.grok-bot-hopping .grok-bot-spark-b {
+  animation: bot-spark-b 0.7s var(--motion-ease) both;
+}
+
+.grok-bot-hopping .grok-bot-spark-c {
+  animation: bot-spark-c 0.7s var(--motion-ease) both;
+}
+
+@media (hover: hover) {
+  .group\/bot:hover .grok-bot-inner,
+  .group\/bot:focus-visible .grok-bot-inner {
+    transform: rotate(45deg);
+  }
+
+  .group\/bot:hover .grok-bot-core,
+  .group\/bot:focus-visible .grok-bot-core {
+    opacity: 1;
+    animation: none;
+    filter: brightness(1.35);
+  }
+
+  .group\/bot:hover .grok-bot-eyes,
+  .group\/bot:focus-visible .grok-bot-eyes {
+    transform: scale(1.07);
+  }
+
+  .group\/bot:hover .grok-bot-lid,
+  .group\/bot:focus-visible .grok-bot-lid {
+    animation: none;
+    transform: scaleY(0.04);
+  }
 }
 
 .rank-row {
@@ -868,6 +1142,18 @@ body {
   .brand-mark-core,
   .brand-mark-drift,
   .brand-mark-spin,
+  .grok-bot-inner,
+  .grok-bot-core,
+  .grok-bot-core-halo,
+  .grok-bot-lid,
+  .grok-bot-scan-enter,
+  .grok-bot-scan-hum,
+  .grok-bot-motion,
+  .grok-bot-hopping .grok-bot-motion,
+  .grok-bot-hopping .grok-bot-ground,
+  .grok-bot-hopping .grok-bot-spark-a,
+  .grok-bot-hopping .grok-bot-spark-b,
+  .grok-bot-hopping .grok-bot-spark-c,
   .rank-row-leader::before,
   .empty-scan::after,
   .empty-scan-bar,
@@ -890,6 +1176,12 @@ body {
   .brand-mark-core,
   .brand-mark-drift,
   .brand-mark-spin,
+  .grok-bot-yaw,
+  .grok-bot-pupils,
+  .grok-bot-eyes,
+  .grok-bot-inner,
+  .grok-bot-motion,
+  .grok-bot-ground,
   .btn-shine::after,
   .rank-row::after {
     transition: none;
@@ -903,6 +1195,15 @@ body {
 
   .brand-mark-inner {
     opacity: 0.35;
+  }
+
+  .grok-bot-lid {
+    transform: scaleY(0.1);
+  }
+
+  .grok-bot-scan,
+  .grok-bot-spark {
+    opacity: 0;
   }
 
   .empty-scan::after,
@@ -934,6 +1235,12 @@ body {
 
   .group\/mark:hover .brand-mark-inner,
   .group\/mark:focus-visible .brand-mark-inner,
+  .group\/bot:hover .grok-bot-inner,
+  .group\/bot:focus-visible .grok-bot-inner,
+  .group\/bot:hover .grok-bot-lid,
+  .group\/bot:focus-visible .grok-bot-lid,
+  .group\/bot:hover .grok-bot-eyes,
+  .group\/bot:focus-visible .grok-bot-eyes,
   .btn-shine:hover::after {
     animation: none;
     transform: none;

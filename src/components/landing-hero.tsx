@@ -4,6 +4,7 @@ import {
   BotRankList,
   BotRankRowSkeleton,
 } from "@/components/bot-rank-row";
+import { GrokBot } from "@/components/grok-bot";
 import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
@@ -14,45 +15,61 @@ export function LandingHero({ children }: { children: ReactNode }) {
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <p
-          className="motion-enter inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-          style={motionDelay(0)}
-        >
-          <span className="inline-flex items-center gap-2.5">
-            <span className="live-dot" aria-hidden="true" />
-            Public Grok Bots
-          </span>
-        </p>
-        <LockTitle display="hero" delay={1} className="mt-6 max-w-4xl text-balance">
-          A ranked board of public Grok Bots.
-        </LockTitle>
-        <p
-          className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
-          style={motionDelay(2)}
-        >
-          Grok Bots are custom agents on x.ai. Grokdex ranks the public ones.
-          Upvote the useful ones, then Add — it copies the template onto your
-          Grok account, not the author’s computer.
-        </p>
-        <div
-          className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
-          style={motionDelay(3)}
-        >
-          <Button
-            size="lg"
-            nativeButton={false}
-            render={<Link href="/templates" />}
+        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-start sm:gap-6 md:grid-cols-[minmax(0,1fr)_14rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-12">
+          <div className="min-w-0">
+            <div className="max-sm:pr-[7.6rem]">
+              <p
+                className="motion-enter inline-flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
+                style={motionDelay(0)}
+              >
+                <span className="inline-flex items-center gap-2.5">
+                  <span className="live-dot" aria-hidden="true" />
+                  Public Grok Bots
+                </span>
+              </p>
+              <LockTitle
+                display="hero"
+                delay={1}
+                className="mt-6 max-w-4xl text-balance"
+              >
+                A ranked board of public Grok Bots.
+              </LockTitle>
+            </div>
+            <p
+              className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
+              style={motionDelay(2)}
+            >
+              Grok Bots are custom agents on x.ai. Grokdex ranks the public
+              ones. Upvote the useful ones, then Add — it copies the template
+              onto your Grok account, not the author’s computer.
+            </p>
+            <div
+              className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
+              style={motionDelay(3)}
+            >
+              <Button
+                size="lg"
+                nativeButton={false}
+                render={<Link href="/templates" />}
+              >
+                Browse bots
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href="/upload" />}
+              >
+                Share a bot
+              </Button>
+            </div>
+          </div>
+          <div
+            className="motion-enter absolute top-5 right-0 w-[7rem] sm:relative sm:top-auto sm:right-auto sm:mt-6 sm:w-full md:mt-0"
+            style={motionDelay(1)}
           >
-            Browse bots
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            nativeButton={false}
-            render={<Link href="/upload" />}
-          >
-            Share a bot
-          </Button>
+            <GrokBot />
+          </div>
         </div>
         {children}
       </div>
