@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 function hrefFor(params: {
   q?: string;
   category?: string;
+  tag?: string;
   sort?: string;
 }) {
   const search = new URLSearchParams();
@@ -15,6 +16,7 @@ function hrefFor(params: {
   if (params.category && params.category !== "all") {
     search.set("category", params.category);
   }
+  if (params.tag) search.set("tag", params.tag);
   if (params.sort && params.sort !== "hot") {
     search.set("sort", params.sort);
   }
@@ -25,11 +27,13 @@ function hrefFor(params: {
 export function BotFilters({
   q,
   category,
+  tag,
   sort,
   jobs,
 }: {
   q: string;
   category: string;
+  tag?: string;
   sort: string;
   jobs: Category[];
 }) {
@@ -37,6 +41,7 @@ export function BotFilters({
     <div className="space-y-5">
       <form action="/templates" className="flex flex-col gap-2 sm:flex-row">
         <input type="hidden" name="category" value={category} />
+        {tag ? <input type="hidden" name="tag" value={tag} /> : null}
         <input type="hidden" name="sort" value={sort} />
         <label className="sr-only" htmlFor="q">
           Search bots
@@ -60,7 +65,7 @@ export function BotFilters({
         ].map((item) => (
           <FilterTab
             key={item.value}
-            href={hrefFor({ q, category, sort: item.value })}
+            href={hrefFor({ q, category, tag, sort: item.value })}
             active={(sort || "hot") === item.value}
           >
             {item.label}
@@ -70,7 +75,7 @@ export function BotFilters({
       {jobs.length > 0 ? (
         <p className="text-sm leading-7 text-muted-foreground">
           <FilterText
-            href={hrefFor({ q, sort, category: "all" })}
+            href={hrefFor({ q, sort, tag, category: "all" })}
             active={!category || category === "all"}
           >
             All jobs
@@ -81,13 +86,27 @@ export function BotFilters({
                 {" · "}
               </span>
               <FilterText
-                href={hrefFor({ q, sort, category: item })}
+                href={hrefFor({ q, sort, tag, category: item })}
                 active={category === item}
               >
                 {item}
               </FilterText>
             </span>
           ))}
+        </p>
+      ) : null}
+      {tag ? (
+        <p className="text-sm leading-7 text-muted-foreground">
+          <span className="font-mono text-[11px] tracking-[0.18em] uppercase">
+            Tag
+          </span>{" "}
+          <span className="text-foreground">{tag}</span>
+          <span className="text-border" aria-hidden="true">
+            {" · "}
+          </span>
+          <FilterText href={hrefFor({ q, sort, category })} active={false}>
+            Clear
+          </FilterText>
         </p>
       ) : null}
     </div>

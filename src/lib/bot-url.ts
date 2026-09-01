@@ -1,8 +1,11 @@
+import { REPORT_EMAIL } from "./site";
 import { CATEGORIES, type Category } from "./types";
 
 const BOT_PATH =
-  /^(?:https?:\/\/)?(?:www\.)?x\.ai\/bot\/([A-Za-z0-9_-]{8,64})\/?(?:\?.*)?$/i;
+  /^(?:https?:\/\/)?(?:www\.)?x\.ai\/bot\/([A-Za-z0-9_-]{8,64})(?:[/?#].*)?$/i;
 const BARE_ID = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9_-]{12,64}$/;
+
+export const ALREADY_LISTED = "That Grok Bot is already listed.";
 
 export function parseShareUrl(
   input: string
@@ -48,4 +51,58 @@ export function parseTags(raw: string) {
 export function formatCount(n: number) {
   if (n < 1000) return String(n);
   return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, "")}k`;
+}
+
+export function formatAdds(n: number) {
+  return n === 1 ? "1 add" : `${formatCount(n)} adds`;
+}
+
+export function listingPostText(title: string, url: string) {
+  return `${title} — a public Grok Bot on Grokdex ${url}`;
+}
+
+export function authorSlug(name: string) {
+  return (
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 48) || "unknown"
+  );
+}
+
+export function formatCheckedAt(iso?: string) {
+  if (!iso) return "Not checked yet";
+  const then = Date.parse(iso);
+  if (!Number.isFinite(then)) return "Not checked yet";
+  const minutes = Math.max(0, Math.round((Date.now() - then) / 60000));
+  if (minutes < 1) return "Checked just now";
+  if (minutes < 60) return `Checked ${minutes}m ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 36) return `Checked ${hours}h ago`;
+  const days = Math.round(hours / 24);
+  return `Checked ${days}d ago`;
+}
+
+export function isGoneError(error: string) {
+  return /404|does not have a bot|taken down/i.test(error);
+}
+
+export function reportMailto(input: {
+  title: string;
+  slug: string;
+  botUrl: string;
+  listingUrl: string;
+}) {
+  const subject = `Report listing: ${input.title}`;
+  const body = [
+    "Why this listing should come down:",
+    "",
+    "",
+    `Title: ${input.title}`,
+    `Listing: ${input.listingUrl}`,
+    `Share link: ${input.botUrl}`,
+    `Slug: ${input.slug}`,
+  ].join("\n");
+  return `mailto:${REPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }

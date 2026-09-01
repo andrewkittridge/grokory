@@ -48,9 +48,19 @@ export default function PrivacyPage() {
           Add to Grok Bot, we increment a counter on that listing.
         </li>
         <li>
-          <strong className="text-foreground">Abuse checks.</strong> Share and
-          lookup on /upload may run Cloudflare Turnstile so automated posting is
-          harder.
+          <strong className="text-foreground">Abuse checks.</strong> Publish on
+          /upload may run Cloudflare Turnstile so automated posting is harder.
+        </li>
+        <li>
+          <strong className="text-foreground">Link checks.</strong> We
+          periodically fetch public x.ai preview pages to see whether a share
+          link still exists, and we store last-checked time, live/down, and any
+          skill or routine names the preview exposes.
+        </li>
+        <li>
+          <strong className="text-foreground">Reports.</strong> If you email a
+          listing report, we receive the listing URL and whatever you write in
+          that message.
         </li>
         <li>
           <strong className="text-foreground">Logs.</strong> Standard request

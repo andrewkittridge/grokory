@@ -1,6 +1,7 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { SEED_TEMPLATES, SEED_VOTES } from "@/data/seed";
+import { ALREADY_LISTED } from "./bot-url";
 import { getDatabaseUrl, sql } from "./db";
 import type {
   BotTemplate,
@@ -37,6 +38,19 @@ type TemplateRow = {
   featured: boolean;
   created_at: string | Date;
   adds: number;
+  live?: boolean | null;
+  last_checked_at?: string | Date | null;
+  skills?: string[] | null;
+  routines?: string[] | null;
+};
+
+export type ListingCheckUpdate = {
+  id: string;
+  live: boolean;
+  lastCheckedAt: string;
+  ogImage?: string;
+  skills?: string[];
+  routines?: string[];
 };
 
 let queue: Promise<unknown> = Promise.resolve();
@@ -76,10 +90,20 @@ function toListed(
     }
   }
   return templates.map((template) => ({
-    ...template,
+    ...normalizeTemplate(template),
     score: scores.get(template.id) ?? 0,
     userVote: mine.get(template.id) ?? 0,
   }));
+}
+
+function normalizeTemplate(template: BotTemplate): BotTemplate {
+  return {
+    ...template,
+    live: template.live !== false,
+    lastCheckedAt: template.lastCheckedAt,
+    skills: template.skills ?? [],
+    routines: template.routines ?? [],
+  };
 }
 
 function mergeSeed(store: StoreFile): StoreFile {
@@ -141,6 +165,15 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
         ? row.created_at.toISOString()
         : new Date(row.created_at).toISOString(),
     adds: Number(row.adds) || 0,
+    live: row.live !== false,
+    lastCheckedAt:
+      row.last_checked_at instanceof Date
+        ? row.last_checked_at.toISOString()
+        : row.last_checked_at
+          ? new Date(row.last_checked_at).toISOString()
+          : undefined,
+    skills: row.skills ?? [],
+    routines: row.routines ?? [],
   };
 }
 
@@ -167,6 +200,10 @@ async function ensureNeon() {
         created_at timestamptz NOT NULL,
         adds integer NOT NULL DEFAULT 0
       )`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS live boolean NOT NULL DEFAULT true`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS last_checked_at timestamptz`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS skills text[] NOT NULL DEFAULT '{}'`;
+      await db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS routines text[] NOT NULL DEFAULT '{}'`;
       await db`CREATE TABLE IF NOT EXISTS votes (
         voter_id text NOT NULL,
         template_id text NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
@@ -226,10 +263,17 @@ async function ensureNeon() {
   await schemaReady;
 }
 
-async function neonList(voterId?: string): Promise<ListedTemplate[]> {
+async function neonList(
+  voterId?: string,
+  includeDown = false
+): Promise<ListedTemplate[]> {
   await ensureNeon();
   const db = sql();
-  const templates = (await db`SELECT * FROM templates`) as TemplateRow[];
+  const templates = (
+    includeDown
+      ? await db`SELECT * FROM templates`
+      : await db`SELECT * FROM templates WHERE live IS NOT FALSE`
+  ) as TemplateRow[];
   const votes = (await db`SELECT voter_id, template_id, value FROM votes`) as {
     voter_id: string;
     template_id: string;
@@ -273,25 +317,32 @@ async function writeStore(store: StoreFile): Promise<boolean> {
   }
 }
 
-async function fileList(voterId?: string) {
+async function fileList(voterId?: string, includeDown = false) {
   return withLock(async () => {
     const store = await readStore();
-    return toListed(store.templates, store.votes, voterId);
+    const templates = includeDown
+      ? store.templates
+      : store.templates.filter((template) => template.live !== false);
+    return toListed(templates, store.votes, voterId);
   });
 }
 
-export async function listTemplates(voterId?: string) {
-  if (getDatabaseUrl()) return neonList(voterId);
-  return fileList(voterId);
+export async function listTemplates(
+  voterId?: string,
+  options: { includeDown?: boolean } = {}
+) {
+  const includeDown = options.includeDown === true;
+  if (getDatabaseUrl()) return neonList(voterId, includeDown);
+  return fileList(voterId, includeDown);
 }
 
 export async function getTemplate(slug: string, voterId?: string) {
-  const templates = await listTemplates(voterId);
+  const templates = await listTemplates(voterId, { includeDown: true });
   return templates.find((template) => template.slug === slug) ?? null;
 }
 
 export async function findByBotId(botId: string, voterId?: string) {
-  const templates = await listTemplates(voterId);
+  const templates = await listTemplates(voterId, { includeDown: true });
   return templates.find((template) => template.botId === botId) ?? null;
 }
 
@@ -310,7 +361,7 @@ export async function addTemplate(
     if (duplicate[0]) {
       return {
         ok: false as const,
-        error: "That Grok Bot is already in the gallery.",
+        error: ALREADY_LISTED,
         slug: duplicate[0].slug,
       };
     }
@@ -323,16 +374,18 @@ export async function addTemplate(
       slug = `${template.slug}-${n}`;
       n += 1;
     }
-    const saved = { ...template, slug };
+    const saved = normalizeTemplate({ ...template, slug });
     await db`
       INSERT INTO templates (
         id, slug, bot_id, bot_url, title, author_name, summary, description,
-        og_image, category, tags, note, submitted_by, origin, featured, created_at, adds
+        og_image, category, tags, note, submitted_by, origin, featured, created_at, adds,
+        live, last_checked_at, skills, routines
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
         ${saved.authorName}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
         ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
-        ${saved.origin}, ${saved.featured}, ${saved.createdAt}, ${saved.adds}
+        ${saved.origin}, ${saved.featured}, ${saved.createdAt}, ${saved.adds},
+        ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
       )
     `;
     return {
@@ -347,7 +400,7 @@ export async function addTemplate(
     if (duplicate) {
       return {
         ok: false as const,
-        error: "That Grok Bot is already in the gallery.",
+        error: ALREADY_LISTED,
         slug: duplicate.slug,
       };
     }
@@ -357,7 +410,7 @@ export async function addTemplate(
       slug = `${template.slug}-${n}`;
       n += 1;
     }
-    const saved = { ...template, slug };
+    const saved = normalizeTemplate({ ...template, slug });
     store.templates.push(saved);
     const written = await writeStore(store);
     if (!written) {
@@ -443,5 +496,71 @@ export async function setVote(
     await writeStore(store);
     const listed = toListed(store.templates, store.votes, voterId);
     return listed.find((template) => template.id === templateId) ?? null;
+  });
+}
+
+const STALE_MS = 12 * 60 * 60 * 1000;
+
+function isDue(template: BotTemplate) {
+  if (!template.lastCheckedAt) return true;
+  const then = Date.parse(template.lastCheckedAt);
+  if (!Number.isFinite(then)) return true;
+  return Date.now() - then >= STALE_MS;
+}
+
+export async function listDueForCheck(limit = 15): Promise<BotTemplate[]> {
+  const listed = await listTemplates(undefined, { includeDown: true });
+  return listed
+    .filter(isDue)
+    .sort((a, b) => {
+      const aTime = a.lastCheckedAt ? Date.parse(a.lastCheckedAt) : 0;
+      const bTime = b.lastCheckedAt ? Date.parse(b.lastCheckedAt) : 0;
+      return aTime - bTime;
+    })
+    .slice(0, limit);
+}
+
+export async function applyListingCheck(update: ListingCheckUpdate) {
+  if (getDatabaseUrl()) {
+    await ensureNeon();
+    const db = sql();
+    const ogImage = update.ogImage ?? null;
+    if (update.skills && update.routines) {
+      await db`
+        UPDATE templates
+        SET
+          live = ${update.live},
+          last_checked_at = ${update.lastCheckedAt},
+          og_image = COALESCE(${ogImage}, og_image),
+          skills = ${update.skills},
+          routines = ${update.routines}
+        WHERE id = ${update.id}
+      `;
+      return;
+    }
+    await db`
+      UPDATE templates
+      SET live = ${update.live}, last_checked_at = ${update.lastCheckedAt}
+      WHERE id = ${update.id}
+    `;
+    return;
+  }
+
+  return withLock(async () => {
+    const store = await readStore();
+    const index = store.templates.findIndex(
+      (template) => template.id === update.id
+    );
+    if (index === -1) return;
+    const current = normalizeTemplate(store.templates[index]);
+    store.templates[index] = {
+      ...current,
+      live: update.live,
+      lastCheckedAt: update.lastCheckedAt,
+      ogImage: update.ogImage ?? current.ogImage,
+      skills: update.skills ?? current.skills,
+      routines: update.routines ?? current.routines,
+    };
+    await writeStore(store);
   });
 }

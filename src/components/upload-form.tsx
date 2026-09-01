@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { createListing, lookupShareLink } from "@/lib/actions";
-import { CATEGORIES } from "@/lib/types";
+import { parseShareUrl } from "@/lib/bot-url";
+import { CATEGORIES, type BotPreview } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,36 +21,58 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
     {}
   );
   const [shareUrl, setShareUrl] = useState("");
-  const [hideLookupError, setHideLookupError] = useState(false);
-  const [title, setTitle] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [description, setDescription] = useState("");
+  const [editFor, setEditFor] = useState<string | null>(null);
   const [turnstileReset, setTurnstileReset] = useState(0);
+  const lastLookup = useRef("");
 
-  const preview = lookupState.preview ?? null;
+  const parsedShare = parseShareUrl(shareUrl);
+  const preview =
+    lookupState.preview && parsedShare?.botId === lookupState.preview.botId
+      ? lookupState.preview
+      : null;
+  const lookupMatches =
+    !!lookupState.input &&
+    (shareUrl.trim() === lookupState.input ||
+      parsedShare?.botUrl === lookupState.input);
   const lookupError =
-    hideLookupError || !lookupState.error ? null : lookupState.error;
+    lookupPending || !lookupMatches ? null : lookupState.error ?? null;
+  const showIdentityFields = !preview || editFor === preview.botId;
 
   useEffect(() => {
-    if (!lookupState.preview) return;
-    setTitle(lookupState.preview.title);
-    setAuthorName(lookupState.preview.authorName);
-    setDescription(lookupState.preview.description);
-  }, [lookupState.preview]);
+    const parsed = parseShareUrl(shareUrl);
+    if (!parsed) return;
+    const timer = window.setTimeout(() => {
+      if (lastLookup.current === parsed.botId) return;
+      lastLookup.current = parsed.botId;
+      const formData = new FormData();
+      formData.set("shareUrl", parsed.botUrl);
+      lookupAction(formData);
+    }, 400);
+    return () => window.clearTimeout(timer);
+  }, [shareUrl, lookupAction]);
 
-  useEffect(() => {
-    if (!siteKey) return;
-    if (!lookupState.error && !lookupState.preview && !lookupState.soft) return;
-    setTurnstileReset((value) => value + 1);
-  }, [lookupState, siteKey]);
-
-  useEffect(() => {
-    if (!siteKey || !state.error) return;
-    setTurnstileReset((value) => value + 1);
-  }, [state, siteKey]);
+  function runLookup(raw: string, force = false) {
+    const parsed = parseShareUrl(raw);
+    const formData = new FormData();
+    formData.set("shareUrl", parsed?.botUrl ?? raw);
+    if (parsed) {
+      if (!force && lastLookup.current === parsed.botId) return;
+      lastLookup.current = parsed.botId;
+    } else {
+      lastLookup.current = "";
+    }
+    lookupAction(formData);
+  }
 
   return (
-    <form action={action} noValidate className="space-y-6">
+    <form
+      action={(formData) => {
+        setTurnstileReset((value) => value + 1);
+        return action(formData);
+      }}
+      noValidate
+      className="space-y-6"
+    >
       <div className="space-y-2">
         <Label htmlFor="shareUrl">Grok Bot share link</Label>
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -57,22 +80,20 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
             id="shareUrl"
             name="shareUrl"
             value={shareUrl}
-            onChange={(event) => {
-              setShareUrl(event.target.value);
-              setHideLookupError(true);
+            onChange={(event) => setShareUrl(event.target.value)}
+            onBlur={() => {
+              if (parseShareUrl(shareUrl)) runLookup(shareUrl);
             }}
             placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
             className="h-10 font-mono"
             autoComplete="off"
           />
           <Button
-            type="submit"
-            formAction={lookupAction}
-            formNoValidate
+            type="button"
             variant="outline"
             className="h-10 shrink-0"
             disabled={lookupPending}
-            onClick={() => setHideLookupError(false)}
+            onClick={() => runLookup(shareUrl, true)}
           >
             {lookupPending ? "Looking up…" : "Look up"}
           </Button>
@@ -81,11 +102,6 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
           In Grok Bot, open the bot → copy its public share link. That URL is the
           template.
         </p>
-        {siteKey ? (
-          <div className="pt-2">
-            <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
-          </div>
-        ) : null}
       </div>
 
       {lookupError ? (
@@ -113,10 +129,129 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
             <p className="text-sm text-muted-foreground">
               by {preview.authorName}
             </p>
+            <button
+              type="button"
+              className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+              onClick={() =>
+                setEditFor((id) => (id === preview.botId ? null : preview.botId))
+              }
+            >
+              {editFor === preview.botId
+                ? "Hide details"
+                : "Edit name and description"}
+            </button>
           </div>
         </Frame>
       ) : null}
 
+      <IdentityFields
+        key={preview?.botId ?? "none"}
+        preview={preview}
+        open={showIdentityFields}
+      />
+
+      <div className="space-y-2">
+        <Label htmlFor="category">Job category</Label>
+        <select
+          id="category"
+          name="category"
+          defaultValue="Work"
+          className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+        >
+          {CATEGORIES.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <details className="border border-border">
+        <summary className="cursor-pointer px-3 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
+          Tags, note, your name
+        </summary>
+        <div className="space-y-4 border-t border-border px-3 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags</Label>
+            <Input
+              id="tags"
+              name="tags"
+              placeholder="chief-of-staff, routing"
+              className="h-10"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="note">Why people should add it (optional)</Label>
+            <Textarea
+              id="note"
+              name="note"
+              rows={3}
+              placeholder="Best as the top of a solo-founder roster. Let it spawn specialists instead of doing the work itself."
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="submittedBy">Your name on this listing (optional)</Label>
+            <Input
+              id="submittedBy"
+              name="submittedBy"
+              placeholder="Anonymous"
+              className="h-10"
+            />
+          </div>
+        </div>
+      </details>
+
+      {state.error ? (
+        <p
+          role="alert"
+          className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+        >
+          {state.error}
+          {state.slug ? (
+            <>
+              {" "}
+              <a className="underline" href={`/templates/${state.slug}`}>
+                Open the existing listing
+              </a>
+            </>
+          ) : null}
+        </p>
+      ) : null}
+
+      {siteKey ? (
+        <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+      ) : null}
+
+      <Button type="submit" disabled={pending} className="h-10 w-full sm:w-auto">
+        {pending ? "Publishing…" : "Publish to Grokdex"}
+      </Button>
+    </form>
+  );
+}
+
+function IdentityFields({
+  preview,
+  open,
+}: {
+  preview: BotPreview | null;
+  open: boolean;
+}) {
+  const [title, setTitle] = useState(preview?.title ?? "");
+  const [authorName, setAuthorName] = useState(preview?.authorName ?? "");
+  const [description, setDescription] = useState(preview?.description ?? "");
+
+  if (!open) {
+    return (
+      <>
+        <input type="hidden" name="title" value={title} />
+        <input type="hidden" name="authorName" value={authorName} />
+        <input type="hidden" name="description" value={description} />
+      </>
+    );
+  }
+
+  return (
+    <>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="title">Bot name</Label>
@@ -153,74 +288,6 @@ export function UploadForm({ siteKey }: { siteKey?: string }) {
           placeholder="A chief of agents for a solo founder…"
         />
       </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="category">Job category</Label>
-          <select
-            id="category"
-            name="category"
-            defaultValue="Work"
-            className="h-10 w-full rounded-none border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-          >
-            {CATEGORIES.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="tags">Tags</Label>
-          <Input
-            id="tags"
-            name="tags"
-            placeholder="chief-of-staff, routing"
-            className="h-10"
-          />
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="note">Why people should add it (optional)</Label>
-        <Textarea
-          id="note"
-          name="note"
-          rows={3}
-          placeholder="Best as the top of a solo-founder roster. Let it spawn specialists instead of doing the work itself."
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="submittedBy">Your name on this listing (optional)</Label>
-        <Input
-          id="submittedBy"
-          name="submittedBy"
-          placeholder="Anonymous"
-          className="h-10"
-        />
-      </div>
-
-      {state.error ? (
-        <p
-          role="alert"
-          className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-        >
-          {state.error}
-          {state.slug ? (
-            <>
-              {" "}
-              <a className="underline" href={`/templates/${state.slug}`}>
-                Open the existing listing
-              </a>
-            </>
-          ) : null}
-        </p>
-      ) : null}
-
-      <Button type="submit" disabled={pending} className="h-10 w-full sm:w-auto">
-        {pending ? "Publishing…" : "Publish to Grokdex"}
-      </Button>
-    </form>
+    </>
   );
 }

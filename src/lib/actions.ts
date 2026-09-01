@@ -9,7 +9,14 @@ import {
   setVote,
 } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
-import { isCategory, parseShareUrl, parseTags, slugify } from "./bot-url";
+import {
+  ALREADY_LISTED,
+  authorSlug as slugifyAuthor,
+  isCategory,
+  parseShareUrl,
+  parseTags,
+  slugify,
+} from "./bot-url";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
 import type { BotPreview, BotTemplate, VoteValue } from "./types";
@@ -23,28 +30,30 @@ export type LookupState = {
   error?: string;
   soft?: boolean;
   preview?: BotPreview;
+  input?: string;
 };
 
 export async function lookupShareLink(
   _prev: LookupState,
   formData: FormData
 ): Promise<LookupState> {
-  const blocked = await verifyTurnstile(formData);
-  if (blocked) return { error: blocked };
   const shareInput = String(formData.get("shareUrl") ?? "");
   if (!shareInput.trim()) {
-    return { error: "Paste a Grok Bot share link first." };
+    return { error: "Paste a Grok Bot share link first.", input: shareInput };
   }
   const parsed = parseShareUrl(shareInput);
   if (!parsed) {
     return {
       error:
         "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN",
+      input: shareInput,
     };
   }
   const result = await fetchBotPreview(parsed.botUrl);
-  if (!result.ok) return { error: result.error, soft: true };
-  return { preview: result.preview };
+  if (!result.ok) {
+    return { error: result.error, soft: true, input: parsed.botUrl };
+  }
+  return { preview: result.preview, input: parsed.botUrl };
 }
 
 export async function createListing(
@@ -67,7 +76,7 @@ export async function createListing(
     const existing = await findByBotId(parsed.botId);
     if (existing) {
       return {
-        error: "That Grok Bot is already listed.",
+        error: ALREADY_LISTED,
         slug: existing.slug,
       };
     }
@@ -126,6 +135,10 @@ export async function createListing(
       featured: false,
       createdAt: new Date().toISOString(),
       adds: 0,
+      live: !(lookedUp.ok === false && lookedUp.gone),
+      lastCheckedAt: new Date().toISOString(),
+      skills: preview?.skills ?? [],
+      routines: preview?.routines ?? [],
     };
 
     const result = await addTemplate(template);
@@ -136,6 +149,8 @@ export async function createListing(
     revalidatePath("/");
     revalidatePath("/templates");
     revalidatePath(`/templates/${slug}`);
+    revalidatePath("/feed.xml");
+    revalidatePath(`/authors/${slugifyAuthor(resolvedAuthor)}`);
   } catch {
     return {
       error: "Could not save this listing. Try again in a moment.",

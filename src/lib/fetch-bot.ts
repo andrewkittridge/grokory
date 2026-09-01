@@ -1,6 +1,9 @@
 import { parseShareUrl } from "./bot-url";
 import type { BotPreview } from "./types";
 
+const PREVIEW_TTL = 60 * 60 * 6;
+const GONE_TTL = 60 * 30;
+
 function decode(value: string) {
   return value
     .replace(/&amp;/g, "&")
@@ -35,9 +38,162 @@ function attr(html: string, tagPattern: RegExp) {
   return match?.[1] ? decode(match[1]) : undefined;
 }
 
+function uniqueLabels(values: string[]) {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const value of values) {
+    const label = value.replace(/\s+/g, " ").trim();
+    const key = label.toLowerCase();
+    if (label.length < 2 || label.length > 80 || seen.has(key)) continue;
+    seen.add(key);
+    out.push(label);
+    if (out.length >= 12) break;
+  }
+  return out;
+}
+
+function extractSectionList(html: string, heading: string) {
+  const headingRe = new RegExp(
+    `<(?:h[1-6]|p|span|div)[^>]*>\\s*${heading}\\s*</(?:h[1-6]|p|span|div)>`,
+    "i"
+  );
+  const headingMatch = html.match(headingRe);
+  if (!headingMatch || headingMatch.index === undefined) return [];
+  const after = html.slice(headingMatch.index + headingMatch[0].length);
+  const end = after.search(/<(?:h[1-6])\b/i);
+  const slice = end >= 0 ? after.slice(0, end) : after.slice(0, 4000);
+  const items = [...slice.matchAll(/<li\b[^>]*>([\s\S]*?)<\/li>/gi)].map(
+    (match) =>
+      decode(match[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim())
+  );
+  return uniqueLabels(items);
+}
+
+export type ParsedBotPage = {
+  gone: boolean;
+  title?: string;
+  authorName?: string;
+  description?: string;
+  ogImage?: string;
+  skills: string[];
+  routines: string[];
+};
+
+export function parseBotHtml(html: string): ParsedBotPage {
+  const ogTitle = metaContent(html, "og:title");
+  const ogDescription = metaContent(html, "og:description");
+  const ogImage = metaContent(html, "og:image");
+  const pageTitle = attr(html, /<h1[^>]*title="([^"]+)"/i);
+  const byline = attr(
+    html,
+    /<p class="text-secondary text-sm">by ([^<]+)<\/p>/i
+  );
+  const fullDescription = attr(
+    html,
+    /<p title="([^"]+)" class="text-secondary mt-3/i
+  );
+
+  const gone =
+    html.includes("Page not found") &&
+    !pageTitle &&
+    !ogTitle?.includes(" by ");
+
+  let title = pageTitle;
+  let authorName = byline;
+  if (!title && ogTitle) {
+    const split = ogTitle.match(/^(.*) by (.+)$/);
+    if (split) {
+      title = split[1];
+      authorName = authorName ?? split[2];
+    } else {
+      title = ogTitle;
+    }
+  }
+
+  const description = fullDescription || ogDescription;
+
+  return {
+    gone,
+    title,
+    authorName,
+    description,
+    ogImage,
+    skills: extractSectionList(html, "Skills"),
+    routines: extractSectionList(html, "Routines"),
+  };
+}
+
+function previewFromParsed(
+  parsed: { botId: string; botUrl: string },
+  page: ParsedBotPage
+): BotPreview {
+  const description =
+    page.description || "A shared Grok Bot template.";
+  const summary =
+    description.length > 180
+      ? `${description.slice(0, 177).trimEnd()}…`
+      : description;
+  return {
+    botId: parsed.botId,
+    botUrl: parsed.botUrl,
+    title: (page.title || "Untitled bot").slice(0, 80),
+    authorName: (page.authorName || "Unknown").slice(0, 60),
+    summary,
+    description: description.slice(0, 2000),
+    ogImage: page.ogImage,
+    skills: page.skills,
+    routines: page.routines,
+  };
+}
+
+type CacheEntry =
+  | { ok: true; preview: BotPreview }
+  | { ok: false; error: string; gone?: boolean };
+
+async function previewCache() {
+  try {
+    const { getCloudflareContext } = await import(
+      "@opennextjs/cloudflare"
+    );
+    const { env } = await getCloudflareContext({ async: true });
+    return env.TEMPLATES;
+  } catch {
+    return undefined;
+  }
+}
+
+async function readCached(botId: string): Promise<CacheEntry | undefined> {
+  const kv = await previewCache();
+  if (!kv) return undefined;
+  try {
+    const raw = await kv.get(`bot-preview:v1:${botId}`, "text");
+    if (!raw) return undefined;
+    return JSON.parse(raw) as CacheEntry;
+  } catch {
+    return undefined;
+  }
+}
+
+async function writeCached(
+  botId: string,
+  entry: CacheEntry,
+  ttl: number
+) {
+  const kv = await previewCache();
+  if (!kv) return;
+  try {
+    await kv.put(`bot-preview:v1:${botId}`, JSON.stringify(entry), {
+      expirationTtl: ttl,
+    });
+  } catch {
+    // Local or missing KV should not fail lookup.
+  }
+}
+
 export async function fetchBotPreview(
-  input: string
-): Promise<{ ok: true; preview: BotPreview } | { ok: false; error: string }> {
+  input: string,
+  options: { skipCache?: boolean } = {}
+): Promise<{ ok: true; preview: BotPreview } | { ok: false; error: string; gone?: boolean }> {
   const parsed = parseShareUrl(input);
   if (!parsed) {
     return {
@@ -45,6 +201,11 @@ export async function fetchBotPreview(
       error:
         "Paste a Grok Bot share link, like https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN",
     };
+  }
+
+  if (!options.skipCache) {
+    const cached = await readCached(parsed.botId);
+    if (cached) return cached;
   }
 
   try {
@@ -62,10 +223,13 @@ export async function fetchBotPreview(
     clearTimeout(timer);
 
     if (response.status === 404) {
-      return {
-        ok: false,
+      const result = {
+        ok: false as const,
         error: "x.ai returned 404. That share link may have been taken down.",
+        gone: true,
       };
+      await writeCached(parsed.botId, result, GONE_TTL);
+      return result;
     }
     if (!response.ok) {
       return {
@@ -75,61 +239,23 @@ export async function fetchBotPreview(
     }
 
     const html = await response.text();
-    const ogTitle = metaContent(html, "og:title");
-    const ogDescription = metaContent(html, "og:description");
-    const ogImage = metaContent(html, "og:image");
-    const pageTitle = attr(html, /<h1[^>]*title="([^"]+)"/i);
-    const byline = attr(
-      html,
-      /<p class="text-secondary text-sm">by ([^<]+)<\/p>/i
-    );
-    const fullDescription = attr(
-      html,
-      /<p title="([^"]+)" class="text-secondary mt-3/i
-    );
-
-    if (
-      html.includes("Page not found") &&
-      !pageTitle &&
-      !ogTitle?.includes(" by ")
-    ) {
-      return {
-        ok: false,
+    const page = parseBotHtml(html);
+    if (page.gone) {
+      const result = {
+        ok: false as const,
         error: "x.ai does not have a bot at that link.",
+        gone: true,
       };
+      await writeCached(parsed.botId, result, GONE_TTL);
+      return result;
     }
 
-    let title = pageTitle;
-    let authorName = byline;
-    if (!title && ogTitle) {
-      const split = ogTitle.match(/^(.*) by (.+)$/);
-      if (split) {
-        title = split[1];
-        authorName = authorName ?? split[2];
-      } else {
-        title = ogTitle;
-      }
-    }
-
-    const description =
-      fullDescription || ogDescription || "A shared Grok Bot template.";
-    const summary =
-      description.length > 180
-        ? `${description.slice(0, 177).trimEnd()}…`
-        : description;
-
-    return {
-      ok: true,
-      preview: {
-        botId: parsed.botId,
-        botUrl: parsed.botUrl,
-        title: (title || "Untitled bot").slice(0, 80),
-        authorName: (authorName || "Unknown").slice(0, 60),
-        summary,
-        description: description.slice(0, 2000),
-        ogImage,
-      },
+    const result = {
+      ok: true as const,
+      preview: previewFromParsed(parsed, page),
     };
+    await writeCached(parsed.botId, result, PREVIEW_TTL);
+    return result;
   } catch {
     return {
       ok: false,

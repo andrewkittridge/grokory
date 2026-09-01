@@ -1,33 +1,25 @@
 import Link from "next/link";
 import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
+import { formatAdds } from "@/lib/bot-url";
 import { cn } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
-
-function jobLine(template: ListedTemplate) {
-  return template.origin === "curated"
-    ? `Staff pick · ${template.category}`
-    : template.category;
-}
 
 export function BotRankRow({
   rank,
   template,
   showVote = false,
   size = "default",
-  detail,
   scramble = false,
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
-  detail?: "summary" | "job";
   scramble?: boolean;
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
-  const subtitle = detail ?? (showVote ? "job" : "summary");
   const leader = size === "leader";
 
   return (
@@ -76,24 +68,21 @@ export function BotRankRow({
         >
           {template.title}
         </span>
-        {leader ? (
-          <>
-            <span className="mt-1 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-              {jobLine(template)}
-            </span>
-            <span className="mt-1.5 line-clamp-2 block text-sm leading-6 text-muted-foreground">
-              {template.summary}
-            </span>
-          </>
-        ) : subtitle === "job" ? (
-          <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-            {jobLine(template)}
-          </span>
-        ) : (
-          <span className="mt-0.5 line-clamp-1 block text-xs text-muted-foreground">
-            {template.summary}
-          </span>
-        )}
+        <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+          {template.category}
+          <span aria-hidden="true"> · </span>
+          {formatAdds(template.adds)}
+        </span>
+        <span
+          className={cn(
+            "block text-muted-foreground",
+            leader
+              ? "mt-1.5 line-clamp-2 text-sm leading-6"
+              : "mt-0.5 line-clamp-1 text-xs"
+          )}
+        >
+          {template.summary}
+        </span>
       </span>
       <span
         className={cn("relative z-10", leader ? "pt-1" : undefined)}

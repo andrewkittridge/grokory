@@ -3,6 +3,7 @@ export const SITE_NAME = "Grokdex";
 export const SITE_TITLE = "Grokdex — Ranked Grok Bot catalog";
 export const SITE_DESCRIPTION =
   "A public ranked catalog of Grok Bot templates. Browse specialist agents, upvote the useful ones, and add a copy to your Grok account.";
+export const REPORT_EMAIL = "report@grokdex.net";
 
 export function absUrl(path = "/") {
   if (path.startsWith("http://") || path.startsWith("https://")) return path;

@@ -11,9 +11,11 @@ export function filterTemplates(
     filters.category && filters.category !== "all"
       ? filters.category
       : undefined;
+  const tag = filters.tag?.trim().toLowerCase();
 
   return templates.filter((template) => {
     if (category && template.category !== category) return false;
+    if (tag && !template.tags.some((item) => item === tag)) return false;
     if (!q) return true;
     const haystack = [
       template.title,
@@ -23,6 +25,8 @@ export function filterTemplates(
       template.note ?? "",
       template.tags.join(" "),
       template.category,
+      template.skills.join(" "),
+      template.routines.join(" "),
     ]
       .join(" ")
       .toLowerCase();

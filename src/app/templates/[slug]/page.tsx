@@ -6,11 +6,19 @@ import { BotCover } from "@/components/bot-cover";
 import { BotRankRow } from "@/components/bot-rank-row";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
+import { JsonLd } from "@/components/json-ld";
+import { ListedBanner } from "@/components/listed-banner";
 import { ListedConversion } from "@/components/listed-conversion";
+import {
+  AuthorLink,
+  ListingTrust,
+  WhatTravels,
+} from "@/components/listing-trust";
 import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
+import { softwareJson } from "@/lib/json-ld";
 import { formatCount } from "@/lib/bot-url";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
@@ -43,7 +51,11 @@ export async function generateMetadata({
       title: template.title,
       description: template.summary,
       url: `/templates/${slug}`,
-      images: template.ogImage ? [{ url: template.ogImage }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: template.title,
+      description: template.summary,
     },
   };
 }
@@ -66,7 +78,13 @@ export default async function TemplateDetailPage({
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+      <JsonLd data={softwareJson(template, listingHref)} />
       <ListedConversion listed={listed} />
+      {listed ? (
+        <div className="motion-enter mb-10" style={motionDelay(0)}>
+          <ListedBanner title={template.title} listingUrl={listingHref} />
+        </div>
+      ) : null}
       <p
         className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
         style={motionDelay(0)}
@@ -92,13 +110,26 @@ export default async function TemplateDetailPage({
                 {template.botUrl}
               </p>
               <div className="mt-4 flex flex-col gap-2">
-                <AddBotButton
-                  slug={template.slug}
-                  botUrl={template.botUrl}
-                  size="lg"
-                />
+                {template.live ? (
+                  <AddBotButton
+                    slug={template.slug}
+                    botUrl={template.botUrl}
+                    size="lg"
+                  />
+                ) : (
+                  <p className="border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    This share link is down on x.ai. It is hidden from the
+                    board until the preview comes back.
+                  </p>
+                )}
                 <CopyLinkButton url={template.botUrl} />
                 <CopyLinkButton url={listingHref} label="Copy listing link" />
+              </div>
+              <div className="mt-4">
+                <ListingTrust
+                  template={template}
+                  listingUrl={listingHref}
+                />
               </div>
               <p className="mt-4 text-xs text-muted-foreground">
                 Listed by {template.submittedBy}
@@ -140,9 +171,24 @@ export default async function TemplateDetailPage({
               />
               <div className="px-5 py-6 sm:px-8 sm:py-8">
                 <div className="flex flex-wrap gap-1.5">
-                  <Badge variant="secondary">{template.category}</Badge>
+                  <Badge
+                    variant="secondary"
+                    render={
+                      <Link
+                        href={`/templates?category=${encodeURIComponent(template.category)}`}
+                      />
+                    }
+                  >
+                    {template.category}
+                  </Badge>
                   {template.tags.map((tag) => (
-                    <Badge key={tag} variant="ghost">
+                    <Badge
+                      key={tag}
+                      variant="ghost"
+                      render={
+                        <Link href={`/templates?tag=${encodeURIComponent(tag)}`} />
+                      }
+                    >
                       {tag}
                     </Badge>
                   ))}
@@ -151,7 +197,11 @@ export default async function TemplateDetailPage({
                   {template.title}
                 </h1>
                 <p className="mt-2 text-muted-foreground">
-                  by {template.authorName}
+                  by{" "}
+                  <AuthorLink
+                    name={template.authorName}
+                    className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                  />
                 </p>
                 <p className="mt-5 max-w-2xl text-base leading-7 text-secondary-foreground">
                   {template.description}
@@ -161,6 +211,10 @@ export default async function TemplateDetailPage({
                     {template.note}
                   </blockquote>
                 ) : null}
+                <WhatTravels
+                  skills={template.skills}
+                  routines={template.routines}
+                />
                 <p className="mt-6 text-xs leading-5 text-muted-foreground">
                   This bot was created by a third-party user, not by SpaceXAI.
                   Adding it creates a copy on your Grok Bot account. It does

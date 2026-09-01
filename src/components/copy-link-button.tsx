@@ -1,14 +1,21 @@
+import { cn } from "@/lib/utils";
+
 export function CopyLinkButton({
   url,
   label = "Copy share link",
+  className,
 }: {
   url: string;
   label?: string;
+  className?: string;
 }) {
   return (
     <label
       data-copy-url={url}
-      className="copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-none border border-border bg-transparent px-4 text-sm font-normal hover:bg-white/5 focus-within:ring-1 focus-within:ring-foreground"
+      className={cn(
+        "copy-share inline-flex h-10 w-full cursor-pointer select-none items-center justify-center rounded-none border border-border bg-transparent px-4 text-sm font-normal hover:bg-white/5 focus-within:ring-1 focus-within:ring-foreground",
+        className
+      )}
     >
       <input type="checkbox" className="sr-only" aria-label={label} />
       <span className="copy-share-idle">{label}</span>

@@ -36,7 +36,8 @@ export default function TermsPage() {
         responsible for the listing text and for the bot behind the link.
         Listings are user-generated. We may refuse, edit, or remove a listing
         (including spam, malware, impersonation, or anything that looks like an
-        official xAI product). Duplicate share URLs are not listed twice.
+        official xAI product). Duplicate share URLs are not listed twice. We
+        may hide a listing from the board when its x.ai share link returns 404.
       </p>
 
       <h2>Voting</h2>

@@ -42,6 +42,10 @@ export type BotTemplate = {
   featured: boolean;
   createdAt: string;
   adds: number;
+  live: boolean;
+  lastCheckedAt?: string;
+  skills: string[];
+  routines: string[];
 };
 
 export type ListedTemplate = BotTemplate & {
@@ -57,10 +61,13 @@ export type BotPreview = {
   summary: string;
   description: string;
   ogImage?: string;
+  skills: string[];
+  routines: string[];
 };
 
 export type TemplateFilters = {
   q?: string;
   category?: string;
+  tag?: string;
   sort?: SortMode;
 };

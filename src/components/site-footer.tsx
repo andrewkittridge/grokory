@@ -31,6 +31,12 @@ export function SiteFooter() {
             >
               x.ai/bot
             </a>
+            <a
+              href="/feed.xml"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              RSS
+            </a>
             <Link
               href="/privacy"
               className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"

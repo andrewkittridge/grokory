@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "grokdex",
-  "main": ".open-next/worker.js",
+  "main": "cloudflare-worker.ts",
   "compatibility_date": "2026-08-28",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "workers_dev": true,
@@ -18,7 +18,10 @@
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "0x4AAAAAAEjDWXVo9ws84fi6",
   },
   "secrets": {
-    "required": ["DATABASE_URL", "TURNSTILE_SECRET"],
+    "required": ["DATABASE_URL", "TURNSTILE_SECRET", "CRON_SECRET"],
+  },
+  "triggers": {
+    "crons": ["17 * * * *"],
   },
   "kv_namespaces": [
     {
