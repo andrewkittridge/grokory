@@ -132,7 +132,17 @@ export default async function TemplateDetailPage({
         {template.title}
       </p>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
+      <div className="motion-enter mt-8 lg:hidden" style={motionDelay(1)}>
+        <LockTitle>{template.title}</LockTitle>
+        <AuthorByline
+          name={template.authorName}
+          xHandle={template.xHandle}
+          shareUrl={template.botUrl}
+          className="mt-2 text-muted-foreground"
+        />
+      </div>
+
+      <div className="mt-6 grid gap-8 lg:mt-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
         <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-16 lg:self-start">
           <div className="motion-enter" style={motionDelay(1)}>
             <AddProcedure
@@ -220,12 +230,14 @@ export default async function TemplateDetailPage({
                     </Badge>
                   ))}
                 </div>
-                <LockTitle className="mt-5">{template.title}</LockTitle>
+                <LockTitle className="mt-5 hidden lg:block">
+                  {template.title}
+                </LockTitle>
                 <AuthorByline
                   name={template.authorName}
                   xHandle={template.xHandle}
                   shareUrl={template.botUrl}
-                  className="mt-2 text-muted-foreground"
+                  className="mt-2 hidden text-muted-foreground lg:block"
                 />
                 <p className="mt-5 max-w-2xl text-base leading-7 text-body">
                   {template.description}

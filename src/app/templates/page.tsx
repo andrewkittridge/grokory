@@ -8,7 +8,11 @@ import { LockTitle } from "@/components/lock-title";
 import { itemListJson } from "@/lib/json-ld";
 import { partitionBoosted } from "@/lib/boost";
 import { partitionFeatured } from "@/lib/featured";
-import { boardVacancies, isFoundingBoard } from "@/lib/founding";
+import {
+  boardVacancies,
+  isFoundingBoard,
+  showBoardSortTabs,
+} from "@/lib/founding";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import { filterTemplates } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
@@ -78,7 +82,13 @@ export default async function TemplatesPage({
           : "Every listing is a public Grok Bot share URL. Upvote the ones worth adding, then open the share link on x.ai."}
       </p>
       <div className="motion-enter mt-8" style={motionDelay(2)}>
-        <BotFilters q={q} tag={tag} skill={skill} sort={sort} />
+        <BotFilters
+          q={q}
+          tag={tag}
+          skill={skill}
+          sort={sort}
+          sortTabs={showBoardSortTabs(all.length)}
+        />
       </div>
       <BoardStrip sort={sort} count={filtered.length} founding={founding} />
       {empty ? (

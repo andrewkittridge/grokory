@@ -7,6 +7,7 @@ import {
   LIST_AGENT_HREF,
   LIST_SKILL_PATH,
   isClaimSeat,
+  isSeatsOpenInvite,
   type BoardVacancy,
 } from "@/lib/founding";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
@@ -41,7 +42,8 @@ export function OpenSlots({
   const [paused, setPaused] = useState(false);
   const liveIndex = slots.length === 0 ? 0 : active % slots.length;
   const showInvite =
-    inviteAgent && slots.some((slot) => isClaimSeat(slot));
+    inviteAgent &&
+    slots.some((slot) => isClaimSeat(slot) || isSeatsOpenInvite(slot));
 
   useEffect(() => {
     if (!cycle || paused) return;
@@ -93,15 +95,19 @@ export function OpenSlots({
           onFocusCapture={() => lock(index)}
           onBlurCapture={release}
         >
-          <VacantRankRow
-            rank={startRank + index}
-            scramble={scramble}
-            label={slot.label}
-            hint={slot.hint}
-            href={slot.href}
-            live={cycle && index === liveIndex}
-            surface={surface}
-          />
+          {isSeatsOpenInvite(slot) ? (
+            <SeatsOpenRow href={slot.href} surface={surface} />
+          ) : (
+            <VacantRankRow
+              rank={startRank + index}
+              scramble={scramble}
+              label={slot.label}
+              hint={slot.hint}
+              href={slot.href}
+              live={cycle && index === liveIndex}
+              surface={surface}
+            />
+          )}
         </li>
       ))}
       {showInvite ? (
@@ -110,6 +116,36 @@ export function OpenSlots({
         </li>
       ) : null}
     </>
+  );
+}
+
+function SeatsOpenRow({
+  href,
+  surface,
+}: {
+  href: string;
+  surface: "board" | "roster";
+}) {
+  const roster = surface === "roster";
+
+  return (
+    <div
+      className={cn(
+        "rank-row rank-row-open relative items-center",
+        roster ? "px-3 py-3 sm:px-5" : "px-2 py-3"
+      )}
+    >
+      <Link
+        href={href}
+        className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
+        aria-label="Seats open. Claim this seat."
+      />
+      <p className="relative z-10 text-xs leading-5 text-muted-foreground">
+        <span className="text-foreground">Seats open</span>
+        <span aria-hidden="true"> · </span>
+        Claim this seat
+      </p>
+    </div>
   );
 }
 

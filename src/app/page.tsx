@@ -34,7 +34,7 @@ export default function HomePage() {
     <main>
       <Suspense
         fallback={
-          <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+          <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
             <HomeFallback />
           </div>
         }
@@ -66,7 +66,7 @@ async function Home() {
   const taglineDelay = templates.length === 0 ? 6 : 7 + ranked.length;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
       <LandingHero founding={founding}>
         <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
         <JsonLd data={faqJson()} />
@@ -79,7 +79,7 @@ async function Home() {
         />
       </LandingHero>
       <p
-        className="motion-enter mt-10 border-t border-border pt-6 text-sm leading-7 text-body sm:mt-12"
+        className="motion-enter mt-8 border-t border-border pt-5 text-sm leading-7 text-body sm:mt-10"
         style={motionDelay(taglineDelay)}
       >
         Public share links

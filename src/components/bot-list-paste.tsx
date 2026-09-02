@@ -15,13 +15,13 @@ export function BotListPaste({
     return (
       <div
         id="agent"
-        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+        className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
       >
         <div className="min-w-0">
           <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
             Have your bot list it
           </p>
-          <p className="mt-1 text-sm leading-6 text-body">
+          <p className="mt-0.5 text-sm leading-5 text-body">
             Paste into your Grok Bot, then say list me on Grokdex.
           </p>
         </div>

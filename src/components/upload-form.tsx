@@ -274,10 +274,7 @@ export function UploadForm({
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
-        {siteKey ? (
-          <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
-        ) : null}
+      <div className="flex flex-col items-stretch gap-2 sm:items-start">
         <Button
           type="submit"
           disabled={pending || !lookupReady}
@@ -293,6 +290,9 @@ export function UploadForm({
                 ? "Update listing"
                 : "Publish to Grokdex"}
         </Button>
+        {siteKey ? (
+          <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+        ) : null}
       </div>
     </form>
   );

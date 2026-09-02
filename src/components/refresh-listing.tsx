@@ -25,9 +25,6 @@ export function RefreshListing({
     >
       <input type="hidden" name="shareUrl" value={shareUrl} />
       <input type="hidden" name="intent" value="refresh" />
-      {siteKey ? (
-        <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
-      ) : null}
       {state.error ? (
         <p role="alert" className="text-xs text-destructive">
           {state.error}
@@ -41,6 +38,9 @@ export function RefreshListing({
       >
         {pending ? "Refreshing…" : "Refresh from x.ai"}
       </Button>
+      {siteKey ? (
+        <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+      ) : null}
     </form>
   );
 }

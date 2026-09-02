@@ -13,7 +13,11 @@ import {
 } from "@/lib/bot-url";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
-import { isClaimSeat, type BoardVacancy } from "@/lib/founding";
+import {
+  isClaimSeat,
+  isSeatsOpenInvite,
+  type BoardVacancy,
+} from "@/lib/founding";
 import { absUrl } from "@/lib/site";
 import { cn, motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
@@ -80,7 +84,7 @@ export function BotRankRow({
             "relative z-10 shrink-0",
             roster && "w-8",
             leader ? "pt-1" : undefined,
-            rank === 1 ? "text-sunset" : "text-muted-foreground"
+            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
           )}
         />
       ) : (
@@ -89,7 +93,7 @@ export function BotRankRow({
             "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide",
             roster && "w-8",
             leader ? "pt-1" : undefined,
-            rank === 1 ? "text-sunset" : "text-muted-foreground"
+            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
           )}
         >
           {String(rank).padStart(2, "0")}
@@ -247,7 +251,8 @@ export function BotRankList({
         delay={delay + templates.length}
         surface={surface}
         inviteAgent={
-          surface === "board" && open.some((slot) => isClaimSeat(slot))
+          surface === "board" &&
+          open.some((slot) => isClaimSeat(slot) || isSeatsOpenInvite(slot))
         }
       />
     </ol>
