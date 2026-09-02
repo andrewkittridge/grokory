@@ -31,7 +31,6 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     authorName: "Andrew",
     summary: "Primary-source research for cited answers.",
     description: "Primary-source research for cited answers.",
-    category: "Research",
     tags: ["citations"],
     submittedBy: "Anonymous",
     origin: "community",
@@ -95,9 +94,8 @@ test("homepage and listing markdown are citable", () => {
   const catalog = pageMarkdown("/catalog", [bot()]);
   assert.equal(catalog?.status, 200);
   assert.match(catalog?.body ?? "", /^# Catalog/m);
-  assert.match(catalog?.body ?? "", /## Research/);
-  assert.match(catalog?.body ?? "", /## Coding/);
-  assert.match(catalog?.body ?? "", /list the first Coding bot/);
+  assert.match(catalog?.body ?? "", /Research/);
+  assert.doesNotMatch(catalog?.body ?? "", /grouped by job/);
 
   const authors = pageMarkdown("/authors", [bot()]);
   assert.equal(authors?.status, 200);
@@ -133,7 +131,7 @@ test("discovery documents include required fields", async () => {
   assert.equal(mcp.serverInfo.name, "grokdex");
   assert.equal(mcp.transport.endpoint, "/mcp");
   assert.equal(mcp.authentication.required, false);
-  assert.ok(mcp.tools.length >= 4);
+  assert.equal(mcp.tools.length, 4);
   assert.ok(mcp.tools.some((tool) => tool.name === "list_bot"));
   assert.ok(mcp.tools.some((tool) => tool.name === "refresh_bot"));
 
@@ -164,7 +162,7 @@ test("discovery documents include required fields", async () => {
 });
 
 test("searchPublicBots filters without voter fields leaking", () => {
-  const hits = searchPublicBots([bot(), bot({ slug: "loops", title: "Loops", category: "Coding", summary: "Outer loop" })], {
+  const hits = searchPublicBots([bot(), bot({ slug: "loops", title: "Loops", summary: "Outer loop" })], {
     q: "outer loop",
   });
   assert.equal(hits.length, 1);

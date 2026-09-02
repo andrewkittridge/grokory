@@ -5,7 +5,7 @@ import { LegalDoc } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Terms",
   description:
-    "Terms for using Grokdex, listing public Grok Bot share links, paid featured placement, category boosts, and using the board.",
+    "Terms for using Grokdex, listing public Grok Bot share links, paid featured placement, board boosts, and using the board.",
   alternates: { canonical: "/terms" },
 };
 
@@ -38,9 +38,9 @@ export default function TermsPage() {
         proof that you own that account.
         Listings are user-generated. We may refuse, edit, or remove a listing
         (including spam, malware, impersonation, or anything that looks like an
-        official xAI product). Duplicate share URLs are not listed twice; paste
-        the same URL again to refresh the listing from x.ai or change the job,
-        tags, or note. The first X handle sticks. We
+        official xAI product).         Duplicate share URLs are not listed twice; paste
+        the same URL again to refresh the listing from x.ai or change the tags
+        or note. The first X handle sticks. We
         may hide a listing from the board when its x.ai share link returns 404.
       </p>
 
@@ -50,14 +50,14 @@ export default function TermsPage() {
         automate votes or impersonate other listers.
       </p>
 
-      <h2>Tips, featured placement, and category boosts</h2>
+      <h2>Tips, featured placement, and boosts</h2>
       <p>
         Listing a bot is free. You may optionally send a tip or buy featured
         placement through Stripe. Tips are voluntary support for the site. They
         are not tax-deductible and they do not change rank or unlock a pin.
         Featured placement is paid advertising: a labeled pin on the home board
-        and catalog for a stated number of days. A category boost is paid
-        advertising in one job filter only; it is not a homepage pin. Neither
+        and catalog for a stated number of days. A boost is paid advertising on
+        the ranked board only; it is not a homepage pin. Neither
         changes organic hot, top, or new scores, and neither is an endorsement
         by Grokdex, xAI, or SpaceXAI. We may refuse, move, or remove a paid pin
         or boost (including spam, malware, impersonation, or a down share

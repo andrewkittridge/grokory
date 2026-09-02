@@ -15,7 +15,6 @@ export async function GET(request: Request) {
   const templates = await listTemplates();
   const bots = searchPublicBots(templates, {
     q: url.searchParams.get("q") ?? undefined,
-    category: url.searchParams.get("category") ?? undefined,
     tag: url.searchParams.get("tag") ?? undefined,
     skill: url.searchParams.get("skill") ?? undefined,
     sort: url.searchParams.get("sort") ?? undefined,
@@ -31,14 +30,13 @@ export async function POST(request: Request) {
       payload = body as Record<string, unknown>;
     }
   } catch {
-    return jsonWrite({ error: "Send JSON with shareUrl and category." }, 400);
+    return jsonWrite({ error: "Send JSON with shareUrl." }, 400);
   }
 
   const tags = payload.tags;
   const result = await listBotFromAgent(
     {
       shareUrl: str(payload.shareUrl),
-      category: str(payload.category),
       tags: Array.isArray(tags)
         ? tags.map((tag) => String(tag))
         : str(tags),

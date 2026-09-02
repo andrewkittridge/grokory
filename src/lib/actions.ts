@@ -14,7 +14,7 @@ import { publishListing } from "./listing";
 import { consumeVoteRate, headerIp } from "./rate-limit";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
-import type { BotPreview, Category, VoteValue } from "./types";
+import type { BotPreview, VoteValue } from "./types";
 
 export type ActionState = {
   error?: string;
@@ -24,7 +24,6 @@ export type ActionState = {
 export type ExistingLookup = {
   slug: string;
   title: string;
-  category: Category;
   tags: string[];
   note?: string;
   submittedBy: string;
@@ -63,7 +62,6 @@ export async function lookupShareLink(
     ? {
         slug: listed.slug,
         title: listed.title,
-        category: listed.category,
         tags: listed.tags,
         note: listed.note,
         submittedBy: listed.submittedBy,
@@ -92,7 +90,6 @@ export async function createListing(
   const intent = intentRaw === "refresh" ? "refresh" : "publish";
   const result = await publishListing({
     shareUrl: String(formData.get("shareUrl") ?? ""),
-    category: String(formData.get("category") ?? ""),
     tags: String(formData.get("tags") ?? ""),
     note: String(formData.get("note") ?? ""),
     submittedBy: String(formData.get("submittedBy") ?? ""),

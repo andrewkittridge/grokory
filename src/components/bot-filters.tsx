@@ -1,24 +1,21 @@
+"use client";
+
 import { ViewTransition } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ScanField } from "@/components/scan-field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import type { Category } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 function hrefFor(params: {
   q?: string;
-  category?: string;
   tag?: string;
   skill?: string;
   sort?: string;
 }) {
   const search = new URLSearchParams();
   if (params.q) search.set("q", params.q);
-  if (params.category && params.category !== "all") {
-    search.set("category", params.category);
-  }
   if (params.tag) search.set("tag", params.tag);
   if (params.skill) search.set("skill", params.skill);
   if (params.sort && params.sort !== "hot") {
@@ -30,23 +27,18 @@ function hrefFor(params: {
 
 export function BotFilters({
   q,
-  category,
   tag,
   skill,
   sort,
-  jobs,
 }: {
   q: string;
-  category: string;
   tag?: string;
   skill?: string;
   sort: string;
-  jobs: Category[];
 }) {
   return (
     <div className="space-y-5">
       <form action="/templates" className="flex flex-col gap-2 sm:flex-row">
-        <input type="hidden" name="category" value={category} />
         {tag ? <input type="hidden" name="tag" value={tag} /> : null}
         {skill ? <input type="hidden" name="skill" value={skill} /> : null}
         <input type="hidden" name="sort" value={sort} />
@@ -58,7 +50,7 @@ export function BotFilters({
             id="q"
             name="q"
             defaultValue={q}
-            placeholder="Search names, authors, jobs…"
+            placeholder="Search names, authors, skills…"
             className="h-10 font-mono"
           />
         </ScanField>
@@ -74,36 +66,13 @@ export function BotFilters({
         ].map((item) => (
           <FilterTab
             key={item.value}
-            href={hrefFor({ q, category, tag, skill, sort: item.value })}
+            href={hrefFor({ q, tag, skill, sort: item.value })}
             active={(sort || "hot") === item.value}
           >
             {item.label}
           </FilterTab>
         ))}
       </div>
-      {jobs.length > 0 ? (
-        <p className="text-sm leading-7 text-muted-foreground">
-          <FilterText
-            href={hrefFor({ q, sort, tag, skill, category: "all" })}
-            active={!category || category === "all"}
-          >
-            All jobs
-          </FilterText>
-          {jobs.map((item) => (
-            <span key={item}>
-              <span className="text-border" aria-hidden="true">
-                {" · "}
-              </span>
-              <FilterText
-                href={hrefFor({ q, sort, tag, skill, category: item })}
-                active={category === item}
-              >
-                {item}
-              </FilterText>
-            </span>
-          ))}
-        </p>
-      ) : null}
       {tag ? (
         <p className="text-sm leading-7 text-muted-foreground">
           <span className="font-mono text-[11px] tracking-[0.18em] uppercase">
@@ -113,7 +82,7 @@ export function BotFilters({
           <span className="text-border" aria-hidden="true">
             {" · "}
           </span>
-          <FilterText href={hrefFor({ q, sort, category, skill })} active={false}>
+          <FilterText href={hrefFor({ q, sort, skill })} active={false}>
             Clear
           </FilterText>
         </p>
@@ -127,7 +96,7 @@ export function BotFilters({
           <span className="text-border" aria-hidden="true">
             {" · "}
           </span>
-          <FilterText href={hrefFor({ q, sort, category, tag })} active={false}>
+          <FilterText href={hrefFor({ q, sort, tag })} active={false}>
             Clear
           </FilterText>
         </p>

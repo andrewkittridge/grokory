@@ -2,7 +2,6 @@ import { BotListPaste } from "@/components/bot-list-paste";
 import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { UploadForm } from "@/components/upload-form";
-import { isCategory } from "@/lib/bot-url";
 import { isFoundingBoard } from "@/lib/founding";
 import { listTemplates } from "@/lib/templates-store";
 import { turnstileSiteKey } from "@/lib/turnstile";
@@ -18,12 +17,10 @@ export const metadata = {
 export default async function UploadPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string; share?: string }>;
+  searchParams: Promise<{ share?: string }>;
 }) {
   const params = await searchParams;
-  const category = params.category?.trim() ?? "";
   const share = params.share?.trim() ?? "";
-  const defaultCategory = isCategory(category) ? category : undefined;
   const templates = await listTemplates();
   const founding = isFoundingBoard(templates.length);
 
@@ -48,15 +45,13 @@ export default async function UploadPage({
         <span className="font-mono text-sm text-foreground">
           https://x.ai/bot/…
         </span>
-        . Pick a job, and it lists immediately. Listing is free. Already listed?
-        Paste the same link to refresh it from x.ai or change the job, tags, or
-        note.
+        . It lists immediately. Listing is free. Already listed? Paste the same
+        link to refresh it from x.ai or change the tags or note.
       </p>
       <div className="motion-enter mt-10" style={motionDelay(3)}>
         <Frame staticFrame matClassName="p-5 sm:p-8">
           <UploadForm
             siteKey={turnstileSiteKey()}
-            defaultCategory={defaultCategory}
             defaultShareUrl={share || undefined}
           />
         </Frame>

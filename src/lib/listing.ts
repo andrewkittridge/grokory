@@ -11,7 +11,6 @@ import {
   ALREADY_LISTED,
   HANDLE_ALREADY_SET,
   authorSlug as slugifyAuthor,
-  isCategory,
   parseShareUrl,
   parseTags,
   parseXHandle,
@@ -19,7 +18,7 @@ import {
 } from "./bot-url";
 import { consumeKvRate, headerIp } from "./rate-limit";
 import { absUrl } from "./site";
-import type { BotPreview, BotTemplate, Category, ListedTemplate } from "./types";
+import type { BotPreview, BotTemplate, ListedTemplate } from "./types";
 
 const LIST_RATE_LIMIT = 8;
 const LIST_RATE_WINDOW_MS = 60 * 60 * 1000;
@@ -28,7 +27,6 @@ const INVALID_SHARE =
 
 export type PublishListingInput = {
   shareUrl: string;
-  category: string;
   tags?: string | string[];
   note?: string;
   submittedBy?: string;
@@ -63,7 +61,6 @@ export type ExistingListing = {
   title?: string;
   authorName?: string;
   xHandle?: string;
-  category?: Category;
   tags?: string[];
   note?: string;
   submittedBy?: string;
@@ -151,14 +148,6 @@ export async function publishListing(
       );
     }
 
-    if (!isCategory(input.category)) {
-      return {
-        ok: false,
-        error: "Pick a category so people can find this bot.",
-        code: "invalid",
-      };
-    }
-
     const lookedUp = await previewFn(parsed.botUrl);
     if (input.source === "agent" && !lookedUp.ok) {
       return { ok: false, error: lookedUp.error, code: "preview" };
@@ -219,7 +208,6 @@ export async function publishListing(
       description: resolvedDescription.slice(0, 2000),
       ogImage: preview?.ogImage,
       mark: preview?.mark,
-      category: input.category,
       tags: normalizeTags(input.tags),
       note: (input.note ?? "").trim().slice(0, 400) || undefined,
       submittedBy,
@@ -268,7 +256,6 @@ function toExisting(template: ListedTemplate): ExistingListing {
     title: template.title,
     authorName: template.authorName,
     xHandle: template.xHandle,
-    category: template.category,
     tags: template.tags,
     note: template.note,
     submittedBy: template.submittedBy,
@@ -381,7 +368,6 @@ async function updateExistingListing(args: {
   }
 
   if (!refreshOnly && input.source === "form" && input.applyFields) {
-    if (isCategory(input.category)) patch.category = input.category;
     const tags = normalizeTags(input.tags);
     if (tags.length > 0) patch.tags = tags;
     const note = (input.note ?? "").trim().slice(0, 400);
@@ -391,7 +377,6 @@ async function updateExistingListing(args: {
   }
 
   if (!refreshOnly && input.source === "agent") {
-    if (isCategory(input.category)) patch.category = input.category;
     if (input.tags !== undefined) patch.tags = normalizeTags(input.tags);
     if (input.note !== undefined) {
       const note = input.note.trim().slice(0, 400);
@@ -430,7 +415,6 @@ async function updateExistingListing(args: {
 export async function listBotFromAgent(
   input: {
     shareUrl?: string;
-    category?: string;
     tags?: string | string[];
     note?: string;
     submittedBy?: string;
@@ -455,7 +439,6 @@ export async function listBotFromAgent(
   const result = await publishListing(
     {
       shareUrl: input.shareUrl ?? "",
-      category: input.category ?? "",
       tags: input.tags,
       note: input.note,
       submittedBy: input.submittedBy,

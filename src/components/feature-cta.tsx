@@ -115,16 +115,14 @@ export function BoostCta({
   return (
     <Frame staticFrame matClassName="p-5">
       <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        Category boost
+        Boost
       </p>
       <p className="mt-2 text-lg tracking-[-0.02em]">
-        {until
-          ? `Boosted in ${template.category} through ${until}.`
-          : `Boost in ${template.category}.`}
+        {until ? `Boosted through ${until}.` : "Boost this bot on the board."}
       </p>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        Labeled strip on the {template.category} board. Not a homepage pin.
-        Organic rank stays as it is. Paid placement, not an endorsement.
+        Labeled strip on the board. Not a homepage pin. Organic rank stays as
+        it is. Paid placement, not an endorsement.
       </p>
       {gate.ok ? (
         <div className="mt-4 grid gap-2">

@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createListing, lookupShareLink } from "@/lib/actions";
 import { parseShareUrl } from "@/lib/bot-url";
-import { CATEGORIES, type BotPreview, type Category } from "@/lib/types";
+import type { BotPreview } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,11 +18,9 @@ const initial: { error?: string; slug?: string } = {};
 
 export function UploadForm({
   siteKey,
-  defaultCategory,
   defaultShareUrl,
 }: {
   siteKey?: string;
-  defaultCategory?: Category;
   defaultShareUrl?: string;
 }) {
   const [state, action, pending] = useActionState(createListing, initial);
@@ -130,7 +128,7 @@ export function UploadForm({
           <input type="hidden" name="updateFields" value="1" />
           <p className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm leading-6 text-body">
             {existing.title} is already on the board. Publishing refreshes the
-            name from x.ai and any job, tags, or note you set.{" "}
+            name from x.ai and any tags or note you set.{" "}
             <a className="underline" href={`/templates/${existing.slug}`}>
               Open listing
             </a>
@@ -215,25 +213,6 @@ export function UploadForm({
               ? "Shown on the listing. Not a login, and we do not verify you own that account. The first handle sticks."
               : "Shown on the listing. Not a login, and we do not verify you own that account. Already listed? Paste the same share link and add a handle — the first one sticks."}
         </p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="category" className="field-lock">
-          Job category
-        </Label>
-        <select
-          key={existing?.slug ?? defaultCategory ?? "new"}
-          id="category"
-          name="category"
-          defaultValue={existing?.category ?? defaultCategory ?? "Work"}
-          className="h-10 w-full rounded-lg border border-input bg-canvas-soft px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-        >
-          {CATEGORIES.map((category) => (
-            <option key={category} value={category}>
-              {category}
-            </option>
-          ))}
-        </select>
       </div>
 
       <details className="rounded-lg border border-border" open={updating}>

@@ -4,7 +4,6 @@ import { LockTitle } from "@/components/lock-title";
 import { ShareListing } from "@/components/share-listing";
 import { Button } from "@/components/ui/button";
 import { FEATURED_PLANS } from "@/lib/pricing";
-import type { Category } from "@/lib/types";
 
 export function ListedBanner({
   title,
@@ -12,8 +11,6 @@ export function ListedBanner({
   featureHref,
   shareUrl,
   xHandle,
-  category,
-  firstInJob = false,
   justLinked = false,
   justUpdated = false,
 }: {
@@ -22,8 +19,6 @@ export function ListedBanner({
   featureHref?: string;
   shareUrl?: string;
   xHandle?: string;
-  category?: Category;
-  firstInJob?: boolean;
   justLinked?: boolean;
   justUpdated?: boolean;
 }) {
@@ -69,9 +64,7 @@ export function ListedBanner({
         <ShareListing
           title={title}
           listingUrl={listingUrl}
-          category={category}
           xHandle={xHandle}
-          firstInJob={firstInJob}
         />
         {!xHandle ? (
           <Button

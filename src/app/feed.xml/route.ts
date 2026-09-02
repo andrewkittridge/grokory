@@ -23,7 +23,6 @@ export async function GET() {
   <guid>${escapeXml(url)}</guid>
   <pubDate>${new Date(template.createdAt).toUTCString()}</pubDate>
   <description>${escapeXml(template.summary)}</description>
-  <category>${escapeXml(template.category)}</category>
 </item>`;
     })
     .join("\n");

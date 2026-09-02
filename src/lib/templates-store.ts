@@ -17,7 +17,6 @@ import { markFromStored, sanitizeMark, serializeMark } from "./bot-mark";
 import type {
   BotMark,
   BotTemplate,
-  Category,
   ListedTemplate,
   TemplateOrigin,
   Vote,
@@ -134,18 +133,22 @@ function toListed(
   }));
 }
 
-function normalizeTemplate(template: BotTemplate): BotTemplate {
+function normalizeTemplate(
+  template: BotTemplate & { category?: string }
+): BotTemplate {
+  const rest = { ...template };
+  delete rest.category;
   return {
-    ...template,
-    live: template.live !== false,
-    lastCheckedAt: template.lastCheckedAt,
-    skills: template.skills ?? [],
-    routines: template.routines ?? [],
-    featuredUntil: template.featuredUntil,
-    featured: template.featured,
-    boostedUntil: template.boostedUntil,
-    xHandle: template.xHandle?.trim() || undefined,
-    mark: sanitizeMark(template.mark),
+    ...rest,
+    live: rest.live !== false,
+    lastCheckedAt: rest.lastCheckedAt,
+    skills: rest.skills ?? [],
+    routines: rest.routines ?? [],
+    featuredUntil: rest.featuredUntil,
+    featured: rest.featured,
+    boostedUntil: rest.boostedUntil,
+    xHandle: rest.xHandle?.trim() || undefined,
+    mark: sanitizeMark(rest.mark),
   };
 }
 
@@ -199,7 +202,6 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
     description: row.description,
     ogImage: row.og_image ?? undefined,
     mark: markFromStored(row.mark),
-    category: row.category as Category,
     tags: row.tags ?? [],
     note: row.note ?? undefined,
     submittedBy: row.submitted_by,
@@ -402,8 +404,8 @@ async function ensureNeon() {
             og_image, category, tags, note, submitted_by, origin, featured, created_at, adds
           ) VALUES (
             ${seed.id}, ${seed.slug}, ${seed.botId}, ${seed.botUrl}, ${seed.title},
-            ${seed.authorName}, ${seed.summary}, ${seed.description}, ${seed.ogImage ?? null},
-            ${seed.category}, ${seed.tags}, ${seed.note ?? null}, ${seed.submittedBy},
+            ${seed.authorName}, ${seed.summary}, ${seed.description},             ${seed.ogImage ?? null},
+            ${""}, ${seed.tags}, ${seed.note ?? null}, ${seed.submittedBy},
             ${seed.origin}, ${seed.featured}, ${seed.createdAt}, ${seed.adds}
           )
           ON CONFLICT (id) DO UPDATE SET
@@ -649,8 +651,8 @@ export async function addTemplate(
         live, last_checked_at, skills, routines, mark
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
-        ${saved.authorName}, ${saved.xHandle ?? null}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
-        ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
+        ${saved.authorName}, ${saved.xHandle ?? null}, ${saved.summary}, ${saved.description},         ${saved.ogImage ?? null},
+        ${""}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
         ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.boostedUntil ?? null}, ${saved.createdAt}, ${saved.adds},
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}, ${serializeMark(saved.mark)}
       )
@@ -783,7 +785,6 @@ export type ListingPatch = {
   routines?: string[];
   live?: boolean;
   lastCheckedAt?: string;
-  category?: Category;
   tags?: string[];
   note?: string | null;
   submittedBy?: string;
@@ -815,7 +816,6 @@ function applyListingPatch(
     routines: patch.routines ?? current.routines,
     live: patch.live ?? current.live,
     lastCheckedAt: patch.lastCheckedAt ?? current.lastCheckedAt,
-    category: patch.category ?? current.category,
     tags: patch.tags ?? current.tags,
     note,
     submittedBy: patch.submittedBy ?? current.submittedBy,
@@ -859,7 +859,6 @@ export async function updateListingFromShare(
         description = ${next.description},
         og_image = ${next.ogImage ?? null},
         mark = COALESCE(${serializeMark(next.mark)}, mark),
-        category = ${next.category},
         tags = ${next.tags},
         note = ${next.note ?? null},
         submitted_by = ${next.submittedBy},

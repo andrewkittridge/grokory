@@ -21,7 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
-import { isFirstInJob, relatedTemplates } from "@/lib/templates";
+import { relatedTemplates } from "@/lib/templates";
 import { softwareJson } from "@/lib/json-ld";
 import { formatCount } from "@/lib/bot-url";
 import { isStripeConfigured } from "@/lib/stripe";
@@ -93,7 +93,6 @@ export default async function TemplateDetailPage({
 
   const listings = await listTemplates(voterId);
   const related = relatedTemplates(listings, template);
-  const firstInJob = isFirstInJob(listings, template);
   const listingHref = await listingUrl(template.slug);
   const payments = isStripeConfigured();
   const featured = isFeaturedActive(template);
@@ -111,8 +110,6 @@ export default async function TemplateDetailPage({
             featureHref={payments ? "#feature" : undefined}
             shareUrl={template.botUrl}
             xHandle={template.xHandle}
-            category={template.category}
-            firstInJob={firstInJob}
             justLinked={linked && !updated}
             justUpdated={updated}
           />
@@ -138,7 +135,6 @@ export default async function TemplateDetailPage({
             <AddProcedure
               template={template}
               listingUrl={listingHref}
-              firstInJob={firstInJob}
               refresh={
                 <RefreshListing
                   shareUrl={template.botUrl}
@@ -209,16 +205,6 @@ export default async function TemplateDetailPage({
                       Boost pending
                     </span>
                   ) : null}
-                  <Badge
-                    variant="secondary"
-                    render={
-                      <Link
-                        href={`/templates?category=${encodeURIComponent(template.category)}`}
-                      />
-                    }
-                  >
-                    {template.category}
-                  </Badge>
                   {template.tags.map((tag) => (
                     <Badge
                       key={tag}
@@ -263,11 +249,7 @@ export default async function TemplateDetailPage({
 
       {related.length > 0 ? (
         <section className="mt-16">
-          <h2 className="display-section">
-            {related.every((item) => item.category === template.category)
-              ? "Same job"
-              : "Related"}
-          </h2>
+          <h2 className="display-section">Related</h2>
           <BotRankList
             templates={related}
             showVote

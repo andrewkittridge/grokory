@@ -39,7 +39,7 @@ export default function PrivacyPage() {
         </li>
         <li>
           <strong className="text-foreground">Listings you publish.</strong> The
-          public share URL, bot name, author, optional X handle, description, category, optional
+          public share URL, bot name, author, optional X handle, description, optional
           tags, optional note, and an optional display name on the listing. That
           content is shown on the board. An X handle is a label you type, not an
           X login. We do not verify that you own that account.

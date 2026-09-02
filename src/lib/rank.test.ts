@@ -13,7 +13,6 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     authorName: "Andrew",
     summary: "A short summary of the bot.",
     description: "A short summary of the bot.",
-    category: "Work",
     tags: [],
     submittedBy: "Anonymous",
     origin: "community",

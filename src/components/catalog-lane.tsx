@@ -1,47 +1,38 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { CatalogBot } from "@/components/catalog-bot";
-import { categoryAnchor, type CatalogToken } from "@/lib/templates";
-import type { Category } from "@/lib/types";
+import type { CatalogToken } from "@/lib/templates";
 import { cn, motionDelay } from "@/lib/utils";
 
 const DURATIONS = [36, 46, 40, 52, 38, 48, 42, 50, 44];
 
 export function CatalogLane({
-  category,
+  id,
   tokens,
   index,
 }: {
-  category: Category;
+  id: string;
   tokens: CatalogToken[];
   index: number;
 }) {
   const listed = tokens.filter((token) => token.kind === "listed").length;
   const reverse = index % 2 === 1;
   const duration = `${DURATIONS[index % DURATIONS.length]}s`;
-  const anchor = categoryAnchor(category);
 
   return (
     <section
-      id={anchor}
+      id={id}
       className="catalog-lane motion-enter border-t border-border py-5 sm:py-6"
       style={motionDelay(Math.min(index + 2, 12))}
-      aria-labelledby={`${anchor}-label`}
     >
-      <div className="mx-auto flex w-full max-w-6xl items-baseline justify-between gap-3 px-4 sm:px-6">
-        <h2
-          id={`${anchor}-label`}
-          className="font-mono text-[11px] tracking-[0.22em] text-foreground uppercase"
-        >
-          {category}
-        </h2>
+      <div className="mx-auto flex w-full max-w-6xl items-baseline justify-end gap-3 px-4 sm:px-6">
         <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
           {listed > 0 ? (
             <>
               {listed === 1 ? "1 bot" : `${listed} bots`}
               <span aria-hidden="true"> · </span>
               <Link
-                href={`/templates?category=${encodeURIComponent(category)}`}
+                href="/templates"
                 className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
               >
                 Board
@@ -52,7 +43,7 @@ export function CatalogLane({
               Open
               <span aria-hidden="true"> · </span>
               <Link
-                href={`/upload?category=${encodeURIComponent(category)}`}
+                href="/upload"
                 className="text-sunset hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
               >
                 Share

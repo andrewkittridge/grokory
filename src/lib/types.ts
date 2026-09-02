@@ -1,17 +1,3 @@
-export const CATEGORIES = [
-  "Work",
-  "Founder",
-  "Coding",
-  "Research",
-  "Writing",
-  "Sales",
-  "Ops",
-  "Creative",
-  "Learning",
-] as const;
-
-export type Category = (typeof CATEGORIES)[number];
-
 export type TemplateOrigin = "curated" | "community";
 
 export const BOT_MARK_SHAPES = ["teardrop", "blob"] as const;
@@ -48,7 +34,6 @@ export type BotTemplate = {
   description: string;
   ogImage?: string;
   mark?: BotMark;
-  category: Category;
   tags: string[];
   note?: string;
   submittedBy: string;
@@ -85,7 +70,6 @@ export type BotPreview = {
 
 export type TemplateFilters = {
   q?: string;
-  category?: string;
   tag?: string;
   skill?: string;
   sort?: SortMode;

@@ -1,5 +1,4 @@
 import { REPORT_EMAIL } from "./site";
-import { CATEGORIES, type Category } from "./types";
 
 const BOT_PATH =
   /^(?:https?:\/\/)?(?:www\.)?x\.ai\/bot\/([A-Za-z0-9_-]{8,64})(?:[/?#].*)?$/i;
@@ -89,10 +88,6 @@ export function slugify(title: string, botId: string) {
   return `${base || "bot"}-${suffix}`;
 }
 
-export function isCategory(value: string): value is Category {
-  return (CATEGORIES as readonly string[]).includes(value);
-}
-
 export function parseTags(raw: string) {
   return raw
     .split(/[,#]/)
@@ -111,9 +106,7 @@ export function formatAdds(n: number) {
 }
 
 export type ListingPostOptions = {
-  category?: string;
   xHandle?: string;
-  firstInJob?: boolean;
 };
 
 export function listingPostCaption(
@@ -122,12 +115,6 @@ export function listingPostCaption(
 ) {
   const handle = options.xHandle?.trim();
   const who = handle ? `${title} by ${xHandleLabel(handle)}` : title;
-  if (options.firstInJob && options.category) {
-    return `${who} — first ${options.category} bot on Grokdex`;
-  }
-  if (options.category) {
-    return `${who} — a public ${options.category} Grok Bot on Grokdex`;
-  }
   return `${who} — a public Grok Bot on Grokdex`;
 }
 

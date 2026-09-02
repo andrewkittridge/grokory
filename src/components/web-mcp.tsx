@@ -34,21 +34,17 @@ export function WebMcp() {
     register({
       name: "search_grok_bots",
       description:
-        "Search public Grok Bot listings on Grokdex by keyword or job category.",
+        "Search public Grok Bot listings on Grokdex by keyword.",
       inputSchema: {
         type: "object",
         properties: {
           query: { type: "string" },
-          category: { type: "string" },
         },
       },
       execute: async (args) => {
         const url = new URL("/api/bots", window.location.origin);
         if (typeof args.query === "string" && args.query) {
           url.searchParams.set("q", args.query);
-        }
-        if (typeof args.category === "string" && args.category) {
-          url.searchParams.set("category", args.category);
         }
         const response = await fetch(url);
         return response.json();
@@ -60,15 +56,10 @@ export function WebMcp() {
       description: "Open the Grokdex public board in this browser.",
       inputSchema: {
         type: "object",
-        properties: {
-          category: { type: "string" },
-        },
+        properties: {},
       },
-      execute: async (args) => {
+      execute: async () => {
         const url = new URL("/templates", window.location.origin);
-        if (typeof args.category === "string" && args.category) {
-          url.searchParams.set("category", args.category);
-        }
         window.location.assign(url);
         return { ok: true, url: url.toString() };
       },

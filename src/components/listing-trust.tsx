@@ -14,12 +14,10 @@ export function ListingTrust({
   template,
   listingUrl,
   refresh,
-  firstInJob = false,
 }: {
   template: ListedTemplate;
   listingUrl: string;
   refresh?: ReactNode;
-  firstInJob?: boolean;
 }) {
   const report = reportMailto({
     title: template.title,
@@ -48,9 +46,7 @@ export function ListingTrust({
       <ShareListing
         title={template.title}
         listingUrl={listingUrl}
-        category={template.category}
         xHandle={template.xHandle}
-        firstInJob={firstInJob}
         compact
       />
       <p className="flex flex-wrap gap-x-3 gap-y-1">

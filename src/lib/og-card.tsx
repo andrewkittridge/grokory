@@ -21,17 +21,11 @@ export function ogListingCount(n: number) {
   return n === 1 ? "1 public bot" : `${n} public bots`;
 }
 
-export function ogOpenJobs(n: number) {
-  return n === 1 ? "1 job open" : `${n} jobs open`;
-}
-
-export function ogHomeKicker(
-  listed: number,
-  openJobs: number,
-  founding: boolean
-) {
-  if (founding && openJobs > 0) {
-    return `${ogListingCount(listed)} · ${ogOpenJobs(openJobs)}`;
+export function ogHomeKicker(listed: number, founding: boolean) {
+  if (founding) {
+    return listed === 0
+      ? "Just opened"
+      : `${ogListingCount(listed)} · just opened`;
   }
   return ogListingCount(listed);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,32 +9,39 @@ import {
   listingTweetIntent,
   type ListingPostOptions,
 } from "@/lib/bot-url";
-import { cn } from "@/lib/utils";
+
+function subscribe() {
+  return () => {};
+}
+
+function canShareSnapshot() {
+  return typeof navigator.share === "function";
+}
+
+function canShareServer() {
+  return false;
+}
 
 export function ShareListing({
   title,
   listingUrl,
-  category,
   xHandle,
-  firstInJob = false,
   compact = false,
 }: {
   title: string;
   listingUrl: string;
-  category?: string;
   xHandle?: string;
-  firstInJob?: boolean;
   compact?: boolean;
 }) {
-  const options: ListingPostOptions = { category, xHandle, firstInJob };
+  const options: ListingPostOptions = { xHandle };
   const post = listingPostText(title, listingUrl, options);
   const caption = listingPostCaption(title, options);
   const intent = listingTweetIntent(post);
-  const [canShare, setCanShare] = useState(false);
-
-  useEffect(() => {
-    setCanShare(typeof navigator.share === "function");
-  }, []);
+  const canShare = useSyncExternalStore(
+    subscribe,
+    canShareSnapshot,
+    canShareServer
+  );
 
   const pill = compact
     ? "h-8 w-auto px-3 text-[0.8rem]"

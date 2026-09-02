@@ -8,7 +8,6 @@ import { jsonResponse, jsonWrite } from "./agent-http";
 import { listBotFromAgent } from "./listing";
 import { SITE_NAME } from "./site";
 import { listTemplates } from "./templates-store";
-import { CATEGORIES } from "./types";
 
 type JsonRpcId = string | number | null;
 type JsonRpcRequest = {
@@ -92,7 +91,6 @@ async function callTool(
     const listed = await listBotFromAgent(
       {
         shareUrl: str(args.shareUrl),
-        category: str(args.category),
         tags: Array.isArray(tags)
           ? tags.map((tag) => String(tag))
           : str(tags),
@@ -145,14 +143,10 @@ async function callTool(
 
   const templates = await listTemplates();
 
-  if (name === "list_categories") {
-    return textResult(JSON.stringify(CATEGORIES));
-  }
   if (name === "search_bots") {
     const limit = clamp(Number(args.limit) || 10, 1, 50);
     const hits = searchPublicBots(templates, {
       q: str(args.query),
-      category: str(args.category),
       skill: str(args.skill),
       sort: str(args.sort),
     }).slice(0, limit);
