@@ -110,6 +110,12 @@ test("homepage and listing markdown are citable", () => {
   assert.equal(authors?.status, 200);
   assert.match(authors?.body ?? "", /# Authors/);
   assert.match(authors?.body ?? "", /Andrew/);
+
+  const howToList = pageMarkdown("/guides/how-to-list", []);
+  assert.equal(howToList?.status, 200);
+  assert.match(howToList?.body ?? "", /# How to list a Grok Bot on Grokdex/);
+  assert.match(howToList?.body ?? "", /list_bot/);
+  assert.equal(pageMarkdown("/guides/missing", [])?.status, 404);
 });
 
 test("auth.md documents anonymous agent access", () => {
@@ -129,6 +135,9 @@ test("llms.txt is an LLM reading list", () => {
   assert.match(body, /llms-full\.txt/);
   assert.match(body, /templates\/research\/index\.md/);
   assert.match(body, /catalog\/index\.md/);
+  assert.match(body, /guides\/how-to-list\/index\.md/);
+  assert.match(body, /guides\/what-is-grokdex\/index\.md/);
+  assert.match(body, /guides\/how-to-add\/index\.md/);
 });
 
 test("discovery documents include required fields", async () => {

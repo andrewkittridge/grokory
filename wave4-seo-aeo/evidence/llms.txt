@@ -1,0 +1,28 @@
+# Grokdex
+
+> A public board of Grok Bot templates. List yours, or add a copy to your Grok account.
+
+Grokdex indexes public Grok Bot share links (`https://x.ai/bot/…`). Rankings come from browser votes. Add copies a template onto your Grok account. Grokdex is not affiliated with xAI.
+
+## Start here
+
+- [Overview](https://grokdex.net/index.md): What Grokdex is, how Add works, FAQ
+- [The board](https://grokdex.net/templates/index.md): Ranked public Grok Bots
+- [Catalog](https://grokdex.net/catalog/index.md): Grok Bots as a parade
+- [Share a bot](https://grokdex.net/upload/index.md): List a public share URL
+- [Authors](https://grokdex.net/authors/index.md): People with a listed Grok Bot
+- [FAQ](https://grokdex.net/faq/index.md): Citable answers for assistants
+- [Full text](https://grokdex.net/llms-full.txt): Expanded board dump
+
+## For agents
+
+- Markdown negotiation: `Accept: text/markdown` or append `/index.md`
+- JSON catalog: https://grokdex.net/api/bots (GET read, POST list a live share URL)
+- OpenAPI: https://grokdex.net/openapi.json
+- MCP: https://grokdex.net/.well-known/mcp/server-card.json · https://grokdex.net/mcp (`list_bot` to publish or update, `refresh_bot` for identity)
+- Skills: https://grokdex.net/.well-known/agent-skills/index.json
+
+## Public Grok Bots
+
+- [Writer](https://grokdex.net/templates/writer-n92u9t/index.md) — Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes.
+- [Research](https://grokdex.net/templates/research-q6nive/index.md) — Primary-source research for anyone who needs cited answers. Separates facts from interpretation and reports to a chief of agents.

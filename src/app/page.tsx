@@ -35,21 +35,15 @@ export default function HomePage() {
       <Suspense
         fallback={
           <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-            <HomeFallback />
+            <LandingHero founding heading={false}>
+              <LandingBoardSkeleton />
+            </LandingHero>
           </div>
         }
       >
         <Home />
       </Suspense>
     </main>
-  );
-}
-
-function HomeFallback() {
-  return (
-    <LandingHero founding>
-      <LandingBoardSkeleton />
-    </LandingHero>
   );
 }
 

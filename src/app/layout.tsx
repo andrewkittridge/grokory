@@ -16,6 +16,7 @@ import {
   SITE_URL,
   publicEnv,
   safeTagId,
+  twitterMeta,
 } from "@/lib/site";
 import "./globals.css";
 
@@ -48,11 +49,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     locale: "en_US",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-  },
+  twitter: twitterMeta(SITE_TITLE, SITE_DESCRIPTION),
   alternates: {
     types: {
       "application/rss+xml": "/feed.xml",

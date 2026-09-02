@@ -1,0 +1,115 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/mcp-server-card/v1.json",
+  "version": "1.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "grokdex",
+    "title": "Grokdex",
+    "version": "0.4.0"
+  },
+  "description": "Search, read, and list public Grok Bot share links on Grokdex. No authentication.",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "/mcp"
+  },
+  "authentication": {
+    "required": false
+  },
+  "tools": [
+    {
+      "name": "search_bots",
+      "title": "Search Grok Bots",
+      "description": "Search public Grok Bot listings on Grokdex by query, skill, or sort.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Free-text search"
+          },
+          "skill": {
+            "type": "string",
+            "description": "Exact skill name"
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "hot",
+              "top",
+              "new"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        }
+      }
+    },
+    {
+      "name": "get_bot",
+      "title": "Get a Grok Bot listing",
+      "description": "Fetch one Grokdex listing by slug.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "slug"
+        ]
+      }
+    },
+    {
+      "name": "list_bot",
+      "title": "List a Grok Bot on Grokdex",
+      "description": "Publish or update a live public https://x.ai/bot/… share URL on the Grokdex board. Title and description come from x.ai. Re-pasting updates the listing. A conflicting X handle returns the existing listingUrl.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "shareUrl": {
+            "type": "string",
+            "description": "Public https://x.ai/bot/… share URL"
+          },
+          "tags": {
+            "type": "string",
+            "description": "Optional comma-separated tags"
+          },
+          "note": {
+            "type": "string"
+          },
+          "submittedBy": {
+            "type": "string"
+          },
+          "xHandle": {
+            "type": "string",
+            "description": "Optional X username. Shown on the listing. Not a login and not verified."
+          }
+        },
+        "required": [
+          "shareUrl"
+        ]
+      }
+    },
+    {
+      "name": "refresh_bot",
+      "title": "Refresh a Grokdex listing from x.ai",
+      "description": "Re-fetch a listed bot’s public x.ai share page and update identity on Grokdex. Does not change organic rank. Pass slug or shareUrl.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "shareUrl": {
+            "type": "string",
+            "description": "Public https://x.ai/bot/… share URL"
+          }
+        }
+      }
+    }
+  ]
+}

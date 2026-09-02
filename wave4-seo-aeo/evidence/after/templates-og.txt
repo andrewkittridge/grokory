@@ -1,0 +1,30 @@
+URL: http://127.0.0.1:43127/templates
+title: The board · Grokdex
+canonical: https://grokdex.net/templates
+
+## OG / Twitter
+<meta property="og:title" content="The board · Grokdex"/>
+<meta property="og:description" content="A public board of Grok Bot share links. List yours, upvote the useful ones, then add a copy on x.ai."/>
+<meta property="og:url" content="https://grokdex.net/templates"/>
+<meta property="og:site_name" content="Grokdex"/>
+<meta property="og:image" content="http://localhost:43127/templates/opengraph-image?f99c3fe592e05276"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Grokdex board"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="The board · Grokdex"/>
+<meta name="twitter:description" content="A public board of Grok Bot share links. List yours, upvote the useful ones, then add a copy on x.ai."/>
+<meta name="twitter:image" content="http://localhost:43127/templates/twitter-image?8acac553e66d5e63"/>
+<meta name="twitter:image:alt" content="Grokdex board"/>
+<meta name="twitter:image:type" content="image/png"/>
+<meta name="twitter:image:width" content="1200"/>
+<meta name="twitter:image:height" content="630"/>
+
+## H1 count: 1
+<h1 class="display-page motion-lock" style="--d:0">The board<span class="motion-lock-scan" aria-hidden="true"></span></h1>
+
+## JSON-LD
+{"@context":"https://schema.org","@type":"ItemList","name":"Grokdex public Grok Bots","url":"https://grokdex.net/templates","numberOfItems":2,"itemListElement":[{"@type":"ListItem","position":1,"url":"https://grokdex.net/templates/research-q6nive","name":"Research"},{"@type":"ListItem","position":2,"url":"https://grokdex.net/templates/writer-n92u9t","name":"Writer"}]}
+

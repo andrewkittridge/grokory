@@ -23,7 +23,7 @@ import { isFeaturedActive } from "@/lib/featured";
 import { isFoundingBoard } from "@/lib/founding";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
-import { softwareJson } from "@/lib/json-ld";
+import { breadcrumbListJson, softwareJson } from "@/lib/json-ld";
 import { formatCount } from "@/lib/bot-url";
 import { isStripeConfigured } from "@/lib/stripe";
 import { turnstileSiteKey } from "@/lib/turnstile";
@@ -102,6 +102,12 @@ export default async function TemplateDetailPage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <JsonLd data={softwareJson(template, listingHref)} />
+      <JsonLd
+        data={breadcrumbListJson([
+          { name: "Board", path: "/templates" },
+          { name: template.title, path: `/templates/${template.slug}` },
+        ])}
+      />
       <ListedConversion listed={listed} />
       {listed || linked || updated ? (
         <div className="motion-enter mb-10" style={motionDelay(0)}>
@@ -132,13 +138,13 @@ export default async function TemplateDetailPage({
         {template.title}
       </p>
 
-      <div className="motion-enter mt-8 lg:hidden" style={motionDelay(1)}>
+      <div className="motion-enter mt-8 lg:sr-only" style={motionDelay(1)}>
         <LockTitle>{template.title}</LockTitle>
         <AuthorByline
           name={template.authorName}
           xHandle={template.xHandle}
           shareUrl={template.botUrl}
-          className="mt-2 text-muted-foreground"
+          className="mt-2 text-muted-foreground lg:hidden"
         />
       </div>
 
@@ -230,7 +236,11 @@ export default async function TemplateDetailPage({
                     </Badge>
                   ))}
                 </div>
-                <LockTitle className="mt-5 hidden lg:block">
+                <LockTitle
+                  as="p"
+                  aria-hidden="true"
+                  className="mt-5 hidden lg:block"
+                >
                   {template.title}
                 </LockTitle>
                 <AuthorByline
