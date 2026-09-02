@@ -119,33 +119,9 @@ test("formatAdds and listingPostText", () => {
     listingPostText(
       "Research",
       "https://grokdex.net/templates/research-q6nive",
-      { category: "Research" }
+      { xHandle: "Ada" }
     ),
-    "Research — a public Research Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
-  );
-  assert.equal(
-    listingPostText(
-      "Research",
-      "https://grokdex.net/templates/research-q6nive",
-      { category: "Research", xHandle: "Ada" }
-    ),
-    "Research by @Ada — a public Research Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
-  );
-  assert.equal(
-    listingPostText(
-      "Writer",
-      "https://grokdex.net/templates/writer-abc",
-      { category: "Writing", firstInJob: true }
-    ),
-    "Writer — first Writing bot on Grokdex https://grokdex.net/templates/writer-abc"
-  );
-  assert.equal(
-    listingPostText(
-      "Writer",
-      "https://grokdex.net/templates/writer-abc",
-      { category: "Writing", xHandle: "Ada", firstInJob: true }
-    ),
-    "Writer by @Ada — first Writing bot on Grokdex https://grokdex.net/templates/writer-abc"
+    "Research by @Ada — a public Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
   );
   assert.equal(
     listingTweetIntent("Research — a public Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"),

@@ -45,7 +45,6 @@ function listed(
     authorName: "Andrew",
     summary: "A chief of agents for a solo founder who routes work.",
     description: "A chief of agents for a solo founder who routes work.",
-    category: "Work",
     tags: ["routing"],
     note: "Keep it at the top of a roster.",
     submittedBy: "Anonymous",
@@ -72,7 +71,6 @@ function deps(over: PublishListingDeps = {}): PublishListingDeps {
         authorName: patch.authorName ?? "Andrew",
         summary: patch.summary ?? listed().summary,
         description: patch.description ?? listed().description,
-        category: patch.category ?? "Work",
         tags: patch.tags ?? ["routing"],
         note: patch.note === null ? undefined : (patch.note ?? listed().note),
         submittedBy: patch.submittedBy ?? "Anonymous",
@@ -98,7 +96,7 @@ test("clientIp prefers cf-connecting-ip", () => {
 
 test("publishListing rejects an invalid share URL", async () => {
   const result = await publishListing(
-    { shareUrl: "https://example.com/bot", category: "Work", source: "agent" },
+    { shareUrl: "https://example.com/bot", source: "agent" },
     deps({
       preview: async () => {
         throw new Error("should not preview");
@@ -110,20 +108,9 @@ test("publishListing rejects an invalid share URL", async () => {
   assert.equal(result.code, "invalid");
 });
 
-test("publishListing rejects an unknown category", async () => {
-  const result = await publishListing(
-    { shareUrl: SHARE, category: "Magic", source: "agent" },
-    deps()
-  );
-  assert.equal(result.ok, false);
-  if (result.ok) return;
-  assert.equal(result.code, "invalid");
-  assert.match(result.error, /category/);
-});
-
 test("agent listings require a live x.ai preview", async () => {
   const result = await publishListing(
-    { shareUrl: SHARE, category: "Work", source: "agent" },
+    { shareUrl: SHARE, source: "agent" },
     deps({
       preview: async () => ({
         ok: false,
@@ -145,7 +132,6 @@ test("re-pasting a listed share URL updates it", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Founder",
       tags: "chief-of-staff, routing",
       note: "Let it spawn specialists.",
       source: "agent",
@@ -154,19 +140,16 @@ test("re-pasting a listed share URL updates it", async () => {
       findExisting: async () => ({
         slug: "jarvis-n92u9t",
         title: "Jarvis",
-        category: "Work",
         tags: ["routing"],
       }),
       update: async (botId, patch) => {
         assert.equal(botId, "N92u9t1nHlL_gtgk2nAeN");
-        assert.equal(patch.category, "Founder");
         assert.deepEqual(patch.tags, ["chief-of-staff", "routing"]);
         assert.equal(patch.note, "Let it spawn specialists.");
         assert.equal(patch.title, "Jarvis");
         return {
           ok: true,
           template: listed({
-            category: "Founder",
             tags: ["chief-of-staff", "routing"],
             note: "Let it spawn specialists.",
           }),
@@ -184,11 +167,10 @@ test("re-pasting a listed share URL updates it", async () => {
   );
 });
 
-test("form re-paste before lookup keeps job and tags", async () => {
+test("form re-paste before lookup keeps tags", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Work",
       tags: "",
       note: "",
       title: "Hacked name",
@@ -198,11 +180,9 @@ test("form re-paste before lookup keeps job and tags", async () => {
       findExisting: async () => ({
         slug: "jarvis-n92u9t",
         title: "Jarvis",
-        category: "Research",
         tags: ["citations"],
       }),
       update: async (_botId, patch) => {
-        assert.equal(patch.category, undefined);
         assert.equal(patch.tags, undefined);
         assert.equal(patch.note, undefined);
         assert.equal(patch.title, "Jarvis");
@@ -216,11 +196,10 @@ test("form re-paste before lookup keeps job and tags", async () => {
   assert.equal(result.updated, true);
 });
 
-test("form re-paste applies job after lookup", async () => {
+test("form re-paste applies tags after lookup", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Founder",
       tags: "chief-of-staff",
       note: "Let it spawn specialists.",
       title: "Hacked name",
@@ -231,17 +210,14 @@ test("form re-paste applies job after lookup", async () => {
       findExisting: async () => ({
         slug: "jarvis-n92u9t",
         title: "Jarvis",
-        category: "Work",
       }),
       update: async (_botId, patch) => {
-        assert.equal(patch.category, "Founder");
         assert.deepEqual(patch.tags, ["chief-of-staff"]);
         assert.equal(patch.note, "Let it spawn specialists.");
         assert.equal(patch.title, "Jarvis");
         return {
           ok: true,
           template: listed({
-            category: "Founder",
             tags: ["chief-of-staff"],
             note: "Let it spawn specialists.",
           }),
@@ -252,11 +228,10 @@ test("form re-paste applies job after lookup", async () => {
   assert.equal(result.ok, true);
 });
 
-test("refresh intent skips job, tags, and note", async () => {
+test("refresh intent skips tags and note", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Founder",
       tags: "should-not-apply",
       note: "should-not-apply",
       source: "agent",
@@ -266,10 +241,8 @@ test("refresh intent skips job, tags, and note", async () => {
       findExisting: async () => ({
         slug: "jarvis-n92u9t",
         title: "Jarvis",
-        category: "Work",
       }),
       update: async (_botId, patch) => {
-        assert.equal(patch.category, undefined);
         assert.equal(patch.tags, undefined);
         assert.equal(patch.note, undefined);
         assert.equal(patch.title, "Jarvis");
@@ -289,7 +262,7 @@ test("refresh intent skips job, tags, and note", async () => {
 
 test("agent updates require a live x.ai preview", async () => {
   const result = await publishListing(
-    { shareUrl: SHARE, category: "Work", source: "agent" },
+    { shareUrl: SHARE, source: "agent" },
     deps({
       findExisting: async () => ({ slug: "jarvis-n92u9t", title: "Jarvis" }),
       preview: async () => ({
@@ -311,7 +284,6 @@ test("agent listings use x.ai preview fields", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Work",
       title: "Ignored",
       submittedBy: "",
       source: "agent",
@@ -341,7 +313,6 @@ test("form listings can fill name by hand when preview fails", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Research",
       title: "Research",
       description: "Primary-source research for cited answers.",
       source: "form",
@@ -366,7 +337,6 @@ test("publishListing stores an optional X handle", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Work",
       xHandle: "@andrew",
       source: "agent",
     },
@@ -382,7 +352,7 @@ test("publishListing stores an optional X handle", async () => {
 
 test("publishListing rejects a junk X handle", async () => {
   const result = await publishListing(
-    { shareUrl: SHARE, category: "Work", xHandle: "nope!", source: "form" },
+    { shareUrl: SHARE, xHandle: "nope!", source: "form" },
     deps({
       save: async () => {
         throw new Error("should not save");
@@ -399,7 +369,6 @@ test("publishListing can attach an X handle to an existing listing", async () =>
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Work",
       xHandle: "https://x.com/andrew",
       source: "form",
     },
@@ -424,7 +393,6 @@ test("a second X handle on an existing listing is rejected", async () => {
   const result = await publishListing(
     {
       shareUrl: SHARE,
-      category: "Work",
       xHandle: "@other",
       source: "form",
     },
@@ -452,7 +420,7 @@ test("a second X handle on an existing listing is rejected", async () => {
 
 test("listBotFromAgent maps a handle link to 200", async () => {
   const result = await listBotFromAgent(
-    { shareUrl: SHARE, category: "Work", xHandle: "@andrew" },
+    { shareUrl: SHARE, xHandle: "@andrew" },
     new Request("https://grokdex.net/api/bots", { method: "POST" }),
     deps({
       findExisting: async () => ({ slug: "jarvis-n92u9t", title: "Jarvis" }),
@@ -465,7 +433,7 @@ test("listBotFromAgent maps a handle link to 200", async () => {
 
 test("listBotFromAgent maps an update to 200", async () => {
   const result = await listBotFromAgent(
-    { shareUrl: SHARE, category: "Work" },
+    { shareUrl: SHARE },
     new Request("https://grokdex.net/api/bots", { method: "POST" }),
     deps({
       findExisting: async () => ({ slug: "jarvis-n92u9t", title: "Jarvis" }),
@@ -483,7 +451,7 @@ test("listBotFromAgent maps an update to 200", async () => {
 test("updating a listing revalidates author pages", async () => {
   const paths: string[] = [];
   await publishListing(
-    { shareUrl: SHARE, category: "Work", source: "agent" },
+    { shareUrl: SHARE, source: "agent" },
     deps({
       findExisting: async () => ({
         slug: "jarvis-n92u9t",
@@ -503,7 +471,7 @@ test("updating a listing revalidates author pages", async () => {
 
 test("listBotFromAgent maps a bad share URL to 400", async () => {
   const result = await listBotFromAgent(
-    { shareUrl: "not-a-bot", category: "Work" },
+    { shareUrl: "not-a-bot" },
     new Request("https://grokdex.net/api/bots", { method: "POST" }),
     deps()
   );

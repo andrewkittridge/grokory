@@ -80,9 +80,9 @@ export function catalogPrice(lookupKey: string) {
     return {
       lookupKey,
       cents: boost.cents,
-      productName: "Grokdex Category boost",
+      productName: "Grokdex Boost",
       productDescription:
-        "Labeled boost in a Grokdex job category. Organic rank stays as it is. Not an endorsement.",
+        "Labeled boost on the Grokdex board. Organic rank stays as it is. Not an endorsement.",
     };
   }
   const tip = TIP_PRESETS.find((preset) => preset.lookupKey === lookupKey);

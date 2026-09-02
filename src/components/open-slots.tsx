@@ -76,7 +76,7 @@ export function OpenSlots({
     <>
       {slots.map((slot, index) => (
         <li
-          key={`${slot.href}-${slot.label}`}
+          key={`${slot.href}-${slot.label}-${index}`}
           data-open-slot=""
           className="motion-row"
           style={motionDelay(delay + index)}
@@ -114,9 +114,8 @@ function VacantRankRow({
   live?: boolean;
   surface?: "board" | "roster";
 } & Partial<BoardVacancy>) {
-  const listing = Boolean(hint);
+  const go = hint ?? "Paste a share link";
   const roster = surface === "roster";
-  const go = listing ? `List the first ${label} bot` : "Paste a share link";
 
   return (
     <div
@@ -134,7 +133,7 @@ function VacantRankRow({
       <Link
         href={href}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
-        aria-label={listing ? `List the first ${label} bot` : label}
+        aria-label={hint ? `${label}. ${hint}` : label}
       />
       {scramble ? (
         <RankTick
@@ -172,7 +171,7 @@ function VacantRankRow({
           </span>
         ) : null}
       </span>
-      {roster && listing ? (
+      {roster && hint ? (
         <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.16em] uppercase sm:pl-3 sm:text-[10px] sm:tracking-[0.18em]">
           {hint}
         </span>

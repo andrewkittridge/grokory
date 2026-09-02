@@ -1,6 +1,6 @@
 import { formatAdds } from "@/lib/bot-url";
 import { ogImage, OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og-card";
-import { isFirstInJob, jobRank } from "@/lib/templates";
+import { sortTemplates } from "@/lib/rank";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 
 export const alt = "Grokdex listing";
@@ -26,22 +26,18 @@ export default async function Image({
     });
   }
 
-  const firstInJob = isFirstInJob(listings, template);
-  const rank = jobRank(listings, template);
+  const rankIndex = sortTemplates(listings, "hot").findIndex(
+    (item) => item.slug === template.slug
+  );
+  const rank = rankIndex >= 0 ? rankIndex + 1 : 0;
   const handle = template.xHandle ? `  ·  @${template.xHandle}` : "";
   const points = template.score === 1 ? "1 pt" : `${template.score} pts`;
 
   return ogImage({
     title: template.title,
-    kicker: firstInJob
-      ? `first ${template.category} bot`
-      : `${template.category}  ·  ${template.authorName}${handle}`,
+    kicker: `${template.authorName}${handle}`,
     summary: template.summary,
     footerLeft: `${points}  ·  ${formatAdds(template.adds)}`,
-    badge: firstInJob
-      ? "FIRST"
-      : rank > 0
-        ? String(rank).padStart(2, "0")
-        : undefined,
+    badge: rank > 0 ? String(rank).padStart(2, "0") : undefined,
   });
 }

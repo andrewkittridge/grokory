@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { BotCover } from "@/components/bot-cover";
 import { Frame } from "@/components/frame";
 import { VoteButtons } from "@/components/vote-buttons";
@@ -55,7 +54,6 @@ export function BotCard({
                 #{rank}
               </span>
             ) : null}
-            <Badge variant="secondary">{template.category}</Badge>
           </div>
           <h3 className="mt-2 text-xl font-normal tracking-tight">
             {template.title}

@@ -210,7 +210,6 @@ export async function createCheckoutSession(
     kind: "boost",
     templateId: listing.id,
     slug: listing.slug,
-    category: listing.category,
     duration_days: String(boost.durationDays),
     plan: boost.id,
   };

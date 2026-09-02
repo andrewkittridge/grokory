@@ -105,20 +105,15 @@ export function BotRankRow({
         </span>
         <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
           {isFeaturedActive(template) ? (
-            <>
-              <FeaturedMark />
-              <span aria-hidden="true"> · </span>
-            </>
+            <FeaturedMark />
           ) : isBoostedActive(template) ? (
-            <>
-              <BoostedMark />
-              <span aria-hidden="true"> · </span>
-            </>
+            <BoostedMark />
           ) : null}
-          {template.category}
           {template.xHandle ? (
             <>
-              <span aria-hidden="true"> · </span>
+              {isFeaturedActive(template) || isBoostedActive(template) ? (
+                <span aria-hidden="true"> · </span>
+              ) : null}
               <a
                 href={xHandleUrl(template.xHandle)}
                 target="_blank"
@@ -129,7 +124,11 @@ export function BotRankRow({
               </a>
             </>
           ) : null}
-          <span aria-hidden="true"> · </span>
+          {isFeaturedActive(template) ||
+          isBoostedActive(template) ||
+          template.xHandle ? (
+            <span aria-hidden="true"> · </span>
+          ) : null}
           {formatAdds(template.adds)}
         </span>
         <span

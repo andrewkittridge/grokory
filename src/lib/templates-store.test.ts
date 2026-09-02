@@ -13,7 +13,6 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     authorName: "Andrew",
     summary: "Primary-source research for cited answers.",
     description: "Primary-source research for cited answers.",
-    category: "Research",
     tags: ["citations"],
     submittedBy: "Anonymous",
     origin: "community",

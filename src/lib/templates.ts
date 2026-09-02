@@ -1,16 +1,16 @@
 import { isBoostedActive, partitionBoosted } from "./boost";
 import { isFeaturedActive, partitionFeatured } from "./featured";
-import { jobVacancy, type BoardVacancy } from "./founding";
-import type { ListedTemplate, TemplateFilters, Category } from "./types";
-import { CATEGORIES } from "./types";
+import { openVacancy, type BoardVacancy } from "./founding";
+import type { ListedTemplate, TemplateFilters } from "./types";
 import { authorSlug } from "./bot-url";
 import { sortTemplates } from "./rank";
 
 export const CATALOG_LANE_FLOOR = 4;
 export const CATALOG_EMPTY_OPENS = 3;
+export const CATALOG_TRACK_SIZE = 6;
 
-export type CategoryLane = {
-  category: Category;
+export type CatalogLane = {
+  id: string;
   templates: ListedTemplate[];
 };
 
@@ -28,24 +28,15 @@ export type CatalogToken =
       vacancy: BoardVacancy;
     };
 
-export function categoryAnchor(category: Category) {
-  return `job-${category.toLowerCase()}`;
-}
-
 export function filterTemplates(
   templates: ListedTemplate[],
   filters: TemplateFilters
 ) {
   const q = filters.q?.trim().toLowerCase();
-  const category =
-    filters.category && filters.category !== "all"
-      ? filters.category
-      : undefined;
   const tag = filters.tag?.trim().toLowerCase();
   const skill = filters.skill?.trim().toLowerCase();
 
   return templates.filter((template) => {
-    if (category && template.category !== category) return false;
     if (tag && !template.tags.some((item) => item === tag)) return false;
     if (
       skill &&
@@ -62,7 +53,6 @@ export function filterTemplates(
       template.description,
       template.note ?? "",
       template.tags.join(" "),
-      template.category,
       template.skills.join(" "),
       template.routines.join(" "),
     ]
@@ -72,30 +62,18 @@ export function filterTemplates(
   });
 }
 
-export function populatedCategories(templates: ListedTemplate[]): Category[] {
-  const present = new Set(templates.map((template) => template.category));
-  return CATEGORIES.filter((category) => present.has(category));
-}
-
 export function relatedTemplates(
   templates: ListedTemplate[],
   current: ListedTemplate
 ) {
-  const sameJob = sortTemplates(
-    templates.filter(
-      (template) =>
-        template.slug !== current.slug && template.category === current.category
-    ),
-    "hot"
-  ).slice(0, 3);
-  if (sameJob.length > 0) return sameJob;
-
   const currentTags = new Set(current.tags.map((item) => item.toLowerCase()));
   const currentSkills = new Set(
     current.skills.map((item) => item.toLowerCase())
   );
-  const scored = templates
-    .filter((template) => template.slug !== current.slug)
+  const others = templates.filter(
+    (template) => template.slug !== current.slug
+  );
+  const scored = others
     .map((template) => {
       let overlap = 0;
       for (const tag of template.tags) {
@@ -109,29 +87,11 @@ export function relatedTemplates(
     .filter((item) => item.overlap > 0)
     .sort((a, b) => b.overlap - a.overlap);
 
-  return scored.map((item) => item.template).slice(0, 3);
-}
+  if (scored.length > 0) {
+    return scored.map((item) => item.template).slice(0, 3);
+  }
 
-export function isFirstInJob(
-  templates: { slug: string; category: string }[],
-  current: { slug: string; category: string }
-) {
-  const same = templates.filter(
-    (template) => template.category === current.category
-  );
-  return same.length === 1 && same[0].slug === current.slug;
-}
-
-export function jobRank(
-  templates: ListedTemplate[],
-  current: ListedTemplate
-) {
-  const same = sortTemplates(
-    templates.filter((template) => template.category === current.category),
-    "hot"
-  );
-  const index = same.findIndex((template) => template.slug === current.slug);
-  return index >= 0 ? index + 1 : 0;
+  return sortTemplates(others, "hot").slice(0, 3);
 }
 
 export type AuthorIndexRow = {
@@ -167,28 +127,28 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
-export function groupTemplatesByCategory(
+export function catalogParadeLanes(
   templates: ListedTemplate[],
   now = Date.now()
-): CategoryLane[] {
+): CatalogLane[] {
   const { featured, organic } = partitionFeatured(templates, now);
-  return CATEGORIES.map((category) => {
-    const featuredInJob = featured.filter(
-      (template) => template.category === category
-    );
-    const organicInJob = organic.filter(
-      (template) => template.category === category
-    );
-    const { boosted, rest } = partitionBoosted(organicInJob, category, now);
-    return {
-      category,
-      templates: [...featuredInJob, ...boosted, ...sortTemplates(rest, "hot")],
-    };
-  });
+  const { boosted, rest } = partitionBoosted(organic, now);
+  const ordered = [...featured, ...boosted, ...sortTemplates(rest, "hot")];
+  if (ordered.length === 0) {
+    return [{ id: "lane-0", templates: [] }];
+  }
+  const lanes: CatalogLane[] = [];
+  for (let index = 0; index < ordered.length; index += CATALOG_TRACK_SIZE) {
+    lanes.push({
+      id: `lane-${lanes.length}`,
+      templates: ordered.slice(index, index + CATALOG_TRACK_SIZE),
+    });
+  }
+  return lanes;
 }
 
 export function catalogLaneTokens(
-  lane: CategoryLane,
+  lane: CatalogLane,
   now = Date.now()
 ): CatalogToken[] {
   const listed: CatalogToken[] = lane.templates.map((template) => ({
@@ -198,7 +158,7 @@ export function catalogLaneTokens(
     featured: isFeaturedActive(template, now),
     boosted: isBoostedActive(template, now),
   }));
-  const vacancy = jobVacancy(lane.category);
+  const vacancy = openVacancy();
   const opens =
     listed.length === 0
       ? CATALOG_EMPTY_OPENS
@@ -207,7 +167,7 @@ export function catalogLaneTokens(
   for (let index = 0; index < opens; index += 1) {
     tokens.push({
       kind: "open",
-      key: `${lane.category}-open-${index}`,
+      key: `${lane.id}-open-${index}`,
       vacancy,
     });
   }

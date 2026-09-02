@@ -1,10 +1,8 @@
 import { BOOST_PIN_CAP } from "./pricing";
 import { extendFeaturedUntil, formatFeaturedUntil } from "./featured";
-import type { Category } from "./types";
 
 export type BoostedLike = {
   id: string;
-  category?: Category | string;
   boostedUntil?: string;
   live?: boolean;
 };
@@ -22,14 +20,10 @@ export const extendBoostedUntil = extendFeaturedUntil;
 
 export function activeBoosted<T extends BoostedLike>(
   templates: T[],
-  category: string,
   now = Date.now()
 ) {
   return templates
-    .filter(
-      (template) =>
-        template.category === category && isBoostedActive(template, now)
-    )
+    .filter((template) => isBoostedActive(template, now))
     .sort((a, b) => {
       const aUntil = Date.parse(a.boostedUntil ?? "") || 0;
       const bUntil = Date.parse(b.boostedUntil ?? "") || 0;
@@ -39,11 +33,10 @@ export function activeBoosted<T extends BoostedLike>(
 
 export function partitionBoosted<T extends BoostedLike>(
   templates: T[],
-  category: string,
   now = Date.now(),
   cap = BOOST_PIN_CAP
 ) {
-  const boosted = activeBoosted(templates, category, now).slice(0, cap);
+  const boosted = activeBoosted(templates, now).slice(0, cap);
   const pinnedIds = new Set(boosted.map((template) => template.id));
   return {
     boosted,
@@ -67,13 +60,10 @@ export function canBuyBoost<T extends BoostedLike>(
       reason: "This share link is down. Boost it after the preview comes back.",
     };
   }
-  if (!template.category) {
-    return { ok: false, reason: "This listing has no job category." };
-  }
   if (isBoostedActive(template, now)) {
     return { ok: true, extend: true };
   }
-  const pinned = activeBoosted(templates, template.category, now).slice(0, cap);
+  const pinned = activeBoosted(templates, now).slice(0, cap);
   if (pinned.length < cap) {
     return { ok: true, extend: false };
   }
@@ -84,8 +74,8 @@ export function canBuyBoost<T extends BoostedLike>(
   return {
     ok: false,
     reason: nextFreeAt
-      ? `Boosts in ${template.category} are full until ${formatFeaturedUntil(nextFreeAt)}.`
-      : `Boosts in ${template.category} are full right now.`,
+      ? `Boosts are full until ${formatFeaturedUntil(nextFreeAt)}.`
+      : "Boosts are full right now.",
     nextFreeAt,
   };
 }

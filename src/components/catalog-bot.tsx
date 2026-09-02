@@ -30,11 +30,11 @@ export function CatalogBot({
   const summary =
     token.kind === "listed"
       ? token.template.summary
-      : `List the first ${token.vacancy.label} bot`;
+      : (token.vacancy.hint ?? "Paste a public share link");
   const label =
     token.kind === "listed"
       ? `${token.template.title}. ${token.template.summary}`
-      : `List the first ${token.vacancy.label} bot`;
+      : summary;
 
   return (
     <Link

@@ -1,18 +1,18 @@
 # Grokdex implementation plan
 
-Dated 2 September 2026. Branch from current `main` (`3fadcf3`, optional X handles). This is an ordered backlog for follow-up work, not a product pitch.
+Dated 2 September 2026. Categories (job filters, job lanes, category boosts, `list_categories`) were removed: the board is a single ranked list, boost is a labeled board strip (max 2), and listing no longer asks for a job.
 
-The board is still founding: **2 live listings** (Writer, Research) against a floor of **8**. Do not buy ads, restore seed bots, or add chrome that needs a full catalog to make sense.
+The board is still founding: **2 live listings** against a floor of **8**. Do not buy ads, restore seed bots, or add chrome that needs a full catalog to make sense.
 
 ## What already ships
 
 | Surface | Behavior |
 |---|---|
-| Board | Hot / Top / New, job filters, `?q=` / `?tag=`, founding OPEN seats |
+| Board | Hot / Top / New, `?q=` / `?tag=` / `?skill=`, founding OPEN seats |
 | List | Paste `https://x.ai/bot/…` on `/upload`. Title, author, description, skills, routines come from the x.ai preview. No account. |
-| Re-paste | Same share URL can attach the **first** X handle. Other fields still hit “already listed.” |
+| Re-paste | Same share URL can attach the **first** X handle and refresh identity, tags, or note. |
 | Votes | Cookie `grokdex_voter`. One ballot per browser per bot. IP rate limit. |
-| Paid | Tips (no rank). Featured pin, max 3. Category boost, max 2 per job. Webhook fulfills, not the success page. |
+| Paid | Tips (no rank). Featured pin, max 3. Board boost, max 2. Webhook fulfills, not the success page. |
 | Trust | Hourly cron refreshes identity + live/down. Report is mailto `report@grokdex.net`. |
 | Agents | MCP `/mcp` and `POST /api/bots`: search, get, list. Proof is a live share URL. |
 | Share | Post on X only after a successful list (`listed-banner`). |
@@ -21,7 +21,7 @@ The board is still founding: **2 live listings** (Writer, Research) against a fl
 
 - **No Grokdex accounts.** No Sign in with X, Clerk, or email login. Cookies, share-URL possession, and MCP stay the identity model.
 - **Listing stays free.** Paid placement is labeled and does not change organic hot/top/new.
-- **No fake seed data.** Empty jobs stay OPEN seats until real share URLs land.
+- **No fake seed data.** Empty seats stay OPEN until real share URLs land.
 - **Independent catalog.** Copy must not imply xAI or SpaceXAI affiliation.
 - **X handle is a public label.** Unverified. First handle sticks. Do not add a verified badge without a new proof scheme.
 - **Adds count clicks**, not confirmed installs. Keep saying that.
@@ -32,7 +32,7 @@ The board is still founding: **2 live listings** (Writer, Research) against a fl
 - Sign in with X / claim-via-OAuth.
 - Changing or clearing an X handle (write-once is the anti-spoof).
 - Search pagination, trending tags, embed widgets, bot comparison.
-- Google Search ads until ~8–12 real listings across jobs.
+- Google Search ads until ~8–12 real listings.
 - Restoring `seed-jarvis` or any curated origin.
 
 ---
@@ -52,7 +52,7 @@ Small, should land with or before workstream 1.
 
 ## 1. Update existing listings
 
-**Why first.** PR #2 already treats a duplicate share URL as a write when an X handle is new. Tags, note, category, and a manual identity refresh still 409. Cron already overwrites title/author/description/skills from x.ai; humans cannot trigger that, and they cannot fix a wrong job.
+**Why first.** PR #2 already treats a duplicate share URL as a write when an X handle is new. Tags, note, and a manual identity refresh still 409. Cron already overwrites title/author/description/skills from x.ai; humans cannot trigger that.
 
 **Credential.** Possession of the public share URL. Same as listing and handle-attach. Turnstile stays on the HTML form. Agents keep the live-preview gate.
 
@@ -62,14 +62,14 @@ Small, should land with or before workstream 1.
 2. Look up the live x.ai preview.
 3. Apply:
    - Identity from x.ai (title, author, description, og image, skills, routines, live).
-   - Optional Grokdex fields if sent: category, tags, note, submittedBy.
+   - Optional Grokdex fields if sent: tags, note, submittedBy.
    - X handle still write-once via `linkXHandleIfEmpty`.
 4. Do **not** change slug, id, createdAt, score, adds, featured, or boosted.
 5. Return 200 with `updated: true` and `listingUrl`. Identical no-op payloads can still 200.
 
 **UI**
 
-- `/upload` when lookup finds an existing bot: “This bot is already listed” plus fields for job, tags, note, and optional first handle. Primary button: **Update listing**.
+- `/upload` when lookup finds an existing bot: “This bot is already listed” plus fields for tags, note, and optional first handle. Primary button: **Update listing**.
 - After success, redirect to `/templates/{slug}?updated=1` (mirror `?listed=1`).
 - Listing page: a quiet “Refresh from x.ai” that is the same re-paste with empty optional fields (form + Turnstile), not a new secret endpoint.
 
@@ -89,7 +89,7 @@ Small, should land with or before workstream 1.
 
 **Done when**
 
-- Re-pasting Writer with a new category and tags updates the row and listing page.
+- Re-pasting Writer with new tags updates the row and listing page.
 - A second different X handle still fails.
 - Cron and manual refresh share the same identity merge (`checkedIdentity` rules).
 
@@ -97,16 +97,16 @@ Small, should land with or before workstream 1.
 
 ## 2. Share and discover
 
-Useful once listings can stay accurate. Cheap. Helps fill empty jobs by making each listing something people actually post.
+Useful once listings can stay accurate. Cheap. Helps fill empty seats by making each listing something people actually post.
 
 | Item | Implementation |
 |---|---|
 | Post on X from every listing | Reuse `listingPostText` + `x.com/intent/tweet` from `listed-banner.tsx` in `add-procedure.tsx` / `listing-trust.tsx`. |
 | Authors index | New `/authors` listing unique `authorName` (and handles). Pages already exist at `/authors/[slug]`. |
 | Clickable skills | `?skill=` on `/templates`, same pattern as `?tag=`. `filterTemplates` already searches skill text; add an exact filter. Chips on the listing page already wrap tags; do the same for skills. |
-| Related bots | Keep same-job as the default. If that list is empty, fall back to overlapping tags/skills so a lonely Writing bot is not an island. |
+| Related bots | Overlapping tags/skills, then other hot listings so a lonely bot is not an island. |
 
-Skip RSS-per-category and keyboard shortcuts until the catalog is bigger.
+Skip RSS feeds and keyboard shortcuts until the catalog is bigger.
 
 ---
 
@@ -150,15 +150,14 @@ Tweet-the-listing-URL is v2 of the same idea. Do not mix it into workstream 1.
 
 ## 6. After the founding floor
 
-README already sets the gate: ~8–12 real listings across jobs.
+README already sets the gate: ~8–12 real listings.
 
 Then, and only then:
 
 - Unpause **Add** Google Search (US, ~$10/day). Keep Share → `/upload` as the primary.
-- Consider a homepage “jobs still open” strip only if seats remain.
 - Featured/boost become worth showing more loudly; they already work.
 
-Until then, filling empty jobs (Work, Founder, Coding, Sales, Ops, Creative, Learning) is the product. Code cannot list bots the owner does not share.
+Until then, filling the board is the product. Code cannot list bots the owner does not share.
 
 ---
 
@@ -173,7 +172,7 @@ Scope: workstream **0 + 1** only.
 3. `publishListing` returns 200 on metadata update.
 4. Upload form existing-bot state + `?updated=1` banner.
 5. FAQ / terms / skill / OpenAPI one-liners.
-6. Tests: create, update tags/category/note, refresh identity, reject handle overwrite, agent 200 vs 201.
+6. Tests: create, update tags/note, refresh identity, reject handle overwrite, agent 200 vs 201.
 
 Out of scope for that PR: Saved, authors index, skill query param, MCP vote, wink.
 
