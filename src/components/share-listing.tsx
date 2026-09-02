@@ -50,7 +50,7 @@ export function ShareListing({
   );
 
   const pill = row
-    ? "h-7 w-auto px-2.5 text-[11px]"
+    ? "h-8 min-h-8 w-auto px-3 text-xs sm:h-7 sm:min-h-7 sm:px-2.5 sm:text-[11px]"
     : compact
       ? "h-8 w-auto px-3 text-[0.8rem]"
       : "h-10 w-full sm:w-auto";
@@ -58,11 +58,7 @@ export function ShareListing({
   const postLabel = row ? "Post" : "Post on X";
 
   const copyButton = (
-    <CopyLinkButton
-      url={post}
-      label={copyLabel}
-      className={cn(pill, row && "hidden sm:inline-flex")}
-    />
+    <CopyLinkButton url={post} label={copyLabel} className={pill} />
   );
   const postButton = (
     <Button

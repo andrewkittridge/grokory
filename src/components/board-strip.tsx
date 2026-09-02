@@ -12,10 +12,16 @@ export function BoardStrip({
   const label = sort ? sort.charAt(0).toUpperCase() + sort.slice(1) : "Hot";
 
   return (
-    <p className="board-strip mt-8 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
+    <p className="board-strip mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
       <span className="inline-flex items-center gap-2 text-foreground">
-        <span className="live-dot" aria-hidden="true" />
-        {founding ? `${count} listed` : label}
+        {founding ? (
+          `${count} listed`
+        ) : (
+          <>
+            <span className="live-dot" aria-hidden="true" />
+            {label}
+          </>
+        )}
       </span>
       {founding ? (
         <>
@@ -23,10 +29,6 @@ export function BoardStrip({
             ·
           </span>
           <span>seats open</span>
-          <span className="text-border" aria-hidden="true">
-            ·
-          </span>
-          <span>{label}</span>
         </>
       ) : (
         <>

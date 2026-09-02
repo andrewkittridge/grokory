@@ -127,21 +127,25 @@ export function LandingBoard({
   return (
     <div className="mt-8 sm:mt-10">
       <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
-        <p className="inline-flex min-w-0 items-baseline gap-x-2.5 overflow-hidden font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
+        <p className="inline-flex min-w-0 items-baseline gap-x-2 overflow-hidden font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
           <span className="inline-flex items-center gap-2 text-foreground">
-            <span className="live-dot" aria-hidden="true" />
             {founding ? (
               `${count} listed`
             ) : (
-              <CountTick value={count} singular="bot" plural="bots" />
+              <>
+                <span className="live-dot" aria-hidden="true" />
+                <CountTick value={count} singular="bot" plural="bots" />
+              </>
             )}
           </span>
-          <span className="text-border" aria-hidden="true">
-            ·
-          </span>
-          <span className="truncate">
-            {founding ? "seats open" : "Hot"}
-          </span>
+          {founding ? (
+            <>
+              <span className="text-border" aria-hidden="true">
+                ·
+              </span>
+              <span className="truncate">seats open</span>
+            </>
+          ) : null}
         </p>
         <Button
           size="sm"

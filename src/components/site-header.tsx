@@ -48,7 +48,11 @@ export function SiteHeader() {
           <HeaderLink href="/catalog" active={pathname === "/catalog"}>
             Catalog
           </HeaderLink>
-          <HeaderLink href="/upload" active={pathname === "/upload"} primary>
+          <HeaderLink
+            href="/upload"
+            active={pathname === "/upload"}
+            primary={pathname !== "/"}
+          >
             Share a bot
           </HeaderLink>
         </nav>
@@ -76,6 +80,7 @@ export function SiteHeader() {
               </Button>
               <Button
                 className="w-full"
+                variant={pathname === "/" ? "outline" : "default"}
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >

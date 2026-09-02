@@ -42,21 +42,21 @@ export function BotListPaste({
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div>
-        <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+        <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
           Have your bot list it
         </p>
-        <p className="mt-3 text-sm leading-6 text-body">
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Paste this skill into your Grok Bot. Then tell it: list me on Grokdex.
         </p>
       </div>
-      <pre className="max-h-56 overflow-auto rounded-lg border border-border bg-canvas-soft p-3 font-mono text-[11px] leading-5 whitespace-pre-wrap text-foreground">
+      <pre className="max-h-40 overflow-auto rounded-lg border border-border/80 bg-transparent p-3 font-mono text-[11px] leading-5 whitespace-pre-wrap text-muted-foreground">
         {skill}
       </pre>
       <CopyText text={skill} label="Copy skill" />
-      <div className="border-t border-border pt-5">
-        <p className="text-sm leading-6 text-body">
+      <div className="border-t border-border pt-4">
+        <p className="text-sm leading-6 text-muted-foreground">
           Or add Grokdex as a custom connector. The bot can then call{" "}
           <span className="font-mono text-xs">list_bot</span>.
         </p>

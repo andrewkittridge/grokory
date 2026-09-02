@@ -3,9 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { RankTick } from "@/components/telemetry";
+import {
+  LIST_AGENT_HREF,
+  LIST_SKILL_PATH,
+  isClaimSeat,
+  type BoardVacancy,
+} from "@/lib/founding";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
 import { cn, motionDelay } from "@/lib/utils";
-import type { BoardVacancy } from "@/lib/founding";
 
 function isOpenSlot(target: EventTarget | null) {
   if (!(target instanceof Node)) return false;
@@ -19,12 +24,14 @@ export function OpenSlots({
   scramble = false,
   delay = 0,
   surface = "board",
+  inviteAgent = false,
 }: {
   slots: BoardVacancy[];
   startRank: number;
   scramble?: boolean;
   delay?: number;
   surface?: "board" | "roster";
+  inviteAgent?: boolean;
 }) {
   const hydrated = useHydrated();
   const reduced = usePrefersReducedMotion();
@@ -33,6 +40,8 @@ export function OpenSlots({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const liveIndex = slots.length === 0 ? 0 : active % slots.length;
+  const showInvite =
+    inviteAgent && slots.some((slot) => isClaimSeat(slot));
 
   useEffect(() => {
     if (!cycle || paused) return;
@@ -90,14 +99,46 @@ export function OpenSlots({
             label={slot.label}
             hint={slot.hint}
             href={slot.href}
-            agentHref={slot.agentHref}
-            agentLabel={slot.agentLabel}
             live={cycle && index === liveIndex}
             surface={surface}
           />
         </li>
       ))}
+      {showInvite ? (
+        <li className="motion-row" style={motionDelay(delay + slots.length)}>
+          <AgentInvite surface={surface} />
+        </li>
+      ) : null}
     </>
+  );
+}
+
+function AgentInvite({ surface }: { surface: "board" | "roster" }) {
+  const roster = surface === "roster";
+
+  return (
+    <p
+      className={cn(
+        "text-xs leading-5 text-muted-foreground",
+        roster ? "px-3 py-3 sm:px-5" : "px-2 py-3"
+      )}
+    >
+      Or have your bot list it
+      <span aria-hidden="true"> · </span>
+      <Link
+        href={LIST_SKILL_PATH}
+        className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+      >
+        Skill
+      </Link>
+      <span aria-hidden="true"> · </span>
+      <Link
+        href={LIST_AGENT_HREF}
+        className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+      >
+        MCP
+      </Link>
+    </p>
   );
 }
 
@@ -107,8 +148,6 @@ function VacantRankRow({
   label = "Share a bot",
   hint,
   href = "/upload",
-  agentHref,
-  agentLabel,
   live = false,
   surface = "board",
 }: {
@@ -119,17 +158,14 @@ function VacantRankRow({
 } & Partial<BoardVacancy>) {
   const go = hint ?? "Paste a share link";
   const roster = surface === "roster";
-  const agent = agentHref
-    ? (agentLabel ?? "MCP list_bot")
-    : undefined;
 
   return (
     <div
       className={cn(
         "rank-row rank-row-open relative items-center overflow-hidden hover:bg-canvas-soft",
         roster
-          ? "rank-row-roster flex gap-x-2 px-3 py-3.5 sm:gap-x-3 sm:px-5 sm:py-4"
-          : "grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3 px-2 py-2.5",
+          ? "flex gap-x-3 px-3 py-4 sm:px-5 sm:py-5"
+          : "grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 px-2 py-3.5 sm:px-3 sm:py-4",
         live && "is-live"
       )}
     >
@@ -139,21 +175,15 @@ function VacantRankRow({
       <Link
         href={href}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
-        aria-label={
-          agent
-            ? `${label}. ${go}. Or have your bot list it with ${agent}.`
-            : hint
-              ? `${label}. ${hint}`
-              : label
-        }
+        aria-label={hint ? `${label}. ${hint}` : label}
       />
       {scramble ? (
         <RankTick
-          rank={rank}
           className={cn(
             "relative z-10 shrink-0 text-muted-foreground",
             roster && "w-8"
           )}
+          rank={rank}
         />
       ) : (
         <span
@@ -169,74 +199,15 @@ function VacantRankRow({
         <span className="rank-open-label block truncate text-[15px] leading-tight">
           {label}
         </span>
-        {roster ? (
-          <span className="rank-open-go mt-0.5 block truncate text-xs leading-5">
-            <span className="pointer-events-auto">
-              <Link
-                href={href}
-                className="relative z-10 hover:text-foreground"
-              >
-                {go}
-              </Link>
-            </span>
-            {agent && agentHref ? (
-              <>
-                <span aria-hidden="true"> · </span>
-                <span className="pointer-events-auto">
-                  <Link
-                    href={agentHref}
-                    className="relative z-10 hover:text-foreground"
-                  >
-                    Skill
-                  </Link>
-                </span>
-                <span aria-hidden="true"> · </span>
-                <span className="pointer-events-auto">
-                  <Link
-                    href={`${href}#agent`}
-                    className="relative z-10 font-mono text-[11px] tracking-[0.08em] hover:text-foreground"
-                  >
-                    {agent}
-                  </Link>
-                </span>
-              </>
-            ) : (
-              <span> →</span>
-            )}
-          </span>
-        ) : hint ? (
-          <span className="rank-open-hint mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] uppercase">
-            {hint}
-            {agent ? (
-              <>
-                <span aria-hidden="true"> · </span>
-                <span className="pointer-events-auto normal-case tracking-normal">
-                  <Link
-                    href={`${href}#agent`}
-                    className="relative z-10 hover:text-foreground"
-                  >
-                    {agent}
-                  </Link>
-                </span>
-              </>
-            ) : null}
-          </span>
-        ) : null}
+        <span
+          className={cn(
+            "rank-open-go mt-0.5 block truncate text-xs leading-5",
+            !roster && "text-muted-foreground"
+          )}
+        >
+          {go}
+        </span>
       </span>
-      {roster && agent ? (
-        <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.12em] uppercase sm:pl-3 sm:text-[10px]">
-          <Link
-            href={`${href}#agent`}
-            className="pointer-events-auto hover:text-foreground"
-          >
-            {agent}
-          </Link>
-        </span>
-      ) : roster && hint ? (
-        <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.16em] uppercase sm:pl-3 sm:text-[10px] sm:tracking-[0.18em]">
-          {hint}
-        </span>
-      ) : null}
     </div>
   );
 }

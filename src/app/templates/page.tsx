@@ -129,6 +129,7 @@ export default async function TemplatesPage({
               templates={templates}
               showVote
               scramble
+              leader
               vacancies={vacancies}
               className="mt-0 border-b border-border"
             />
