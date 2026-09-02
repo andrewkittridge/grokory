@@ -1,7 +1,9 @@
+import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   authorSlug,
   formatCheckedAt,
+  listingPostText,
   reportMailto,
   xHandleLabel,
   xHandleUrl,
@@ -11,9 +13,11 @@ import type { ListedTemplate } from "@/lib/types";
 export function ListingTrust({
   template,
   listingUrl,
+  refresh,
 }: {
   template: ListedTemplate;
   listingUrl: string;
+  refresh?: ReactNode;
 }) {
   const report = reportMailto({
     title: template.title,
@@ -21,6 +25,8 @@ export function ListingTrust({
     botUrl: template.botUrl,
     listingUrl,
   });
+  const post = listingPostText(template.title, listingUrl);
+  const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(post)}`;
 
   return (
     <div className="space-y-3 text-xs leading-5 text-muted-foreground">
@@ -49,12 +55,28 @@ export function ListingTrust({
           Preview on x.ai
         </a>
         <a
+          href={intent}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+        >
+          Post on X
+        </a>
+        <a
           href={report}
           className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
         >
           Report
         </a>
       </p>
+      {refresh ? (
+        <details className="pt-1">
+          <summary className="cursor-pointer hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
+            Refresh from x.ai
+          </summary>
+          <div className="mt-2">{refresh}</div>
+        </details>
+      ) : null}
     </div>
   );
 }
@@ -77,7 +99,11 @@ export function WhatTravels({
         chats.
       </p>
       {skills.length > 0 ? (
-        <LabeledList label="Skills" items={skills} />
+        <LabeledList
+          label="Skills"
+          items={skills}
+          hrefFor={(item) => `/templates?skill=${encodeURIComponent(item)}`}
+        />
       ) : null}
       {routines.length > 0 ? (
         <LabeledList label="Routines" items={routines} />
@@ -92,7 +118,15 @@ export function WhatTravels({
   );
 }
 
-function LabeledList({ label, items }: { label: string; items: string[] }) {
+function LabeledList({
+  label,
+  items,
+  hrefFor,
+}: {
+  label: string;
+  items: string[];
+  hrefFor?: (item: string) => string;
+}) {
   return (
     <div className="mt-4">
       <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
@@ -100,11 +134,19 @@ function LabeledList({ label, items }: { label: string; items: string[] }) {
       </p>
       <ul className="mt-2 flex flex-wrap gap-1.5">
         {items.map((item) => (
-          <li
-            key={item}
-            className="rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground"
-          >
-            {item}
+          <li key={item}>
+            {hrefFor ? (
+              <Link
+                href={hrefFor(item)}
+                className="inline-flex rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground"
+              >
+                {item}
+              </Link>
+            ) : (
+              <span className="inline-flex rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground">
+                {item}
+              </span>
+            )}
           </li>
         ))}
       </ul>

@@ -29,6 +29,7 @@ type Search = {
   q?: string;
   category?: string;
   tag?: string;
+  skill?: string;
   sort?: string;
 };
 
@@ -41,6 +42,7 @@ export default async function TemplatesPage({
   const q = params.q?.trim() ?? "";
   const category = params.category ?? "all";
   const tag = params.tag?.trim().toLowerCase() ?? "";
+  const skill = params.skill?.trim().toLowerCase() ?? "";
   const sort = parseSort(params.sort);
   const all = await listTemplates(await readVoterId());
   const founding = isFoundingBoard(all.length);
@@ -49,6 +51,7 @@ export default async function TemplatesPage({
     q,
     category,
     tag,
+    skill,
   });
   const { featured, organic } = partitionFeatured(filtered);
   const job =
@@ -57,7 +60,7 @@ export default async function TemplatesPage({
     ? partitionBoosted(organic, job)
     : { boosted: [] as typeof organic, rest: organic };
   const templates = sortTemplates(rest, sort);
-  const emptyBoard = !q && !tag && (!category || category === "all");
+  const emptyBoard = !q && !tag && !skill && (!category || category === "all");
   const empty =
     templates.length === 0 && featured.length === 0 && boosted.length === 0;
   const vacancies = emptyBoard
@@ -85,6 +88,7 @@ export default async function TemplatesPage({
           q={q}
           category={category}
           tag={tag}
+          skill={skill}
           sort={sort}
           jobs={jobs}
         />

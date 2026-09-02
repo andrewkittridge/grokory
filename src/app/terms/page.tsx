@@ -38,7 +38,9 @@ export default function TermsPage() {
         proof that you own that account.
         Listings are user-generated. We may refuse, edit, or remove a listing
         (including spam, malware, impersonation, or anything that looks like an
-        official xAI product). Duplicate share URLs are not listed twice. We
+        official xAI product). Duplicate share URLs are not listed twice; paste
+        the same URL again to refresh the listing from x.ai or change the job,
+        tags, or note. The first X handle sticks. We
         may hide a listing from the board when its x.ai share link returns 404.
       </p>
 

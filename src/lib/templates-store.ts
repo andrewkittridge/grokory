@@ -765,6 +765,136 @@ export async function linkXHandleIfEmpty(
   });
 }
 
+export type ListingPatch = {
+  title?: string;
+  authorName?: string;
+  description?: string;
+  summary?: string;
+  ogImage?: string;
+  skills?: string[];
+  routines?: string[];
+  live?: boolean;
+  lastCheckedAt?: string;
+  category?: Category;
+  tags?: string[];
+  note?: string | null;
+  submittedBy?: string;
+};
+
+export type UpdateListingResult =
+  | { ok: true; template: ListedTemplate }
+  | { ok: false; error: string; slug?: string };
+
+function applyListingPatch(
+  current: BotTemplate,
+  patch: ListingPatch
+): BotTemplate {
+  const note =
+    patch.note === null
+      ? undefined
+      : patch.note !== undefined
+        ? patch.note
+        : current.note;
+  return normalizeTemplate({
+    ...current,
+    title: patch.title ?? current.title,
+    authorName: patch.authorName ?? current.authorName,
+    description: patch.description ?? current.description,
+    summary: patch.summary ?? current.summary,
+    ogImage: patch.ogImage ?? current.ogImage,
+    skills: patch.skills ?? current.skills,
+    routines: patch.routines ?? current.routines,
+    live: patch.live ?? current.live,
+    lastCheckedAt: patch.lastCheckedAt ?? current.lastCheckedAt,
+    category: patch.category ?? current.category,
+    tags: patch.tags ?? current.tags,
+    note,
+    submittedBy: patch.submittedBy ?? current.submittedBy,
+  });
+}
+
+async function neonListedByBotId(botId: string) {
+  const db = sql();
+  const rows = (await db`
+    SELECT t.*, COALESCE(v.score, 0)::int AS score
+    FROM templates t
+    LEFT JOIN (
+      SELECT template_id, SUM(value)::int AS score
+      FROM votes
+      GROUP BY template_id
+    ) v ON v.template_id = t.id
+    WHERE t.bot_id = ${botId}
+    LIMIT 1
+  `) as TemplateRow[];
+  return rowsToListed(rows)[0] ?? null;
+}
+
+export async function updateListingFromShare(
+  botId: string,
+  patch: ListingPatch
+): Promise<UpdateListingResult> {
+  if (getDatabaseUrl()) {
+    await ensureNeon();
+    const current = await neonListedByBotId(botId);
+    if (!current) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    const next = applyListingPatch(current, patch);
+    const db = sql();
+    await db`
+      UPDATE templates
+      SET
+        title = ${next.title},
+        author_name = ${next.authorName},
+        summary = ${next.summary},
+        description = ${next.description},
+        og_image = ${next.ogImage ?? null},
+        category = ${next.category},
+        tags = ${next.tags},
+        note = ${next.note ?? null},
+        submitted_by = ${next.submittedBy},
+        live = ${next.live},
+        last_checked_at = ${next.lastCheckedAt ?? null},
+        skills = ${next.skills},
+        routines = ${next.routines}
+      WHERE bot_id = ${botId}
+    `;
+    await invalidateTemplateListCache();
+    const listed = await neonListedByBotId(botId);
+    if (!listed) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    return { ok: true, template: listed };
+  }
+
+  return withLock(async () => {
+    const store = await readStore();
+    const index = store.templates.findIndex((item) => item.botId === botId);
+    if (index < 0) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    const current = normalizeTemplate(store.templates[index]);
+    store.templates[index] = applyListingPatch(current, patch);
+    const written = await writeStore(store);
+    if (!written) {
+      return {
+        ok: false,
+        error:
+          "This host cannot save listings. Set DATABASE_URL to a Neon pooled connection string.",
+        slug: current.slug,
+      };
+    }
+    await invalidateTemplateListCache();
+    const listed = toListed(store.templates, store.votes).find(
+      (item) => item.botId === botId
+    );
+    if (!listed) {
+      return { ok: false, error: "That Grok Bot is not listed yet." };
+    }
+    return { ok: true, template: listed };
+  });
+}
+
 export async function incrementAdds(slug: string) {
   if (getDatabaseUrl()) {
     await ensureNeon();
@@ -902,7 +1032,12 @@ export async function listDueForCheck(limit = 15): Promise<BotTemplate[]> {
     .slice(0, limit);
 }
 
-function checkedIdentity(update: ListingCheckUpdate) {
+export function checkedIdentity(update: {
+  title?: string;
+  authorName?: string;
+  description?: string;
+  summary?: string;
+}) {
   const title = update.title?.trim();
   const authorName = update.authorName?.trim();
   const description = update.description?.trim();

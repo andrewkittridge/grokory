@@ -63,7 +63,7 @@ async function dispatch(message: JsonRpcRequest, request: Request) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "grokdex", version: AGENT_VERSION },
         instructions:
-          "Grokdex is a public board of Grok Bot share links. Use search_bots, get_bot, and list_bot. list_bot publishes a live https://x.ai/bot/… share URL. No auth.",
+          "Grokdex is a public board of Grok Bot share links. Use search_bots, get_bot, list_bot, and refresh_bot. list_bot publishes or updates a live https://x.ai/bot/… share URL. refresh_bot re-fetches identity from x.ai. No auth.",
       });
     case "ping":
       return ok(id, {});
@@ -108,6 +108,41 @@ async function callTool(
     };
   }
 
+  if (name === "refresh_bot") {
+    let shareUrl = str(args.shareUrl);
+    if (!shareUrl) {
+      const slug = str(args.slug);
+      if (!slug) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Pass slug or shareUrl to refresh a listing.",
+            },
+          ],
+          isError: true,
+        };
+      }
+      const templates = await listTemplates();
+      const template = templates.find((item) => item.slug === slug);
+      if (!template) {
+        return {
+          content: [{ type: "text", text: `No listing for slug "${slug}".` }],
+          isError: true,
+        };
+      }
+      shareUrl = template.botUrl;
+    }
+    const listed = await listBotFromAgent(
+      { shareUrl, intent: "refresh" },
+      request
+    );
+    return {
+      content: [{ type: "text", text: JSON.stringify(listed.body) }],
+      isError: listed.status >= 400 && listed.status !== 409,
+    };
+  }
+
   const templates = await listTemplates();
 
   if (name === "list_categories") {
@@ -118,6 +153,7 @@ async function callTool(
     const hits = searchPublicBots(templates, {
       q: str(args.query),
       category: str(args.category),
+      skill: str(args.skill),
       sort: str(args.sort),
     }).slice(0, limit);
     return textResult(JSON.stringify({ bots: hits, count: hits.length }));
