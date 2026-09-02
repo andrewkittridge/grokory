@@ -649,9 +649,9 @@ body {
 }
 
 .hero-wordmark {
-  font-size: clamp(3rem, 8vw, 5.5rem);
-  line-height: 0.9;
-  letter-spacing: -0.055em;
+  font-size: clamp(2.15rem, 7vw, 3.35rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -910,12 +910,12 @@ body {
 .rank-spark {
   position: absolute;
   right: 4.5rem;
-  bottom: 0;
+  bottom: 0.7rem;
   left: 2.25rem;
   z-index: 1;
   height: 1px;
   pointer-events: none;
-  background: color-mix(in srgb, var(--sunset) 40%, transparent);
+  background: color-mix(in srgb, var(--sunset) 28%, transparent);
   transform: scaleX(var(--spark, 0));
   transform-origin: left center;
 }
@@ -947,7 +947,13 @@ body {
 
 .turnstile-quiet {
   max-width: 19rem;
-  opacity: 0.82;
+  min-height: 0;
+  line-height: 0;
+  opacity: 0.72;
+}
+
+.turnstile-quiet:not(:has(iframe)) {
+  display: none;
 }
 
 .rank-row-open::before,

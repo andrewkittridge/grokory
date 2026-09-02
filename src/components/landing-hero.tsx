@@ -24,41 +24,29 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-start sm:gap-6 md:grid-cols-[minmax(0,1fr)_16rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-12">
+        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_7rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_9rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-10">
           <div className="min-w-0">
-            <div className="max-sm:pr-[7.6rem]">
+            <div className="max-sm:flex max-sm:min-h-[4.75rem] max-sm:items-center max-sm:pr-[5.25rem]">
               <HeroWordmark />
-              <LockTitle
-                as="p"
-                display="section"
-                delay={8}
-                className="mt-5 max-w-3xl text-balance"
-              >
-                A ranked board of public Grok Bots.
-              </LockTitle>
             </div>
-            <p
-              className="motion-enter mt-6 max-w-xl text-base leading-7 text-body sm:text-lg sm:leading-8"
-              style={motionDelay(14)}
+            <LockTitle
+              as="p"
+              display="section"
+              delay={8}
+              className="mt-3 max-w-2xl text-balance sm:mt-4"
             >
-              List a public share link — it shows up immediately. Add copies
-              the template onto your Grok account.
-            </p>
+              A ranked board of public Grok Bots.
+            </LockTitle>
             <div
-              className="motion-enter mt-8 flex flex-col gap-3 sm:flex-row"
+              className="motion-enter mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row"
               style={motionDelay(16)}
             >
               {founding ? (
                 <>
-                  <Button
-                    size="lg"
-                    nativeButton={false}
-                    render={<Link href="/upload" />}
-                  >
+                  <Button nativeButton={false} render={<Link href="/upload" />}>
                     Share a bot
                   </Button>
                   <Button
-                    size="lg"
                     variant="outline"
                     nativeButton={false}
                     render={<Link href="/templates" />}
@@ -69,14 +57,12 @@ export function LandingHero({
               ) : (
                 <>
                   <Button
-                    size="lg"
                     nativeButton={false}
                     render={<Link href="/templates" />}
                   >
                     Browse bots
                   </Button>
                   <Button
-                    size="lg"
                     variant="outline"
                     nativeButton={false}
                     render={<Link href="/upload" />}
@@ -88,7 +74,7 @@ export function LandingHero({
             </div>
           </div>
           <div
-            className="motion-enter absolute top-0 right-0 w-[7rem] sm:relative sm:top-auto sm:right-auto sm:mt-6 sm:w-full md:mt-0"
+            className="motion-enter absolute top-0 right-0 w-[4.75rem] sm:relative sm:top-auto sm:right-auto sm:mt-2 sm:w-full md:mt-0"
             style={motionDelay(2)}
           >
             <div className="relative">
@@ -98,7 +84,7 @@ export function LandingHero({
           </div>
         </div>
         <div
-          className="motion-enter mt-8 border-y border-border py-4 sm:mt-10"
+          className="motion-enter mt-5 border-y border-border py-3 sm:mt-6 sm:py-3.5"
           style={motionDelay(18)}
         >
           <BotListPaste compact />
@@ -125,7 +111,7 @@ export function LandingBoard({
   const empty = count === 0 && vacancies.length === 0;
 
   return (
-    <div className="mt-8 sm:mt-10">
+    <div className="mt-5 sm:mt-6">
       <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
         <p className="inline-flex min-w-0 items-baseline gap-x-2 overflow-hidden font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
           <span className="inline-flex items-center gap-2 text-foreground">
@@ -216,7 +202,7 @@ export function LandingBoard({
 
 export function LandingBoardSkeleton() {
   return (
-    <div className="mt-10 sm:mt-12">
+    <div className="mt-5 sm:mt-6">
       <div className="mb-3 flex h-8 items-center justify-between sm:mb-4">
         <div className="h-3 w-36 animate-pulse bg-canvas-soft" />
         <div className="h-8 w-28 animate-pulse rounded-full bg-canvas-soft" />

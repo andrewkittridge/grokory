@@ -75,7 +75,7 @@ export function SiteFooter() {
             </Link>
           </nav>
         </div>
-        <div className="flex flex-col gap-3 py-5 text-xs leading-5 text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <div className="py-5 text-xs leading-5 text-muted-foreground">
           <p>
             Grokdex indexes public{" "}
             <a
@@ -89,12 +89,6 @@ export function SiteFooter() {
             share links. Adding a bot on x.ai copies the template, not the author’s
             computer or logins.
           </p>
-          <Link
-            href="/upload"
-            className="shrink-0 font-mono tracking-wide text-foreground uppercase hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
-          >
-            Share a bot
-          </Link>
         </div>
       </div>
     </footer>
