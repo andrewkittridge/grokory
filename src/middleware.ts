@@ -31,6 +31,14 @@ export function middleware(request: NextRequest) {
   }
 
   const pathname = request.nextUrl.pathname;
+  if (pathname === "/og.png") {
+    const dest = request.nextUrl.clone();
+    dest.pathname = "/opengraph-image.png";
+    const redirected = NextResponse.redirect(dest, 308);
+    redirected.headers.set("content-signal", CONTENT_SIGNAL);
+    return redirected;
+  }
+
   if (shouldServeMarkdown(pathname, request.headers.get("accept"))) {
     const dest = request.nextUrl.clone();
     dest.pathname = "/agent/markdown";

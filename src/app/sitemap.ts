@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { authorSlug } from "@/lib/bot-url";
+import { GUIDES } from "@/lib/guides";
 import { SITE_URL } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 
@@ -65,6 +66,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    ...GUIDES.map((guide) => ({
+      url: `${SITE_URL}${guide.path}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
     {
       url: `${SITE_URL}/llms.txt`,
       lastModified: now,

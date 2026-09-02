@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { BoardStrip } from "@/components/board-strip";
 import { BotFilters } from "@/components/bot-filters";
 import { BotRankList } from "@/components/bot-rank-row";
@@ -15,18 +14,19 @@ import {
 } from "@/lib/founding";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import { filterTemplates } from "@/lib/templates";
+import { pageMetadata } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "The board",
   description:
     "A public board of Grok Bot share links. List yours, upvote the useful ones, then add a copy on x.ai.",
-  alternates: { canonical: "/templates" },
-};
+  path: "/templates",
+});
 
 type Search = {
   q?: string;

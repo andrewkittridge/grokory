@@ -1,5 +1,6 @@
 import { authorSlug, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
+import { getGuide, guideMarkdown } from "./guides";
 import { authorIndex, filterTemplates } from "./templates";
 import { parseSort, sortTemplates } from "./rank";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
@@ -230,6 +231,12 @@ export function pageMarkdown(
   if (path === "/authors") return { status: 200, body: authorsIndexMarkdown(templates) };
   if (path === "/support") return { status: 200, body: supportMarkdown() };
   if (path === "/faq") return { status: 200, body: faqMarkdown() };
+  const guideMatch = path.match(/^\/guides\/([^/]+)$/);
+  if (guideMatch) {
+    const guide = getGuide(guideMatch[1]);
+    if (!guide) return { status: 404, body: "# Not found\n" };
+    return { status: 200, body: guideMarkdown(guide) };
+  }
   if (path === "/privacy") return { status: 200, body: privacyMarkdown() };
   if (path === "/terms") return { status: 200, body: termsMarkdown() };
   const listing = path.match(/^\/templates\/([^/]+)$/);
@@ -465,6 +472,9 @@ Grokdex indexes public Grok Bot share links (\`https://x.ai/bot/…\`). Rankings
 - [Share a bot](${absUrl("/upload/index.md")}): List a public share URL
 - [Authors](${absUrl("/authors/index.md")}): People with a listed Grok Bot
 - [FAQ](${absUrl("/faq/index.md")}): Citable answers for assistants
+- [How to list a Grok Bot](${absUrl("/guides/how-to-list/index.md")}): Paste a public share URL
+- [What is Grokdex](${absUrl("/guides/what-is-grokdex/index.md")}): Grok Bot vs Grokdex
+- [How to add a template](${absUrl("/guides/how-to-add/index.md")}): Preview, then Add
 - [Full text](${absUrl("/llms-full.txt")}): Expanded board dump
 
 ## For agents

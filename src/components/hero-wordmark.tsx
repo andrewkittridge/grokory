@@ -4,9 +4,15 @@ import { cn } from "@/lib/utils";
 
 const LETTERS = SITE_NAME.split("");
 
-export function HeroWordmark({ className }: { className?: string }) {
+export function HeroWordmark({
+  className,
+  as: Comp = "h1",
+}: {
+  className?: string;
+  as?: "h1" | "p";
+}) {
   return (
-    <h1 className={cn("hero-wordmark", className)} aria-label={SITE_NAME}>
+    <Comp className={cn("hero-wordmark", className)} aria-label={SITE_NAME}>
       {LETTERS.map((letter, index) => (
         <span
           key={`${letter}-${index}`}
@@ -17,6 +23,6 @@ export function HeroWordmark({ className }: { className?: string }) {
           {letter}
         </span>
       ))}
-    </h1>
+    </Comp>
   );
 }

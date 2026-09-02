@@ -1,0 +1,16 @@
+HTTP/2 200 
+date: Wed, 02 Sep 2026 21:10:58 GMT
+content-type: text/html; charset=utf-8
+cache-control: public, s-maxage=30, stale-while-revalidate=120
+link: </.well-known/api-catalog>; rel="api-catalog", <https://grokdex.net/openapi.json>; rel="service-desc"; type="application/json", <https://grokdex.net/llms.txt>; rel="describedby"; type="text/plain", <https://grokdex.net/faq>; rel="service-doc"; type="text/html", <https://grokdex.net/.well-known/ai-catalog.json>; rel="ai-catalog"; type="application/json", <https://grokdex.net/.well-known/mcp/server-card.json>; rel="alternate"; type="application/json", <https://grokdex.net/.well-known/agent-card.json>; rel="alternate"; type="application/json", </index.md>; rel="alternate"; type="text/markdown"
+vary: Accept
+content-signal: search=yes, ai-input=yes, ai-train=yes, use=full
+x-grokdex-cache: miss
+x-opennext: 1
+x-powered-by: Next.js
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=wdXHdqWZkUCd8kG17A47BzKdwZe6ASWV8sH0xxHhKXboFa9%2Br6CFbLGRhh6hP7Dldw1uptR8jU6R%2FNLtLxZiO8PELZQsXmi%2BXQc6GBqLFtjB%2FOJUWhdx%2BaUTfJGWUg%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a34f812a5e41ac0d-PDX
+alt-svc: h3=":443"; ma=86400
+

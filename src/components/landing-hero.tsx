@@ -16,9 +16,11 @@ import type { ListedTemplate } from "@/lib/types";
 
 export function LandingHero({
   founding = false,
+  heading = true,
   children,
 }: {
   founding?: boolean;
+  heading?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -27,7 +29,7 @@ export function LandingHero({
         <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_7rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_9rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-10">
           <div className="min-w-0">
             <div className="max-sm:flex max-sm:min-h-[4.75rem] max-sm:items-center max-sm:pr-[5.25rem]">
-              <HeroWordmark />
+              <HeroWordmark as={heading ? "h1" : "p"} />
             </div>
             <LockTitle
               as="p"

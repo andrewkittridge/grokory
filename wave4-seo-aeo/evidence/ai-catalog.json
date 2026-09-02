@@ -1,0 +1,41 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Grokdex",
+    "identifier": "did:web:grokdex.net"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:grokdex.net:server:mcp",
+      "displayName": "Grokdex MCP",
+      "type": "application/mcp-server-card+json",
+      "url": "https://grokdex.net/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "find a public Grok Bot for research",
+        "search Grokdex for coding bots",
+        "list Grok Bot templates I can add",
+        "list my Grok Bot on Grokdex"
+      ]
+    },
+    {
+      "identifier": "urn:air:grokdex.net:api:bots",
+      "displayName": "Grokdex public bots API",
+      "type": "application/json",
+      "url": "https://grokdex.net/api/bots",
+      "representativeQueries": [
+        "public Grok Bot catalog JSON",
+        "Grokdex listings API"
+      ]
+    },
+    {
+      "identifier": "urn:air:grokdex.net:agent:a2a",
+      "displayName": "Grokdex agent card",
+      "type": "application/json",
+      "url": "https://grokdex.net/.well-known/agent-card.json",
+      "representativeQueries": [
+        "Grokdex agent card",
+        "add a Grok Bot from a public board"
+      ]
+    }
+  ]
+}

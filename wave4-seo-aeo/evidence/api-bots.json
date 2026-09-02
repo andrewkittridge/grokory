@@ -1,0 +1,47 @@
+{
+  "bots": [
+    {
+      "slug": "writer-n92u9t",
+      "title": "Writer",
+      "authorName": "Andrew Kittridge",
+      "xHandle": "andrewkittridge",
+      "xUrl": "https://x.com/andrewkittridge",
+      "summary": "Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes.",
+      "description": "Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes.",
+      "tags": [
+        "writing",
+        "drafts",
+        "copy"
+      ],
+      "skills": [],
+      "routines": [],
+      "botUrl": "https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN",
+      "listingUrl": "https://grokdex.net/templates/writer-n92u9t",
+      "score": 1,
+      "adds": 1,
+      "live": true,
+      "featured": false,
+      "createdAt": "2026-09-01T20:24:19.614Z"
+    },
+    {
+      "slug": "research-q6nive",
+      "title": "Research",
+      "authorName": "Andrew Kittridge",
+      "xHandle": "andrewkittridge",
+      "xUrl": "https://x.com/andrewkittridge",
+      "summary": "Primary-source research for anyone who needs cited answers. Separates facts from interpretation and reports to a chief of agents.",
+      "description": "Primary-source research for anyone who needs cited answers. Separates facts from interpretation and reports to a chief of agents.",
+      "tags": [],
+      "skills": [],
+      "routines": [],
+      "botUrl": "https://x.ai/bot/Q6NiveEqmhIiYir_ZQG-4",
+      "listingUrl": "https://grokdex.net/templates/research-q6nive",
+      "score": 1,
+      "adds": 2,
+      "live": true,
+      "featured": false,
+      "createdAt": "2026-08-31T14:51:55.362Z"
+    }
+  ],
+  "count": 2
+}

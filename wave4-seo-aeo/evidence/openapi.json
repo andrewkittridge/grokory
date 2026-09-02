@@ -1,0 +1,157 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Grokdex public API",
+    "version": "0.4.0",
+    "description": "Read the public Grok Bot board and list a live https://x.ai/bot/… share URL. No authentication."
+  },
+  "servers": [
+    {
+      "url": "https://grokdex.net"
+    }
+  ],
+  "paths": {
+    "/api/bots": {
+      "get": {
+        "summary": "List public Grok Bots",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Search title, summary, author, tags, skills"
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "skill",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "hot",
+                "top",
+                "new"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of public listings"
+          }
+        }
+      },
+      "post": {
+        "summary": "List or update a public Grok Bot",
+        "description": "Publish a live https://x.ai/bot/… share URL. Title, author, and description come from the x.ai preview. Re-pasting an existing share URL returns 200 and updates the listing. A conflicting X handle returns 409.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "shareUrl"
+                ],
+                "properties": {
+                  "shareUrl": {
+                    "type": "string",
+                    "description": "Public https://x.ai/bot/… share URL"
+                  },
+                  "tags": {
+                    "type": "string",
+                    "description": "Optional comma-separated tags"
+                  },
+                  "note": {
+                    "type": "string"
+                  },
+                  "submittedBy": {
+                    "type": "string"
+                  },
+                  "xHandle": {
+                    "type": "string",
+                    "description": "Optional X username. Shown on the listing. Not a login and not verified."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated an existing listing: identity from x.ai, optional tags/note, or the first X handle"
+          },
+          "201": {
+            "description": "Listed"
+          },
+          "400": {
+            "description": "Invalid share URL or preview"
+          },
+          "409": {
+            "description": "X handle already set on this listing"
+          },
+          "429": {
+            "description": "Rate limited"
+          }
+        }
+      }
+    },
+    "/api/bots/{slug}": {
+      "get": {
+        "summary": "Get one listing",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Listing"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/status": {
+      "get": {
+        "summary": "Liveness",
+        "responses": {
+          "200": {
+            "description": "ok"
+          }
+        }
+      }
+    }
+  }
+}

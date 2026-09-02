@@ -1,0 +1,21 @@
+=== /og.png ===
+HTTP/1.1 308 Permanent Redirect
+location: /opengraph-image.png
+Refresh: 0;url=/opengraph-image.png
+Date: Wed, 02 Sep 2026 21:30:42 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+
+
+HTTP/1.1 200 OK
+content-signal: search=yes, ai-input=yes, ai-train=yes, use=full
+link: </.well-known/api-catalog>; rel="api-catalog", <https://grokdex.net/openapi.json>; rel="service-desc"; type="application/json", <https://grokdex.net/llms.txt>; rel="describedby"; type="text/plain", <https://grokdex.net/faq>; rel="service-doc"; type="text/html", <https://grokdex.net/.well-known/ai-catalog.json>; rel="ai-catalog"; type="application/json", <https://grokdex.net/.well-known/mcp/server-card.json>; rel="alternate"; type="application/json", <https://grokdex.net/.well-known/agent-card.json>; rel="alternate"; type="application/json", </opengraph-image.png/index.md>; rel="alternate"; type="text/markdown"
+vary: Accept
+Cache-Control: no-cache, must-revalidate
+Accept-Ranges: bytes
+Last-Modified: Wed, 02 Sep 2026 16:07:13 GMT
+ETag: W/"3a84-1a062dfdbd6"
+Content-Type: image/png
+Content-Length: 14980
+Date: Wed, 02 Sep 2026 21:30:42 GMT
+Connection: keep-alive

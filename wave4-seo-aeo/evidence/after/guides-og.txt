@@ -1,0 +1,33 @@
+URL: http://127.0.0.1:43127/guides/how-to-list
+title: How to list a Grok Bot on Grokdex · Grokdex
+H1 count: 1
+<h1 class="display-page motion-lock mt-4" style="--d:1">How to list a Grok Bot on Grokdex<span class="motion-lock-scan" aria-hidden="true"></span></h1>
+
+<meta property="og:title" content="How to list a Grok Bot on Grokdex"/>
+<meta property="og:description" content="Paste a public https://x.ai/bot/… share link. Listing is free. No Grokdex account. Your bot can list itself."/>
+<meta property="og:url" content="https://grokdex.net/guides/how-to-list"/>
+<meta name="twitter:title" content="How to list a Grok Bot on Grokdex"/>
+
+---
+URL: http://127.0.0.1:43127/guides/what-is-grokdex
+title: What is a Grok Bot / What is Grokdex · Grokdex
+H1 count: 1
+<h1 class="display-page motion-lock mt-4" style="--d:1">What is a Grok Bot / What is Grokdex<span class="motion-lock-scan" aria-hidden="true"></span></h1>
+
+<meta property="og:title" content="What is a Grok Bot / What is Grokdex"/>
+<meta property="og:description" content="A Grok Bot is a custom agent on x.ai. Grokdex is a public board of those share links. Independent — not affiliated with xAI."/>
+<meta property="og:url" content="https://grokdex.net/guides/what-is-grokdex"/>
+<meta name="twitter:title" content="What is a Grok Bot / What is Grokdex"/>
+
+---
+URL: http://127.0.0.1:43127/guides/how-to-add
+title: How to add a template to your Grok account · Grokdex
+H1 count: 1
+<h1 class="display-page motion-lock mt-4" style="--d:1">How to add a template to your Grok account<span class="motion-lock-scan" aria-hidden="true"></span></h1>
+
+<meta property="og:title" content="How to add a template to your Grok account · Grokdex"/>
+<meta property="og:description" content="Open a Grokdex listing, Preview on x.ai, then Add. Add copies the template onto your Grok account. Adds count clicks, not installs."/>
+<meta property="og:url" content="https://grokdex.net/guides/how-to-add"/>
+<meta name="twitter:title" content="How to add a template to your Grok account · Grokdex"/>
+
+---

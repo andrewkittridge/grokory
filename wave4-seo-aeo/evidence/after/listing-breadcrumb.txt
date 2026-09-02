@@ -1,0 +1,30 @@
+URL: http://127.0.0.1:43127/templates/writer-n92u9t
+title: Writer · Grokdex
+canonical: https://grokdex.net/templates/writer-n92u9t
+
+## OG / Twitter
+<meta property="og:title" content="Writer"/>
+<meta property="og:description" content="Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes."/>
+<meta property="og:url" content="https://grokdex.net/templates/writer-n92u9t"/>
+<meta property="og:image" content="http://localhost:43127/templates/writer-n92u9t/opengraph-image?86f2d74432a62a27"/>
+<meta property="og:image:type" content="image/png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:image:alt" content="Grokdex listing"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Writer"/>
+<meta name="twitter:description" content="Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes."/>
+<meta name="twitter:image" content="http://localhost:43127/templates/writer-n92u9t/twitter-image?8acac553e66d5e63"/>
+<meta name="twitter:image:alt" content="Grokdex listing"/>
+<meta name="twitter:image:type" content="image/png"/>
+<meta name="twitter:image:width" content="1200"/>
+<meta name="twitter:image:height" content="630"/>
+
+## H1 count: 1
+<h1 class="display-page motion-lock" style="--d:0">Writer<span class="motion-lock-scan" aria-hidden="true"></span></h1>
+
+## JSON-LD
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Writer","applicationCategory":"DeveloperApplication","description":"Drafts posts, emails, and short copy in your voice. Short and direct. Never sends without your yes.","url":"http://127.0.0.1:43127/templates/writer-n92u9t","author":{"@type":"Person","name":"Andrew Kittridge","sameAs":"https://x.com/andrewkittridge"},"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isRelatedTo":{"@type":"WebSite","name":"Grokdex","url":"https://grokdex.net"}}
+
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Board","item":"https://grokdex.net/templates"},{"@type":"ListItem","position":2,"name":"Writer","item":"https://grokdex.net/templates/writer-n92u9t"}]}
+

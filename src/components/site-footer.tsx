@@ -50,6 +50,12 @@ export function SiteFooter() {
               Authors
             </Link>
             <Link
+              href="/guides/how-to-list"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              How to list
+            </Link>
+            <Link
               href="/faq"
               className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >
