@@ -5,6 +5,7 @@ import {
   fetchBotPreview,
   parseBotHtml,
 } from "./fetch-bot";
+import { GROK_BOT_TEARDROP_HEAD } from "./grok-bot-shapes";
 
 const originalFetch = globalThis.fetch;
 
@@ -104,6 +105,23 @@ test("parseBotHtml reads identity from the live x.ai RSC payload", () => {
   );
   assert.deepEqual(page.skills, []);
   assert.deepEqual(page.routines, []);
+});
+
+test("parseBotHtml reads the share-page identity mark", () => {
+  const page = parseBotHtml(`<!doctype html>
+    <h1 title="Research">Research</h1>
+    <span class="share-template-mark" style="--share-coat-light:#FFAF38;--share-coat-dark:#FF9800">
+      <svg class="grok-bot-mark" viewBox="-15 -15 259 259">
+        <defs><clipPath id="c"><path d="${GROK_BOT_TEARDROP_HEAD}"></path></clipPath></defs>
+        <path class="grok-bot-mark__head" d="${GROK_BOT_TEARDROP_HEAD}"></path>
+      </svg>
+    </span>
+  `);
+  assert.deepEqual(page.mark, {
+    coatLight: "#FFAF38",
+    coatDark: "#FF9800",
+    shape: "teardrop",
+  });
 });
 
 test("parseBotHtml marks a missing bot as gone", () => {

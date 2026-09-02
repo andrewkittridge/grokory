@@ -80,6 +80,7 @@ async function listOne(spec: Spec) {
     summary: preview.summary,
     description: preview.description,
     ogImage: preview.ogImage,
+    mark: preview.mark,
     category,
     tags: [],
     note: spec.note,
