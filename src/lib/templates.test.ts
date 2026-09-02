@@ -184,6 +184,25 @@ test("catalogLaneTokens pads empty and sparse jobs with Open seats", () => {
   }
 });
 
+test("catalogLaneTokens keep the share-page mark on listed bots", () => {
+  const mark = {
+    coatLight: "#FFAF38",
+    coatDark: "#FF9800",
+    shape: "teardrop" as const,
+  };
+  const tokens = catalogLaneTokens(
+    {
+      category: "Research",
+      templates: [bot({ mark })],
+    },
+    NOW
+  );
+  assert.equal(tokens[0]?.kind, "listed");
+  if (tokens[0]?.kind === "listed") {
+    assert.deepEqual(tokens[0].template.mark, mark);
+  }
+});
+
 test("relatedTemplates falls back to overlapping skills when a job is empty", () => {
   const current = bot({
     id: "writer",

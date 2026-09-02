@@ -4,7 +4,7 @@ import type { CSSProperties } from "react";
 import { useRef } from "react";
 import Link from "next/link";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
-import { GrokBotMark, hopGrokBot } from "@/components/grok-bot";
+import { GrokBotIdentityMark, GrokBotMark, hopGrokBot } from "@/components/grok-bot";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import type { CatalogToken } from "@/lib/templates";
 import { cn } from "@/lib/utils";
@@ -63,7 +63,8 @@ export function CatalogBot({
             featured
               ? "w-[5.9rem] sm:w-[6.6rem]"
               : "w-[4.8rem] sm:w-[5.5rem]",
-            token.kind === "open" && "is-ghost"
+            token.kind === "open" && "is-ghost",
+            token.kind === "listed" && token.template.mark && "is-identity"
           )}
           style={
             {
@@ -73,7 +74,11 @@ export function CatalogBot({
             } as CSSProperties
           }
         >
-          <GrokBotMark />
+          {token.kind === "listed" && token.template.mark ? (
+            <GrokBotIdentityMark mark={token.template.mark} />
+          ) : (
+            <GrokBotMark />
+          )}
         </span>
       </span>
       <span className="mt-1 flex min-w-0 flex-col items-center text-center">

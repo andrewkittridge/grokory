@@ -1,5 +1,6 @@
 import { grokbotTemplateUrl, parseShareUrl } from "./bot-url";
-import type { BotPreview } from "./types";
+import { parseShareMark } from "./bot-mark";
+import type { BotMark, BotPreview } from "./types";
 
 const PREVIEW_TTL = 60 * 60 * 6;
 const GONE_TTL = 60 * 30;
@@ -76,6 +77,7 @@ export type ParsedBotPage = {
   description?: string;
   ogImage?: string;
   addHref?: string;
+  mark?: BotMark;
   skills: string[];
   routines: string[];
 };
@@ -167,6 +169,7 @@ export function parseBotHtml(html: string): ParsedBotPage {
     description,
     ogImage,
     addHref,
+    mark: parseShareMark(html),
     skills: extractSectionList(html, "Skills"),
     routines: extractSectionList(html, "Routines"),
   };
@@ -191,6 +194,7 @@ function previewFromParsed(
     description: description.slice(0, 2000),
     ogImage: page.ogImage,
     addHref: page.addHref ?? grokbotTemplateUrl(parsed.botId),
+    mark: page.mark,
     skills: page.skills,
     routines: page.routines,
   };
@@ -216,7 +220,7 @@ async function readCached(botId: string): Promise<CacheEntry | undefined> {
   const kv = await previewCache();
   if (!kv) return undefined;
   try {
-    const raw = await kv.get(`bot-preview:v1:${botId}`, "text");
+    const raw = await kv.get(`bot-preview:v2:${botId}`, "text");
     if (!raw) return undefined;
     return JSON.parse(raw) as CacheEntry;
   } catch {
@@ -232,7 +236,7 @@ async function writeCached(
   const kv = await previewCache();
   if (!kv) return;
   try {
-    await kv.put(`bot-preview:v1:${botId}`, JSON.stringify(entry), {
+    await kv.put(`bot-preview:v2:${botId}`, JSON.stringify(entry), {
       expirationTtl: ttl,
     });
   } catch {

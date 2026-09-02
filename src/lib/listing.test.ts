@@ -20,6 +20,11 @@ function preview(over: Partial<BotPreview> = {}): BotPreview {
     description: "A chief of agents for a solo founder who routes work.",
     skills: ["route"],
     routines: ["stand-up"],
+    mark: {
+      coatLight: "#000000",
+      coatDark: "#FFFFFF",
+      shape: "blob",
+    },
     ...over,
   };
 }
@@ -268,6 +273,11 @@ test("refresh intent skips job, tags, and note", async () => {
         assert.equal(patch.tags, undefined);
         assert.equal(patch.note, undefined);
         assert.equal(patch.title, "Jarvis");
+        assert.deepEqual(patch.mark, {
+          coatLight: "#000000",
+          coatDark: "#FFFFFF",
+          shape: "blob",
+        });
         return { ok: true, template: listed() };
       },
     })
@@ -312,6 +322,11 @@ test("agent listings use x.ai preview fields", async () => {
         assert.equal(template.authorName, "Andrew");
         assert.equal(template.submittedBy, "Grok Bot");
         assert.deepEqual(template.skills, ["route"]);
+        assert.deepEqual(template.mark, {
+          coatLight: "#000000",
+          coatDark: "#FFFFFF",
+          shape: "blob",
+        });
         return { ok: true, template: saved(template) };
       },
     })

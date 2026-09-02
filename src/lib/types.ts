@@ -14,6 +14,18 @@ export type Category = (typeof CATEGORIES)[number];
 
 export type TemplateOrigin = "curated" | "community";
 
+export const BOT_MARK_SHAPES = ["teardrop", "blob"] as const;
+
+export type BotMarkShape = (typeof BOT_MARK_SHAPES)[number];
+
+/** Share-page identity: coat colors plus a named silhouette or custom head path. */
+export type BotMark = {
+  coatLight: string;
+  coatDark: string;
+  shape?: BotMarkShape;
+  headPath?: string;
+};
+
 export type SortMode = "hot" | "top" | "new";
 
 export type VoteValue = 1 | -1;
@@ -35,6 +47,7 @@ export type BotTemplate = {
   summary: string;
   description: string;
   ogImage?: string;
+  mark?: BotMark;
   category: Category;
   tags: string[];
   note?: string;
@@ -65,6 +78,7 @@ export type BotPreview = {
   description: string;
   ogImage?: string;
   addHref?: string;
+  mark?: BotMark;
   skills: string[];
   routines: string[];
 };

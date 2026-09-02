@@ -28,6 +28,7 @@ export async function refreshDueListings(limit = 15) {
         live: true,
         lastCheckedAt: now,
         ogImage: result.preview.ogImage,
+        mark: result.preview.mark,
         skills: result.preview.skills,
         routines: result.preview.routines,
         title: result.preview.title,

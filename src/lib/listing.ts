@@ -218,6 +218,7 @@ export async function publishListing(
       summary,
       description: resolvedDescription.slice(0, 2000),
       ogImage: preview?.ogImage,
+      mark: preview?.mark,
       category: input.category,
       tags: normalizeTags(input.tags),
       note: (input.note ?? "").trim().slice(0, 400) || undefined,
@@ -369,6 +370,7 @@ async function updateExistingListing(args: {
             : patch.description;
     }
     if (preview.ogImage) patch.ogImage = preview.ogImage;
+    if (preview.mark) patch.mark = preview.mark;
     patch.skills = preview.skills;
     patch.routines = preview.routines;
     patch.live = true;

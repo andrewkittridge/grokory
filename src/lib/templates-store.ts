@@ -13,7 +13,9 @@ import {
 import { extendFeaturedUntil } from "./featured";
 import { applyBallot } from "./vote";
 import type { VoteResult } from "./vote";
+import { markFromStored, sanitizeMark, serializeMark } from "./bot-mark";
 import type {
+  BotMark,
   BotTemplate,
   Category,
   ListedTemplate,
@@ -54,6 +56,7 @@ type TemplateRow = {
   summary: string;
   description: string;
   og_image: string | null;
+  mark?: string | BotMark | null;
   category: string;
   tags: string[];
   note: string | null;
@@ -76,6 +79,7 @@ export type ListingCheckUpdate = {
   live: boolean;
   lastCheckedAt: string;
   ogImage?: string;
+  mark?: BotMark;
   skills?: string[];
   routines?: string[];
   title?: string;
@@ -141,6 +145,7 @@ function normalizeTemplate(template: BotTemplate): BotTemplate {
     featured: template.featured,
     boostedUntil: template.boostedUntil,
     xHandle: template.xHandle?.trim() || undefined,
+    mark: sanitizeMark(template.mark),
   };
 }
 
@@ -193,6 +198,7 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
     summary: row.summary,
     description: row.description,
     ogImage: row.og_image ?? undefined,
+    mark: markFromStored(row.mark),
     category: row.category as Category,
     tags: row.tags ?? [],
     note: row.note ?? undefined,
@@ -370,6 +376,7 @@ async function ensureNeon() {
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS featured_until timestamptz`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS x_handle text`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS mark text`,
         db`CREATE TABLE IF NOT EXISTS stripe_sessions (
           session_id text PRIMARY KEY,
           kind text NOT NULL,
@@ -639,13 +646,13 @@ export async function addTemplate(
       INSERT INTO templates (
         id, slug, bot_id, bot_url, title, author_name, x_handle, summary, description,
         og_image, category, tags, note, submitted_by, origin, featured, featured_until, boosted_until, created_at, adds,
-        live, last_checked_at, skills, routines
+        live, last_checked_at, skills, routines, mark
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
         ${saved.authorName}, ${saved.xHandle ?? null}, ${saved.summary}, ${saved.description}, ${saved.ogImage ?? null},
         ${saved.category}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
         ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.boostedUntil ?? null}, ${saved.createdAt}, ${saved.adds},
-        ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}
+        ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}, ${serializeMark(saved.mark)}
       )
     `;
     await invalidateTemplateListCache();
@@ -771,6 +778,7 @@ export type ListingPatch = {
   description?: string;
   summary?: string;
   ogImage?: string;
+  mark?: BotMark;
   skills?: string[];
   routines?: string[];
   live?: boolean;
@@ -802,6 +810,7 @@ function applyListingPatch(
     description: patch.description ?? current.description,
     summary: patch.summary ?? current.summary,
     ogImage: patch.ogImage ?? current.ogImage,
+    mark: patch.mark ?? current.mark,
     skills: patch.skills ?? current.skills,
     routines: patch.routines ?? current.routines,
     live: patch.live ?? current.live,
@@ -849,6 +858,7 @@ export async function updateListingFromShare(
         summary = ${next.summary},
         description = ${next.description},
         og_image = ${next.ogImage ?? null},
+        mark = COALESCE(${serializeMark(next.mark)}, mark),
         category = ${next.category},
         tags = ${next.tags},
         note = ${next.note ?? null},
@@ -1014,6 +1024,7 @@ export async function setVote(
 const STALE_MS = 12 * 60 * 60 * 1000;
 
 function isDue(template: BotTemplate) {
+  if (!template.mark) return true;
   if (!template.lastCheckedAt) return true;
   const then = Date.parse(template.lastCheckedAt);
   if (!Number.isFinite(then)) return true;
@@ -1057,6 +1068,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
     await ensureNeon();
     const db = sql();
     const ogImage = update.ogImage ?? null;
+    const mark = serializeMark(update.mark);
     const title = identity.title ?? null;
     const authorName = identity.authorName ?? null;
     const description = identity.description ?? null;
@@ -1068,6 +1080,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
           live = ${update.live},
           last_checked_at = ${update.lastCheckedAt},
           og_image = COALESCE(${ogImage}, og_image),
+          mark = COALESCE(${mark}, mark),
           skills = ${update.skills},
           routines = ${update.routines},
           title = COALESCE(${title}, title),
@@ -1106,6 +1119,7 @@ export async function applyListingCheck(update: ListingCheckUpdate) {
       live: update.live,
       lastCheckedAt: update.lastCheckedAt,
       ogImage: update.ogImage ?? current.ogImage,
+      mark: update.mark ?? current.mark,
       skills: update.skills ?? current.skills,
       routines: update.routines ?? current.routines,
       title: identity.title ?? current.title,

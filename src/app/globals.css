@@ -785,12 +785,25 @@ body {
   transform: rotate(calc(var(--yaw) * 1deg));
 }
 
+.grok-bot.is-identity .grok-bot-yaw {
+  transform-origin: 114px 114px;
+}
+
 .grok-bot-eyes {
   transform-box: view-box;
   transform-origin: 160px 72px;
   transform: translate(
       calc(var(--gaze-x) * 16px),
       calc(var(--gaze-y) * 14px)
+    )
+    scale(var(--eye-scale));
+}
+
+.grok-bot.is-identity .grok-bot-eyes {
+  transform-origin: 114px 100px;
+  transform: translate(
+      calc(var(--gaze-x) * 10px),
+      calc(var(--gaze-y) * 9px)
     )
     scale(var(--eye-scale));
 }
