@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { filterTemplates } from "./templates";
+import { authorIndex, filterTemplates, relatedTemplates } from "./templates";
 import type { ListedTemplate } from "./types";
 
 function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
@@ -43,6 +43,13 @@ test("filterTemplates matches category, tag, and query", () => {
 
   assert.equal(filterTemplates(all, { category: "Coding" }).length, 1);
   assert.equal(filterTemplates(all, { tag: "citations" })[0]?.id, "id");
+  assert.equal(
+    filterTemplates(
+      [research, bot({ id: "cite", skills: ["Cite sources"] })],
+      { skill: "cite sources" }
+    )[0]?.id,
+    "cite"
+  );
   assert.equal(filterTemplates(all, { q: "outer loop" })[0]?.id, "loops");
   assert.equal(filterTemplates(all, { category: "Coding", tag: "citations" }).length, 0);
   assert.equal(
@@ -50,4 +57,30 @@ test("filterTemplates matches category, tag, and query", () => {
       ?.xHandle,
     "kittridge"
   );
+});
+
+test("relatedTemplates falls back to overlapping skills when a job is empty", () => {
+  const current = bot({
+    id: "writer",
+    slug: "writer",
+    category: "Writing",
+    skills: ["draft"],
+  });
+  const otherJob = bot({
+    id: "ops",
+    slug: "ops",
+    category: "Ops",
+    skills: ["draft"],
+  });
+  const unrelated = bot({
+    id: "code",
+    slug: "code",
+    category: "Coding",
+    skills: ["lint"],
+  });
+  assert.equal(
+    relatedTemplates([current, otherJob, unrelated], current)[0]?.id,
+    "ops"
+  );
+  assert.equal(authorIndex([current, bot({ authorName: "Andrew" })]).length, 1);
 });

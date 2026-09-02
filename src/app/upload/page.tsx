@@ -48,7 +48,9 @@ export default async function UploadPage({
         <span className="font-mono text-sm text-foreground">
           https://x.ai/bot/…
         </span>
-        . Pick a job, and it lists immediately. Listing is free.
+        . Pick a job, and it lists immediately. Listing is free. Already listed?
+        Paste the same link to refresh it from x.ai or change the job, tags, or
+        note.
       </p>
       <div className="motion-enter mt-10" style={motionDelay(3)}>
         <Frame staticFrame matClassName="p-5 sm:p-8">

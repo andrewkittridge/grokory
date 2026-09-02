@@ -13,6 +13,7 @@ export function ListedBanner({
   shareUrl,
   xHandle,
   justLinked = false,
+  justUpdated = false,
 }: {
   title: string;
   listingUrl: string;
@@ -20,21 +21,32 @@ export function ListedBanner({
   shareUrl?: string;
   xHandle?: string;
   justLinked?: boolean;
+  justUpdated?: boolean;
 }) {
   const post = listingPostText(title, listingUrl);
   const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(post)}`;
   const linkHandleHref = shareUrl
     ? `/upload?share=${encodeURIComponent(shareUrl)}`
     : "/upload";
+  const kicker = justUpdated
+    ? "Updated"
+    : justLinked
+      ? "Handle linked"
+      : "Listed";
+  const headline = justUpdated
+    ? "Updated."
+    : justLinked
+      ? "Handle linked."
+      : "Listed.";
 
   return (
     <Frame staticFrame matClassName="p-5 sm:p-6">
       <p className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
         <span className="live-dot" aria-hidden="true" />
-        {justLinked ? "Handle linked" : "Listed"}
+        {kicker}
       </p>
       <LockTitle as="p" display="section" className="mt-2">
-        {justLinked ? "Handle linked." : "Listed."}
+        {headline}
       </LockTitle>
       <p className="mt-1 text-sm leading-6 text-muted-foreground">
         {xHandle

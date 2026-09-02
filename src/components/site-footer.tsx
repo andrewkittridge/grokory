@@ -38,6 +38,12 @@ export function SiteFooter() {
               RSS
             </a>
             <Link
+              href="/authors"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              Authors
+            </Link>
+            <Link
               href="/faq"
               className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >

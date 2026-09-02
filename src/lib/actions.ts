@@ -3,18 +3,32 @@
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { incrementAdds as bumpAdds, setVote } from "./templates-store";
+import {
+  findByBotId,
+  incrementAdds as bumpAdds,
+  setVote,
+} from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import { parseShareUrl } from "./bot-url";
 import { publishListing } from "./listing";
 import { consumeVoteRate, headerIp } from "./rate-limit";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
-import type { BotPreview, VoteValue } from "./types";
+import type { BotPreview, Category, VoteValue } from "./types";
 
 export type ActionState = {
   error?: string;
   slug?: string;
+};
+
+export type ExistingLookup = {
+  slug: string;
+  title: string;
+  category: Category;
+  tags: string[];
+  note?: string;
+  submittedBy: string;
+  xHandle?: string;
 };
 
 export type LookupState = {
@@ -22,6 +36,7 @@ export type LookupState = {
   soft?: boolean;
   preview?: BotPreview;
   input?: string;
+  existing?: ExistingLookup;
 };
 
 export async function lookupShareLink(
@@ -40,11 +55,30 @@ export async function lookupShareLink(
       input: shareInput,
     };
   }
-  const result = await fetchBotPreview(parsed.botUrl);
+  const [result, listed] = await Promise.all([
+    fetchBotPreview(parsed.botUrl),
+    findByBotId(parsed.botId),
+  ]);
+  const existing = listed
+    ? {
+        slug: listed.slug,
+        title: listed.title,
+        category: listed.category,
+        tags: listed.tags,
+        note: listed.note,
+        submittedBy: listed.submittedBy,
+        xHandle: listed.xHandle,
+      }
+    : undefined;
   if (!result.ok) {
-    return { error: result.error, soft: true, input: parsed.botUrl };
+    return {
+      error: result.error,
+      soft: true,
+      input: parsed.botUrl,
+      existing,
+    };
   }
-  return { preview: result.preview, input: parsed.botUrl };
+  return { preview: result.preview, input: parsed.botUrl, existing };
 }
 
 export async function createListing(
@@ -54,6 +88,8 @@ export async function createListing(
   const blocked = await verifyTurnstile(formData);
   if (blocked) return { error: blocked };
 
+  const intentRaw = String(formData.get("intent") ?? "publish");
+  const intent = intentRaw === "refresh" ? "refresh" : "publish";
   const result = await publishListing({
     shareUrl: String(formData.get("shareUrl") ?? ""),
     category: String(formData.get("category") ?? ""),
@@ -65,14 +101,18 @@ export async function createListing(
     xHandle: String(formData.get("xHandle") ?? ""),
     description: String(formData.get("description") ?? ""),
     source: "form",
+    intent,
+    applyFields: String(formData.get("updateFields") ?? "") === "1",
   });
   if (!result.ok) {
     return { error: result.error, slug: result.slug };
   }
-  if (result.linked) {
-    redirect(`/templates/${result.slug}?linked=1`);
-  }
-  redirect(`/templates/${result.slug}?listed=1`);
+  const query = new URLSearchParams();
+  if (result.updated) query.set("updated", "1");
+  else if (result.linked) query.set("linked", "1");
+  else query.set("listed", "1");
+  if (result.linked && result.updated) query.set("linked", "1");
+  redirect(`/templates/${result.slug}?${query.toString()}`);
 }
 
 export async function recordAdd(slug: string) {

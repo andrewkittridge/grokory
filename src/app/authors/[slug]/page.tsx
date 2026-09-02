@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
@@ -57,10 +58,17 @@ export default async function AuthorPage({
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <JsonLd data={itemListJson(templates, `/authors/${slug}`)} />
       <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
+        className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
         style={motionDelay(0)}
       >
-        Author
+        <Link
+          href="/authors"
+          className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+        >
+          Authors
+        </Link>
+        <span className="mx-2 text-border">/</span>
+        {name}
       </p>
       <LockTitle delay={1} className="mt-4">
         {name}
