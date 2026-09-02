@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
+import { ShareListing } from "@/components/share-listing";
 import { Button } from "@/components/ui/button";
-import { listingPostText } from "@/lib/bot-url";
 import { FEATURED_PLANS } from "@/lib/pricing";
+import type { Category } from "@/lib/types";
 
 export function ListedBanner({
   title,
@@ -12,6 +12,8 @@ export function ListedBanner({
   featureHref,
   shareUrl,
   xHandle,
+  category,
+  firstInJob = false,
   justLinked = false,
   justUpdated = false,
 }: {
@@ -20,11 +22,11 @@ export function ListedBanner({
   featureHref?: string;
   shareUrl?: string;
   xHandle?: string;
+  category?: Category;
+  firstInJob?: boolean;
   justLinked?: boolean;
   justUpdated?: boolean;
 }) {
-  const post = listingPostText(title, listingUrl);
-  const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(post)}`;
   const linkHandleHref = shareUrl
     ? `/upload?share=${encodeURIComponent(shareUrl)}`
     : "/upload";
@@ -64,21 +66,13 @@ export function ListedBanner({
             {FEATURED_PLANS[0].durationLabel}
           </Button>
         ) : null}
-        <CopyLinkButton
-          url={post}
-          label="Copy a post"
-          className="sm:w-auto"
+        <ShareListing
+          title={title}
+          listingUrl={listingUrl}
+          category={category}
+          xHandle={xHandle}
+          firstInJob={firstInJob}
         />
-        <Button
-          variant="outline"
-          className="h-10 w-full sm:w-auto"
-          nativeButton={false}
-          render={
-            <a href={intent} target="_blank" rel="noopener noreferrer" />
-          }
-        >
-          Post on X
-        </Button>
         {!xHandle ? (
           <Button
             variant="outline"
