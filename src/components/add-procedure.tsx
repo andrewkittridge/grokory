@@ -2,6 +2,7 @@ import { AddBotButton } from "@/components/add-bot-button";
 import { CopyLinkButton } from "@/components/copy-link-button";
 import { Frame } from "@/components/frame";
 import { ListingTrust } from "@/components/listing-trust";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 import type { ReactNode } from "react";
@@ -53,11 +54,28 @@ export function AddProcedure({
           </p>
           <div className="mt-2">
             {template.live ? (
-              <AddBotButton
-                slug={template.slug}
-                botId={template.botId}
-                size="lg"
-              />
+              <div className="flex flex-col gap-2">
+                <AddBotButton
+                  slug={template.slug}
+                  botId={template.botId}
+                  size="lg"
+                />
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full"
+                  nativeButton={false}
+                  render={
+                    <a
+                      href={template.botUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    />
+                  }
+                >
+                  Preview on x.ai
+                </Button>
+              </div>
             ) : (
               <p className="rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive">
                 This share link is down on x.ai. It is hidden from the board
@@ -66,7 +84,7 @@ export function AddProcedure({
             )}
             {template.live ? (
               <p className="mt-3 text-xs leading-5 text-muted-foreground">
-                Opens the Grok Bot app. If you don’t have it, preview on x.ai.
+                Add opens the Grok Bot app. Preview if you don’t have it.
                 Third-party template: bots share one computer — connect the
                 smallest tools, and keep sends, buys, and deletes behind your
                 approval.

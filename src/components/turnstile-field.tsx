@@ -11,6 +11,7 @@ declare global {
           sitekey: string;
           theme?: "dark" | "light" | "auto";
           appearance?: "always" | "execute" | "interaction-only";
+          size?: "normal" | "compact" | "flexible";
         }
       ) => string;
       reset: (id?: string) => void;
@@ -50,7 +51,8 @@ export function TurnstileField({
       widgetId.current = window.turnstile.render(node, {
         sitekey: siteKey,
         theme: "dark",
-        appearance: "always",
+        appearance: "interaction-only",
+        size: "flexible",
       });
     }
 
@@ -80,5 +82,9 @@ export function TurnstileField({
     };
   }, [siteKey, resetKey]);
 
-  return <div ref={ref} className="min-h-[65px]" />;
+  return (
+    <div className="turnstile-quiet">
+      <div ref={ref} className="min-h-0" />
+    </div>
+  );
 }

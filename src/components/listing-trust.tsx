@@ -41,8 +41,7 @@ export function ListingTrust({
         {formatCheckedAt(template.lastCheckedAt)}
       </p>
       <p>
-        Preview on x.ai before you add. Adds count clicks, not confirmed
-        installs.
+        Adds count clicks, not confirmed installs.
       </p>
       <ShareListing
         title={template.title}
@@ -52,14 +51,6 @@ export function ListingTrust({
         compact
       />
       <p className="flex flex-wrap gap-x-3 gap-y-1">
-        <a
-          href={template.botUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
-        >
-          Preview on x.ai
-        </a>
         <a
           href={report}
           className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"

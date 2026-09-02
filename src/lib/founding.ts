@@ -1,20 +1,25 @@
 /** Until this many listings exist, the UI treats the board as just opened. */
 export const FOUNDING_LISTING_FLOOR = 8;
 export const HOME_BOARD_SLOTS = 6;
+/** Founding empty seats stay thin — never four identical noisy rows. */
+export const OPEN_SEAT_MAX = 3;
 export const LIST_SKILL_PATH =
   "/.well-known/agent-skills/list-a-grok-bot/SKILL.md";
 export const LIST_MCP_PATH = "/mcp";
+export const LIST_AGENT_HREF = "/upload#agent";
 
 export type BoardVacancy = {
   label: string;
   href: string;
   hint?: string;
-  agentHref?: string;
-  agentLabel?: string;
 };
 
 export function isFoundingBoard(count: number) {
   return count < FOUNDING_LISTING_FLOOR;
+}
+
+export function isClaimSeat(slot: BoardVacancy) {
+  return slot.label === "Claim this seat";
 }
 
 export function shareVacancy(): BoardVacancy {
@@ -26,8 +31,6 @@ export function openVacancy(): BoardVacancy {
     label: "Claim this seat",
     hint: "Paste a share link",
     href: "/upload",
-    agentHref: LIST_SKILL_PATH,
-    agentLabel: "MCP list_bot",
   };
 }
 
@@ -38,8 +41,9 @@ export function boardVacancies(
 ): BoardVacancy[] {
   if (isFoundingBoard(listingCount)) {
     const room = Math.max(0, cap - listedOnView);
-    if (room > 0) {
-      return Array.from({ length: room }, openVacancy);
+    const seats = Math.min(room, OPEN_SEAT_MAX);
+    if (seats > 0) {
+      return Array.from({ length: seats }, openVacancy);
     }
   }
   if (listedOnView > 0 && listedOnView < cap) return [shareVacancy()];

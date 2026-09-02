@@ -58,7 +58,7 @@ export function BotFilters({
           Search
         </Button>
       </form>
-      <div className="flex gap-0 border-b border-border">
+      <div className="flex gap-0 border-b border-border/80">
         {[
           { value: "hot", label: "Hot" },
           { value: "top", label: "Top" },
@@ -118,10 +118,10 @@ function FilterTab({
     <Link
       href={href}
       className={cn(
-        "relative -mb-px border-b px-3 py-2 font-mono text-xs tracking-[0.16em] uppercase focus-visible:ring-1 focus-visible:ring-foreground",
+        "relative -mb-px border-b px-2.5 py-1.5 font-mono text-[11px] tracking-[0.1em] uppercase focus-visible:ring-1 focus-visible:ring-foreground",
         active
           ? "border-transparent text-foreground"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          : "border-transparent text-muted-foreground/80 hover:text-foreground"
       )}
     >
       {children}

@@ -13,9 +13,9 @@ import {
 } from "@/lib/bot-url";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
+import { isClaimSeat, type BoardVacancy } from "@/lib/founding";
 import { absUrl } from "@/lib/site";
 import { cn, motionDelay } from "@/lib/utils";
-import type { BoardVacancy } from "@/lib/founding";
 import type { ListedTemplate } from "@/lib/types";
 
 export function BotRankRow({
@@ -45,25 +45,23 @@ export function BotRankRow({
       : 0;
   const rowPad = leader
     ? roster
-      ? "items-start px-3 py-5 sm:px-5 sm:py-6"
-      : "items-start px-3 py-4 sm:px-4 sm:py-5"
+      ? "px-3 py-5 sm:px-5 sm:py-6"
+      : "px-3 py-5 sm:px-4 sm:py-6"
     : roster
-      ? "items-center px-3 py-3.5 sm:px-5 sm:py-4"
-      : "items-center px-2 py-2.5";
+      ? "px-3 py-4 sm:px-5 sm:py-5"
+      : "px-2 py-3.5 sm:px-3 sm:py-4";
 
   return (
     <div
       className={cn(
-        "rank-row relative hover:bg-canvas-soft",
-        roster
-          ? "flex gap-x-2 sm:gap-x-3"
-          : "grid grid-cols-[2.25rem_minmax(0,1fr)_auto] gap-x-3",
+        "rank-row relative flex flex-wrap items-start gap-x-3 gap-y-2 hover:bg-canvas-soft",
         leader && "rank-row-leader",
+        rank === 1 && "rank-row-first",
         roster && "rank-row-roster",
         rowPad
       )}
     >
-      {spark > 0 ? (
+      {spark > 0 && rank === 1 ? (
         <span
           className="rank-spark"
           style={{ "--spark": spark } as CSSProperties}
@@ -162,8 +160,8 @@ export function BotRankRow({
       </span>
       <span
         className={cn(
-          "relative z-10 flex shrink-0 items-center gap-1.5",
-          leader ? "pt-1" : undefined
+          "relative z-10 flex w-full items-center gap-1.5 pl-11 sm:w-auto sm:pl-0 sm:self-center",
+          leader && "sm:self-start sm:pt-1"
         )}
       >
         <ShareListing
@@ -173,19 +171,21 @@ export function BotRankRow({
           summary={template.summary}
           compact="row"
         />
-        {showVote ? (
-          <VoteButtons
-            templateId={template.id}
-            score={template.score}
-            userVote={template.userVote}
-            layout="row"
-            size="mat"
-          />
-        ) : (
-          <span className="font-mono text-xs tabular-nums text-muted-foreground">
-            {points}
-          </span>
-        )}
+        <span className="ml-auto flex shrink-0 items-center">
+          {showVote ? (
+            <VoteButtons
+              templateId={template.id}
+              score={template.score}
+              userVote={template.userVote}
+              layout="row"
+              size="mat"
+            />
+          ) : (
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              {points}
+            </span>
+          )}
+        </span>
       </span>
     </div>
   );
@@ -217,7 +217,7 @@ export function BotRankList({
     vacancies ?? (vacant ? [{ label: "Share a bot", href: "/upload" }] : []);
 
   return (
-    <ol className={cn("divide-y divide-border", className)}>
+    <ol className={cn("rank-list", className)}>
       {templates.map((template, index) => (
         <li
           key={template.id}
@@ -243,9 +243,12 @@ export function BotRankList({
       <OpenSlots
         slots={open}
         startRank={templates.length + 1}
-        scramble={scramble}
+        scramble={false}
         delay={delay + templates.length}
         surface={surface}
+        inviteAgent={
+          surface === "board" && open.some((slot) => isClaimSeat(slot))
+        }
       />
     </ol>
   );
@@ -261,7 +264,7 @@ export function BotRankRowSkeleton({
     <div
       className={cn(
         "grid grid-cols-[2.25rem_minmax(0,1fr)_4rem] items-center gap-x-3",
-        roster ? "px-3 py-4 sm:px-5" : "px-2 py-3"
+        roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
       <div className="h-3 w-5 animate-pulse bg-canvas-soft" />

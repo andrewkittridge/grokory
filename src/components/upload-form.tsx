@@ -83,7 +83,7 @@ export function UploadForm({
         return action(formData);
       }}
       noValidate
-      className="space-y-6"
+      className="space-y-5"
     >
       <div className="space-y-2">
         <Label
@@ -274,25 +274,26 @@ export function UploadForm({
         </p>
       ) : null}
 
-      {siteKey ? (
-        <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
-      ) : null}
-
-      <Button
-        type="submit"
-        disabled={pending || !lookupReady}
-        className="btn-ignite h-10 w-full sm:w-auto"
-      >
-        {pending
-          ? updating
-            ? "Updating…"
-            : "Publishing…"
-          : !lookupReady
-            ? "Looking up…"
-            : updating
-              ? "Update listing"
-              : "Publish to Grokdex"}
-      </Button>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:gap-4">
+        {siteKey ? (
+          <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+        ) : null}
+        <Button
+          type="submit"
+          disabled={pending || !lookupReady}
+          className="btn-ignite h-10 w-full sm:w-auto"
+        >
+          {pending
+            ? updating
+              ? "Updating…"
+              : "Publishing…"
+            : !lookupReady
+              ? "Looking up…"
+              : updating
+                ? "Update listing"
+                : "Publish to Grokdex"}
+        </Button>
+      </div>
     </form>
   );
 }
