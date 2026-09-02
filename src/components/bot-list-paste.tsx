@@ -13,7 +13,10 @@ export function BotListPaste({
 
   if (compact) {
     return (
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <div
+        id="agent"
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6"
+      >
         <div className="min-w-0">
           <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
             Have your bot list it

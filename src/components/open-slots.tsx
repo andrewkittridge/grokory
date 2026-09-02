@@ -7,8 +7,6 @@ import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
 import { cn, motionDelay } from "@/lib/utils";
 import type { BoardVacancy } from "@/lib/founding";
 
-const DWELL_MS = 2000;
-
 function isOpenSlot(target: EventTarget | null) {
   if (!(target instanceof Node)) return false;
   const el = target instanceof Element ? target : target.parentElement;
@@ -30,7 +28,8 @@ export function OpenSlots({
 }) {
   const hydrated = useHydrated();
   const reduced = usePrefersReducedMotion();
-  const cycle = hydrated && !reduced && slots.length > 1;
+  const distinct = new Set(slots.map((slot) => slot.label)).size > 1;
+  const cycle = hydrated && !reduced && distinct;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const liveIndex = slots.length === 0 ? 0 : active % slots.length;
@@ -44,7 +43,7 @@ export function OpenSlots({
       window.clearInterval(id);
       id = window.setInterval(() => {
         setActive((index) => (index + 1) % count);
-      }, DWELL_MS);
+      }, 2000);
     };
     const stop = () => window.clearInterval(id);
     const onVisibility = () => {
@@ -91,6 +90,8 @@ export function OpenSlots({
             label={slot.label}
             hint={slot.hint}
             href={slot.href}
+            agentHref={slot.agentHref}
+            agentLabel={slot.agentLabel}
             live={cycle && index === liveIndex}
             surface={surface}
           />
@@ -106,6 +107,8 @@ function VacantRankRow({
   label = "Share a bot",
   hint,
   href = "/upload",
+  agentHref,
+  agentLabel,
   live = false,
   surface = "board",
 }: {
@@ -116,6 +119,9 @@ function VacantRankRow({
 } & Partial<BoardVacancy>) {
   const go = hint ?? "Paste a share link";
   const roster = surface === "roster";
+  const agent = agentHref
+    ? (agentLabel ?? "MCP list_bot")
+    : undefined;
 
   return (
     <div
@@ -133,7 +139,13 @@ function VacantRankRow({
       <Link
         href={href}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
-        aria-label={hint ? `${label}. ${hint}` : label}
+        aria-label={
+          agent
+            ? `${label}. ${go}. Or have your bot list it with ${agent}.`
+            : hint
+              ? `${label}. ${hint}`
+              : label
+        }
       />
       {scramble ? (
         <RankTick
@@ -158,20 +170,69 @@ function VacantRankRow({
           {label}
         </span>
         {roster ? (
-          <span
-            className="rank-open-go mt-0.5 block truncate text-xs leading-5"
-            aria-hidden="true"
-          >
-            {go}
-            <span> →</span>
+          <span className="rank-open-go mt-0.5 block truncate text-xs leading-5">
+            <span className="pointer-events-auto">
+              <Link
+                href={href}
+                className="relative z-10 hover:text-foreground"
+              >
+                {go}
+              </Link>
+            </span>
+            {agent && agentHref ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <span className="pointer-events-auto">
+                  <Link
+                    href={agentHref}
+                    className="relative z-10 hover:text-foreground"
+                  >
+                    Skill
+                  </Link>
+                </span>
+                <span aria-hidden="true"> · </span>
+                <span className="pointer-events-auto">
+                  <Link
+                    href={`${href}#agent`}
+                    className="relative z-10 font-mono text-[11px] tracking-[0.08em] hover:text-foreground"
+                  >
+                    {agent}
+                  </Link>
+                </span>
+              </>
+            ) : (
+              <span> →</span>
+            )}
           </span>
         ) : hint ? (
           <span className="rank-open-hint mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] uppercase">
             {hint}
+            {agent ? (
+              <>
+                <span aria-hidden="true"> · </span>
+                <span className="pointer-events-auto normal-case tracking-normal">
+                  <Link
+                    href={`${href}#agent`}
+                    className="relative z-10 hover:text-foreground"
+                  >
+                    {agent}
+                  </Link>
+                </span>
+              </>
+            ) : null}
           </span>
         ) : null}
       </span>
-      {roster && hint ? (
+      {roster && agent ? (
+        <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.12em] uppercase sm:pl-3 sm:text-[10px]">
+          <Link
+            href={`${href}#agent`}
+            className="pointer-events-auto hover:text-foreground"
+          >
+            {agent}
+          </Link>
+        </span>
+      ) : roster && hint ? (
         <span className="rank-open-status relative z-10 shrink-0 self-center pl-2 text-right font-mono text-[11px] tracking-[0.16em] uppercase sm:pl-3 sm:text-[10px] sm:tracking-[0.18em]">
           {hint}
         </span>

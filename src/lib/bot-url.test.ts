@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  addHandleHref,
   authorSlug,
   formatAdds,
   grokbotTemplateUrl,
@@ -126,5 +127,25 @@ test("formatAdds and listingPostText", () => {
   assert.equal(
     listingTweetIntent("Research — a public Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"),
     "https://x.com/intent/tweet?text=Research%20%E2%80%94%20a%20public%20Grok%20Bot%20on%20Grokdex%20https%3A%2F%2Fgrokdex.net%2Ftemplates%2Fresearch-q6nive"
+  );
+  assert.equal(
+    listingPostText(
+      "Research",
+      "https://grokdex.net/templates/research-q6nive",
+      { summary: "Primary-source research for cited answers." }
+    ),
+    "Research — Primary-source research for cited answers · Grokdex https://grokdex.net/templates/research-q6nive"
+  );
+  assert.match(
+    listingPostText("Research", "https://grokdex.net/templates/research-q6nive"),
+    /Grokdex/
+  );
+  assert.doesNotMatch(
+    listingPostText("Research", "https://grokdex.net/templates/research-q6nive"),
+    /Grokory/
+  );
+  assert.equal(
+    addHandleHref("https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"),
+    "/upload?share=https%3A%2F%2Fx.ai%2Fbot%2FN92u9t1nHlL_gtgk2nAeN"
   );
 });

@@ -20,6 +20,7 @@ import { VoteButtons } from "@/components/vote-buttons";
 import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
+import { isFoundingBoard } from "@/lib/founding";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
 import { softwareJson } from "@/lib/json-ld";
@@ -110,8 +111,10 @@ export default async function TemplateDetailPage({
             featureHref={payments ? "#feature" : undefined}
             shareUrl={template.botUrl}
             xHandle={template.xHandle}
+            summary={template.summary}
             justLinked={linked && !updated}
             justUpdated={updated}
+            founding={isFoundingBoard(listings.length)}
           />
         </div>
       ) : null}
@@ -221,6 +224,7 @@ export default async function TemplateDetailPage({
                 <AuthorByline
                   name={template.authorName}
                   xHandle={template.xHandle}
+                  shareUrl={template.botUrl}
                   className="mt-2 text-muted-foreground"
                 />
                 <p className="mt-5 max-w-2xl text-base leading-7 text-body">

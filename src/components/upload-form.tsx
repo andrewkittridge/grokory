@@ -200,9 +200,12 @@ export function UploadForm({
       <div className="space-y-2">
         <Label htmlFor="xHandle">X handle (optional)</Label>
         <Input
+          key={`${existing?.slug ?? "new"}-handle`}
           id="xHandle"
           name="xHandle"
           placeholder="@handle"
+          defaultValue={existing?.xHandle ? `@${existing.xHandle}` : ""}
+          readOnly={Boolean(existing?.xHandle)}
           className="h-10"
           autoComplete="off"
         />

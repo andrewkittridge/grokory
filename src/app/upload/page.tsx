@@ -56,7 +56,11 @@ export default async function UploadPage({
           />
         </Frame>
       </div>
-      <div className="motion-enter mt-6" style={motionDelay(4)}>
+      <div
+        id="agent"
+        className="motion-enter mt-6"
+        style={motionDelay(4)}
+      >
         <Frame staticFrame matClassName="p-5 sm:p-8">
           <BotListPaste />
         </Frame>

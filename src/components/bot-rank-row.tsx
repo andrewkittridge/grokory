@@ -4,9 +4,16 @@ import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
 import { OpenSlots } from "@/components/open-slots";
-import { formatAdds, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
+import { ShareListing } from "@/components/share-listing";
+import {
+  addHandleHref,
+  formatAdds,
+  xHandleLabel,
+  xHandleUrl,
+} from "@/lib/bot-url";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
+import { absUrl } from "@/lib/site";
 import { cn, motionDelay } from "@/lib/utils";
 import type { BoardVacancy } from "@/lib/founding";
 import type { ListedTemplate } from "@/lib/types";
@@ -123,12 +130,20 @@ export function BotRankRow({
                 {xHandleLabel(template.xHandle)}
               </a>
             </>
-          ) : null}
-          {isFeaturedActive(template) ||
-          isBoostedActive(template) ||
-          template.xHandle ? (
-            <span aria-hidden="true"> · </span>
-          ) : null}
+          ) : (
+            <>
+              {isFeaturedActive(template) || isBoostedActive(template) ? (
+                <span aria-hidden="true"> · </span>
+              ) : null}
+              <Link
+                href={addHandleHref(template.botUrl)}
+                className="relative z-10 pointer-events-auto normal-case tracking-normal hover:text-foreground"
+              >
+                add @handle
+              </Link>
+            </>
+          )}
+          <span aria-hidden="true"> · </span>
           {formatAdds(template.adds)}
         </span>
         <span
@@ -146,8 +161,18 @@ export function BotRankRow({
         </span>
       </span>
       <span
-        className={cn("relative z-10 shrink-0", leader ? "pt-1" : undefined)}
+        className={cn(
+          "relative z-10 flex shrink-0 items-center gap-1.5",
+          leader ? "pt-1" : undefined
+        )}
       >
+        <ShareListing
+          title={template.title}
+          listingUrl={absUrl(`/templates/${template.slug}`)}
+          xHandle={template.xHandle}
+          summary={template.summary}
+          compact="row"
+        />
         {showVote ? (
           <VoteButtons
             templateId={template.id}
