@@ -970,7 +970,7 @@ body {
 }
 
 .rank-row-roster.rank-row-open .rank-open-status {
-  color: var(--sunset);
+  color: var(--muted-foreground);
 }
 
 .rank-row-roster.rank-row-open .rank-open-go {

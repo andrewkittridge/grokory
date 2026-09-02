@@ -80,6 +80,15 @@ test("homepage and listing markdown are citable", () => {
   ]);
   assert.match(withHandle?.body ?? "", /https:\/\/x\.com\/andrew/);
 
+  const emptyLists = pageMarkdown("/templates/research", [
+    bot({ skills: [], routines: [] }),
+  ]);
+  assert.doesNotMatch(emptyLists?.body ?? "", /### Skills/);
+  assert.doesNotMatch(emptyLists?.body ?? "", /### Routines/);
+  assert.match(emptyLists?.body ?? "", /does not list skills or routines/);
+  assert.match(listing?.body ?? "", /### Skills/);
+  assert.match(listing?.body ?? "", /### Routines/);
+
   const home = pageMarkdown("/", [bot()]);
   assert.equal(home?.status, 200);
   assert.match(home?.body ?? "", /# Grokdex/);
@@ -137,6 +146,12 @@ test("discovery documents include required fields", async () => {
 
   const spec = openApiSpec();
   assert.ok(spec.paths["/api/bots"].post);
+  assert.match(
+    spec.paths["/api/bots"].post.responses["200"].description,
+    /Updated an existing listing/
+  );
+  assert.match(spec.paths["/api/bots"].post.description, /200/);
+  assert.match(spec.paths["/api/bots"].post.responses["409"].description, /409|handle/i);
 
   const listSkill = SKILL_DOCS["list-a-grok-bot"].body;
   assert.match(listSkill, /POST/);

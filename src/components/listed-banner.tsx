@@ -3,6 +3,7 @@ import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { ShareListing } from "@/components/share-listing";
 import { Button } from "@/components/ui/button";
+import { addHandleHref } from "@/lib/bot-url";
 import { FEATURED_PLANS } from "@/lib/pricing";
 
 export function ListedBanner({
@@ -11,30 +12,37 @@ export function ListedBanner({
   featureHref,
   shareUrl,
   xHandle,
+  summary,
   justLinked = false,
   justUpdated = false,
+  founding = false,
 }: {
   title: string;
   listingUrl: string;
   featureHref?: string;
   shareUrl?: string;
   xHandle?: string;
+  summary?: string;
   justLinked?: boolean;
   justUpdated?: boolean;
+  founding?: boolean;
 }) {
-  const linkHandleHref = shareUrl
-    ? `/upload?share=${encodeURIComponent(shareUrl)}`
-    : "/upload";
+  const linkHandleHref = shareUrl ? addHandleHref(shareUrl) : "/upload";
   const kicker = justUpdated
     ? "Updated"
     : justLinked
       ? "Handle linked"
-      : "Listed";
+      : "On the board";
   const headline = justUpdated
     ? "Updated."
     : justLinked
       ? "Handle linked."
-      : "Listed.";
+      : "You’re on the board.";
+  const blurb = justUpdated
+    ? "Share it so someone else can add it."
+    : justLinked
+      ? "Share the listing with the handle on it."
+      : "Share it so someone else can add it.";
 
   return (
     <Frame staticFrame matClassName="p-5 sm:p-6">
@@ -45,26 +53,14 @@ export function ListedBanner({
       <LockTitle as="p" display="section" className="mt-2">
         {headline}
       </LockTitle>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        {xHandle
-          ? "Copy a post for X, pin it on the board, or list another bot."
-          : "Link an X handle, copy a post, pin it on the board, or list another bot."}
-      </p>
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-        {featureHref ? (
-          <Button
-            className="h-10 w-full sm:w-auto"
-            nativeButton={false}
-            render={<Link href={featureHref} />}
-          >
-            Pin for {FEATURED_PLANS[0].priceLabel} ·{" "}
-            {FEATURED_PLANS[0].durationLabel}
-          </Button>
-        ) : null}
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{blurb}</p>
+      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
         <ShareListing
           title={title}
           listingUrl={listingUrl}
           xHandle={xHandle}
+          summary={summary}
+          hero
         />
         {!xHandle ? (
           <Button
@@ -73,7 +69,7 @@ export function ListedBanner({
             nativeButton={false}
             render={<Link href={linkHandleHref} />}
           >
-            Link X handle
+            Add @handle
           </Button>
         ) : null}
         <Button
@@ -84,6 +80,17 @@ export function ListedBanner({
         >
           Share a bot
         </Button>
+        {!founding && featureHref ? (
+          <Button
+            variant="ghost"
+            className="h-10 w-full sm:w-auto"
+            nativeButton={false}
+            render={<Link href={featureHref} />}
+          >
+            Pin for {FEATURED_PLANS[0].priceLabel} ·{" "}
+            {FEATURED_PLANS[0].durationLabel}
+          </Button>
+        ) : null}
       </div>
     </Frame>
   );

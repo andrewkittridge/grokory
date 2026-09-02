@@ -8,14 +8,15 @@ The board is still founding: **2 live listings** against a floor of **8**. Do no
 
 | Surface | Behavior |
 |---|---|
-| Board | Hot / Top / New, `?q=` / `?tag=` / `?skill=`, founding OPEN seats |
+| Board | Hot / Top / New, `?q=` / `?tag=` / `?skill=`, founding OPEN seats with paste + agent self-list |
 | List | Paste `https://x.ai/bot/…` on `/upload`. Title, author, description, skills, routines come from the x.ai preview. No account. |
-| Re-paste | Same share URL can attach the **first** X handle and refresh identity, tags, or note. |
+| Re-paste | Same share URL **updates** the listing: identity from x.ai, tags, note, submittedBy. First X handle attaches. A second handle **409s**. Form primary is **Update listing**. Redirect `?updated=1`. |
 | Votes | Cookie `grokdex_voter`. One ballot per browser per bot. IP rate limit. |
-| Paid | Tips (no rank). Featured pin, max 3. Board boost, max 2. Webhook fulfills, not the success page. |
-| Trust | Hourly cron refreshes identity + live/down. Report is mailto `report@grokdex.net`. |
-| Agents | MCP `/mcp` and `POST /api/bots`: search, get, list. Proof is a live share URL. |
-| Share | Post on X only after a successful list (`listed-banner`). |
+| Paid | Tips (no rank). Featured pin, max 3. Board boost, max 2. Webhook fulfills, not the success page. Marks stay quiet until the 8–12 floor. |
+| Trust | Hourly cron refreshes identity + live/down. Report is mailto `report@grokdex.net`. Empty skills/routines chrome is hidden (x.ai preview does not expose lists — do not invent). |
+| Agents | MCP `/mcp` and `POST /api/bots`: search, get, list, refresh. `list_bot` publishes or updates. Proof is a live share URL. OpenAPI documents **201 create / 200 update / 409 handle conflict**. |
+| Share | Post on X / copy on listing pages, rank rows, and the post-list success banner (share is the hero CTA). Captions are Grokdex-only. |
+| Authors | `/authors` index + `/authors/[slug]`. Revalidate on publish, update, and first-handle attach. |
 
 ## Constraints (do not break)
 
@@ -39,20 +40,22 @@ The board is still founding: **2 live listings** against a floor of **8**. Do no
 
 ## 0. Close gaps on what just shipped
 
-Small, should land with or before workstream 1.
+**Shipped.** Author pages revalidate on handle link and metadata update. Empty skills/routines UI is hidden. Null handles show a quiet “add @handle” affordance (never invented).
 
-| Gap | Fix |
+| Gap | Status |
 |---|---|
-| Linking an X handle later does not revalidate `/authors/[slug]` | Call `revalidatePath` for the author slug in `publishListing` when `linked: true` (PR #2 leftover). |
+| Linking an X handle later does not revalidate `/authors/[slug]` | Done — `revalidateListing` includes `/authors` and `/authors/[slug]`. |
 | Live Writer and Research have `xHandle: null` | Product, not code. Re-paste each share URL with `@handle` on `/upload`. |
-| Skills and routines stay empty | x.ai share pages embed identity in RSC, not Skills/Routines lists (`fetch-bot.ts`). Keep the “preview on x.ai” copy. Do not invent skills. Optional later: store whatever the hourly check can parse; do not fake lists. |
+| Skills and routines stay empty | Parser cannot invent. Cards and listing pages hide the chrome when arrays are empty. One honest line remains in agent markdown. |
 | Tag chips on a listing page filter the board; rank rows do not show tags | Fine at 2 listings. Add row chips only after workstream 2. |
 
 ---
 
 ## 1. Update existing listings
 
-**Why first.** PR #2 already treats a duplicate share URL as a write when an X handle is new. Tags, note, and a manual identity refresh still 409. Cron already overwrites title/author/description/skills from x.ai; humans cannot trigger that.
+**Shipped.** Re-paste on `/upload`, `POST /api/bots`, and MCP `list_bot` updates an existing listing. Tags, note, identity refresh, and first-handle attach return 200. A second X handle still 409. Cron and `refresh_bot` share the same identity merge (`checkedIdentity`).
+
+**Why it mattered.** PR #2 treated a duplicate share URL as a write only when an X handle was new. Tags, note, and a manual identity refresh used to 409. Cron already overwrote title/author/description/skills from x.ai; humans could not trigger that.
 
 **Credential.** Possession of the public share URL. Same as listing and handle-attach. Turnstile stays on the HTML form. Agents keep the live-preview gate.
 
@@ -99,11 +102,11 @@ Small, should land with or before workstream 1.
 
 Useful once listings can stay accurate. Cheap. Helps fill empty seats by making each listing something people actually post.
 
-| Item | Implementation |
+| Item | Status |
 |---|---|
-| Post on X from every listing | Reuse `listingPostText` + `x.com/intent/tweet` from `listed-banner.tsx` in `add-procedure.tsx` / `listing-trust.tsx`. |
-| Authors index | New `/authors` listing unique `authorName` (and handles). Pages already exist at `/authors/[slug]`. |
-| Clickable skills | `?skill=` on `/templates`, same pattern as `?tag=`. `filterTemplates` already searches skill text; add an exact filter. Chips on the listing page already wrap tags; do the same for skills. |
+| Post on X from every listing | **Shipped** — `ShareListing` on listing trust, rank rows, and post-list success (Post on X is the hero CTA). |
+| Authors index | **Shipped** — `/authors` plus `/authors/[slug]`. |
+| Clickable skills | Exact `?skill=` exists. Do not advertise skill chips on the board until parse yields skills. |
 | Related bots | Overlapping tags/skills, then other hot listings so a lonely bot is not an island. |
 
 Skip RSS feeds and keyboard shortcuts until the catalog is bigger.
@@ -134,7 +137,7 @@ Today agents can list and read. They cannot vote or ask Grokdex to re-fetch x.ai
 
 So: **refresh yes** (it is the agent form of workstream 1). **Vote no** unless a later plan defines anti-abuse.
 
-Also fix OpenAPI: `POST /api/bots` on a listed bot should document 200 update, not only 201/409.
+OpenAPI: `POST /api/bots` documents **200 update**, **201 create**, and **409** handle conflict.
 
 ---
 
@@ -161,21 +164,14 @@ Until then, filling the board is the product. Code cannot list bots the owner do
 
 ---
 
-## Suggested first implementation PR
+## Suggested next implementation PR
 
-**Title:** Re-paste a listed share URL to update it.
+**0 + 1 already ship on main.** Do not rebuild them.
 
-Scope: workstream **0 + 1** only.
+The pick-list draft (`feat/picklist-honesty-share`) is honesty + share + OPEN-seat agent path + quieter paid marks. Draft only — no merge, no production deploy.
 
-1. Revalidate author pages when a handle is linked.
-2. `updateListingFromShare` in the store.
-3. `publishListing` returns 200 on metadata update.
-4. Upload form existing-bot state + `?updated=1` banner.
-5. FAQ / terms / skill / OpenAPI one-liners.
-6. Tests: create, update tags/note, refresh identity, reject handle overwrite, agent 200 vs 201.
-
-Out of scope for that PR: Saved, authors index, skill query param, MCP vote, wink.
+Later, in order: cookie shortlist (3) after catalog density · wink (5) after a refresh loop exists in production · ads only at 8–12 real listings.
 
 ## How to execute
 
-Follow-up agents should implement one workstream per PR, in order 0+1 → 2 → 4 refresh → 3 → 5. Do not re-ask which track unless the owner names a different one.
+Workstreams 0+1, listing share, authors index, `refresh_bot`, and OpenAPI 200 are on main. Follow-ups should not re-buy that work. Density to 8–12 is mostly real share URLs, not chrome.

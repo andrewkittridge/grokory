@@ -87,8 +87,8 @@ export function CatalogBot({
         ) : token.kind === "listed" && token.boosted ? (
           <BoostedMark className="mb-0.5" />
         ) : token.kind === "open" ? (
-          <span className="mb-0.5 font-mono text-[10px] tracking-[0.14em] text-sunset uppercase">
-            Open
+          <span className="mb-0.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+            Open seat
           </span>
         ) : null}
         <span className="w-full truncate text-[13px] leading-tight tracking-tight">

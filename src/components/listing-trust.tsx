@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ShareListing } from "@/components/share-listing";
 import {
+  addHandleHref,
   authorSlug,
   formatCheckedAt,
   reportMailto,
@@ -47,6 +48,7 @@ export function ListingTrust({
         title={template.title}
         listingUrl={listingUrl}
         xHandle={template.xHandle}
+        summary={template.summary}
         compact
       />
       <p className="flex flex-wrap gap-x-3 gap-y-1">
@@ -84,6 +86,8 @@ export function WhatTravels({
   skills: string[];
   routines: string[];
 }) {
+  if (skills.length === 0 && routines.length === 0) return null;
+
   return (
     <div className="mt-8 border-t border-border pt-6">
       <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
@@ -103,12 +107,6 @@ export function WhatTravels({
       ) : null}
       {routines.length > 0 ? (
         <LabeledList label="Routines" items={routines} />
-      ) : null}
-      {skills.length === 0 && routines.length === 0 ? (
-        <p className="mt-4 text-sm leading-6 text-muted-foreground">
-          x.ai does not list skills or routines on the public share page.
-          Preview the template there before you add.
-        </p>
       ) : null}
     </div>
   );
@@ -189,10 +187,12 @@ export function XHandleLink({
 export function AuthorByline({
   name,
   xHandle,
+  shareUrl,
   className,
 }: {
   name: string;
   xHandle?: string;
+  shareUrl?: string;
   className?: string;
 }) {
   return (
@@ -209,6 +209,16 @@ export function AuthorByline({
             handle={xHandle}
             className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
           />
+        </>
+      ) : shareUrl ? (
+        <>
+          {" · "}
+          <Link
+            href={addHandleHref(shareUrl)}
+            className="text-muted-foreground hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+          >
+            add @handle
+          </Link>
         </>
       ) : null}
     </p>

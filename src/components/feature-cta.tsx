@@ -13,8 +13,9 @@ import type { ListedTemplate } from "@/lib/types";
 export function FeaturedMark({ className }: { className?: string }) {
   return (
     <span
+      title="Paid placement, not an endorsement"
       className={cn(
-        "font-mono text-[10px] tracking-[0.14em] text-sunset uppercase",
+        "font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase",
         className
       )}
     >
@@ -26,8 +27,9 @@ export function FeaturedMark({ className }: { className?: string }) {
 export function BoostedMark({ className }: { className?: string }) {
   return (
     <span
+      title="Paid placement, not an endorsement"
       className={cn(
-        "font-mono text-[10px] tracking-[0.14em] text-foreground uppercase",
+        "font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase",
         className
       )}
     >

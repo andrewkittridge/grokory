@@ -130,12 +130,18 @@ export function LandingBoard({
         <p className="inline-flex min-w-0 items-baseline gap-x-2.5 overflow-hidden font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
           <span className="inline-flex items-center gap-2 text-foreground">
             <span className="live-dot" aria-hidden="true" />
-            <CountTick value={count} singular="bot" plural="bots" />
+            {founding ? (
+              `${count} listed`
+            ) : (
+              <CountTick value={count} singular="bot" plural="bots" />
+            )}
           </span>
           <span className="text-border" aria-hidden="true">
             ·
           </span>
-          <span className="truncate">{founding ? "Board" : "Hot"}</span>
+          <span className="truncate">
+            {founding ? "seats open" : "Hot"}
+          </span>
         </p>
         <Button
           size="sm"
@@ -155,7 +161,7 @@ export function LandingBoard({
       >
         {featured.length > 0 ? (
           <div className="border-b border-border">
-            <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-sunset uppercase sm:px-5">
+            <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
               Featured
             </p>
             <BotRankList

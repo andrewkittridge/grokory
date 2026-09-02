@@ -9,6 +9,7 @@ import {
   listingTweetIntent,
   type ListingPostOptions,
 } from "@/lib/bot-url";
+import { cn } from "@/lib/utils";
 
 function subscribe() {
   return () => {};
@@ -26,54 +27,86 @@ export function ShareListing({
   title,
   listingUrl,
   xHandle,
+  summary,
   compact = false,
+  hero = false,
 }: {
   title: string;
   listingUrl: string;
   xHandle?: string;
-  compact?: boolean;
+  summary?: string;
+  compact?: boolean | "row";
+  hero?: boolean;
 }) {
-  const options: ListingPostOptions = { xHandle };
+  const options: ListingPostOptions = { xHandle, summary };
   const post = listingPostText(title, listingUrl, options);
   const caption = listingPostCaption(title, options);
   const intent = listingTweetIntent(post);
+  const row = compact === "row";
   const canShare = useSyncExternalStore(
     subscribe,
     canShareSnapshot,
     canShareServer
   );
 
-  const pill = compact
-    ? "h-8 w-auto px-3 text-[0.8rem]"
-    : "h-10 w-full sm:w-auto";
+  const pill = row
+    ? "h-7 w-auto px-2.5 text-[11px]"
+    : compact
+      ? "h-8 w-auto px-3 text-[0.8rem]"
+      : "h-10 w-full sm:w-auto";
+  const copyLabel = row ? "Copy" : "Copy a post";
+  const postLabel = row ? "Post" : "Post on X";
 
-  return (
-    <div className={compact ? "flex flex-wrap gap-2" : "contents"}>
-      <CopyLinkButton url={post} label="Copy a post" className={pill} />
+  const copyButton = (
+    <CopyLinkButton
+      url={post}
+      label={copyLabel}
+      className={cn(pill, row && "hidden sm:inline-flex")}
+    />
+  );
+  const postButton = (
+    <Button
+      variant={hero ? "default" : "outline"}
+      className={cn(pill, hero && "btn-ignite")}
+      nativeButton={false}
+      render={<a href={intent} target="_blank" rel="noopener noreferrer" />}
+    >
+      {postLabel}
+    </Button>
+  );
+  const nativeShare =
+    canShare && !row ? (
       <Button
         variant="outline"
+        type="button"
         className={pill}
-        nativeButton={false}
-        render={
-          <a href={intent} target="_blank" rel="noopener noreferrer" />
-        }
+        onClick={() => {
+          void navigator
+            .share({ title, text: caption, url: listingUrl })
+            .catch(() => {});
+        }}
       >
-        Post on X
+        Share
       </Button>
-      {canShare ? (
-        <Button
-          variant="outline"
-          type="button"
-          className={pill}
-          onClick={() => {
-            void navigator
-              .share({ title, text: caption, url: listingUrl })
-              .catch(() => {});
-          }}
-        >
-          Share
-        </Button>
-      ) : null}
+    ) : null;
+
+  const actions = hero ? (
+    <>
+      {postButton}
+      {copyButton}
+      {nativeShare}
+    </>
+  ) : (
+    <>
+      {copyButton}
+      {postButton}
+      {nativeShare}
+    </>
+  );
+
+  return (
+    <div className={compact ? "flex flex-wrap items-center gap-1.5" : "contents"}>
+      {actions}
     </div>
   );
 }

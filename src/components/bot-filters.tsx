@@ -50,7 +50,7 @@ export function BotFilters({
             id="q"
             name="q"
             defaultValue={q}
-            placeholder="Search names, authors, skills…"
+            placeholder="Search names, authors…"
             className="h-10 font-mono"
           />
         </ScanField>

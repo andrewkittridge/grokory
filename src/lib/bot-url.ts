@@ -107,7 +107,19 @@ export function formatAdds(n: number) {
 
 export type ListingPostOptions = {
   xHandle?: string;
+  summary?: string;
 };
+
+export function addHandleHref(shareUrl: string) {
+  return `/upload?share=${encodeURIComponent(shareUrl)}`;
+}
+
+function oneLineJob(summary?: string) {
+  const text = (summary ?? "").trim().replace(/\s+/g, " ");
+  if (!text) return "";
+  if (text.length <= 96) return text.replace(/[.:]+$/, "");
+  return `${text.slice(0, 93).trimEnd()}…`;
+}
 
 export function listingPostCaption(
   title: string,
@@ -115,6 +127,8 @@ export function listingPostCaption(
 ) {
   const handle = options.xHandle?.trim();
   const who = handle ? `${title} by ${xHandleLabel(handle)}` : title;
+  const job = oneLineJob(options.summary);
+  if (job) return `${who} — ${job} · Grokdex`;
   return `${who} — a public Grok Bot on Grokdex`;
 }
 

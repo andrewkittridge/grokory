@@ -315,16 +315,18 @@ ${botList(ranked)}
 
 function listingMarkdown(template: ListedTemplate) {
   const bot = publicBot(template);
-  const missingLists =
-    "_Not listed on the public x.ai share page. Preview there before you add._";
   const skills =
     bot.skills.length > 0
-      ? bot.skills.map((item) => `- ${item}`).join("\n")
-      : missingLists;
+      ? `\n### Skills\n\n${bot.skills.map((item) => `- ${item}`).join("\n")}\n`
+      : "";
   const routines =
     bot.routines.length > 0
-      ? bot.routines.map((item) => `- ${item}`).join("\n")
-      : missingLists;
+      ? `\n### Routines\n\n${bot.routines.map((item) => `- ${item}`).join("\n")}\n`
+      : "";
+  const emptyLists =
+    bot.skills.length === 0 && bot.routines.length === 0
+      ? "\nx.ai does not list skills or routines on the public share page. Preview there before you add.\n"
+      : "";
   return `# ${bot.title}
 
 > ${bot.summary}
@@ -339,15 +341,7 @@ ${bot.description}
 ## What gets copied
 
 A template copies identity, description, skills, and routines onto your Grok account. It does not share the author’s computer, logins, or chats.
-
-### Skills
-
-${skills}
-
-### Routines
-
-${routines}
-
+${skills}${routines}${emptyLists}
 ## Add this bot
 
 1. Preview the share link on x.ai: ${bot.botUrl}
@@ -668,10 +662,13 @@ export function openApiSpec() {
             },
           },
           responses: {
-            "200": { description: "Updated an existing listing" },
+            "200": {
+              description:
+                "Updated an existing listing: identity from x.ai, optional tags/note, or the first X handle",
+            },
             "201": { description: "Listed" },
             "400": { description: "Invalid share URL or preview" },
-            "409": { description: "X handle already set" },
+            "409": { description: "X handle already set on this listing" },
             "429": { description: "Rate limited" },
           },
         },

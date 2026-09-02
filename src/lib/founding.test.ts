@@ -17,9 +17,14 @@ test("isFoundingBoard is true below the listing floor", () => {
 test("boardVacancies fills open seats while the board is new", () => {
   const slots = boardVacancies(1, 1, HOME_BOARD_SLOTS);
   assert.equal(slots.length, HOME_BOARD_SLOTS - 1);
-  assert.equal(slots[0]?.label, "Open");
+  assert.equal(slots[0]?.label, "Claim this seat");
   assert.equal(slots[0]?.hint, "Paste a share link");
   assert.equal(slots[0]?.href, "/upload");
+  assert.equal(
+    slots[0]?.agentHref,
+    "/.well-known/agent-skills/list-a-grok-bot/SKILL.md"
+  );
+  assert.equal(slots[0]?.agentLabel, "MCP list_bot");
 });
 
 test("boardVacancies keeps a share slot on a mature home board", () => {
