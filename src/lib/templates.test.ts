@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { authorIndex, filterTemplates, relatedTemplates } from "./templates";
+import { authorIndex, filterTemplates, isFirstInJob, jobRank, relatedTemplates } from "./templates";
 import type { ListedTemplate } from "./types";
 
 function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
@@ -83,4 +83,54 @@ test("relatedTemplates falls back to overlapping skills when a job is empty", ()
     "ops"
   );
   assert.equal(authorIndex([current, bot({ authorName: "Andrew" })]).length, 1);
+});
+
+test("isFirstInJob is true only when that listing is alone in its job", () => {
+  const writer = bot({ id: "writer", slug: "writer", category: "Writing" });
+  const research = bot({
+    id: "research",
+    slug: "research",
+    category: "Research",
+  });
+  const otherWriter = bot({
+    id: "essay",
+    slug: "essay",
+    category: "Writing",
+    createdAt: "2026-08-01T00:00:00.000Z",
+    score: 4,
+  });
+
+  assert.equal(isFirstInJob([writer], writer), true);
+  assert.equal(isFirstInJob([writer, research], writer), true);
+  assert.equal(isFirstInJob([writer, otherWriter], writer), false);
+  assert.equal(isFirstInJob([research], writer), false);
+});
+
+test("jobRank is hot order within a job, not the global board", () => {
+  const lead = bot({
+    id: "lead",
+    slug: "lead",
+    category: "Writing",
+    score: 8,
+    createdAt: "2026-08-01T00:00:00.000Z",
+  });
+  const newer = bot({
+    id: "newer",
+    slug: "newer",
+    category: "Writing",
+    score: 1,
+    createdAt: "2026-09-01T00:00:00.000Z",
+  });
+  const research = bot({
+    id: "research",
+    slug: "research",
+    category: "Research",
+    score: 20,
+  });
+  const all = [research, newer, lead];
+
+  assert.equal(jobRank(all, lead), 1);
+  assert.equal(jobRank(all, newer), 2);
+  assert.equal(jobRank(all, research), 1);
+  assert.equal(jobRank([research], newer), 0);
 });

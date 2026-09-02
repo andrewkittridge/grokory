@@ -10,10 +10,12 @@ export function AddProcedure({
   template,
   listingUrl,
   refresh,
+  firstInJob = false,
 }: {
   template: ListedTemplate;
   listingUrl: string;
   refresh?: ReactNode;
+  firstInJob?: boolean;
 }) {
   return (
     <Frame staticFrame matClassName="p-5">
@@ -80,6 +82,7 @@ export function AddProcedure({
           template={template}
           listingUrl={listingUrl}
           refresh={refresh}
+          firstInJob={firstInJob}
         />
         <p className="mt-3 text-xs text-muted-foreground">
           Listed by {template.submittedBy}

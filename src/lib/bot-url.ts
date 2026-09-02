@@ -110,8 +110,37 @@ export function formatAdds(n: number) {
   return n === 1 ? "1 add" : `${formatCount(n)} adds`;
 }
 
-export function listingPostText(title: string, url: string) {
-  return `${title} — a public Grok Bot on Grokdex ${url}`;
+export type ListingPostOptions = {
+  category?: string;
+  xHandle?: string;
+  firstInJob?: boolean;
+};
+
+export function listingPostCaption(
+  title: string,
+  options: ListingPostOptions = {}
+) {
+  const handle = options.xHandle?.trim();
+  const who = handle ? `${title} by ${xHandleLabel(handle)}` : title;
+  if (options.firstInJob && options.category) {
+    return `${who} — first ${options.category} bot on Grokdex`;
+  }
+  if (options.category) {
+    return `${who} — a public ${options.category} Grok Bot on Grokdex`;
+  }
+  return `${who} — a public Grok Bot on Grokdex`;
+}
+
+export function listingPostText(
+  title: string,
+  url: string,
+  options: ListingPostOptions = {}
+) {
+  return `${listingPostCaption(title, options)} ${url}`;
+}
+
+export function listingTweetIntent(text: string) {
+  return `https://x.com/intent/tweet?text=${encodeURIComponent(text)}`;
 }
 
 export function authorSlug(name: string) {

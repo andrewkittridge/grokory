@@ -83,6 +83,28 @@ export function relatedTemplates(
   return scored.map((item) => item.template).slice(0, 3);
 }
 
+export function isFirstInJob(
+  templates: { slug: string; category: string }[],
+  current: { slug: string; category: string }
+) {
+  const same = templates.filter(
+    (template) => template.category === current.category
+  );
+  return same.length === 1 && same[0].slug === current.slug;
+}
+
+export function jobRank(
+  templates: ListedTemplate[],
+  current: ListedTemplate
+) {
+  const same = sortTemplates(
+    templates.filter((template) => template.category === current.category),
+    "hot"
+  );
+  const index = same.findIndex((template) => template.slug === current.slug);
+  return index >= 0 ? index + 1 : 0;
+}
+
 export type AuthorIndexRow = {
   slug: string;
   name: string;

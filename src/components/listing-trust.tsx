@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { ShareListing } from "@/components/share-listing";
 import {
   authorSlug,
   formatCheckedAt,
-  listingPostText,
   reportMailto,
   xHandleLabel,
   xHandleUrl,
@@ -14,10 +14,12 @@ export function ListingTrust({
   template,
   listingUrl,
   refresh,
+  firstInJob = false,
 }: {
   template: ListedTemplate;
   listingUrl: string;
   refresh?: ReactNode;
+  firstInJob?: boolean;
 }) {
   const report = reportMailto({
     title: template.title,
@@ -25,8 +27,6 @@ export function ListingTrust({
     botUrl: template.botUrl,
     listingUrl,
   });
-  const post = listingPostText(template.title, listingUrl);
-  const intent = `https://x.com/intent/tweet?text=${encodeURIComponent(post)}`;
 
   return (
     <div className="space-y-3 text-xs leading-5 text-muted-foreground">
@@ -45,6 +45,14 @@ export function ListingTrust({
         Preview on x.ai before you add. Adds count clicks, not confirmed
         installs.
       </p>
+      <ShareListing
+        title={template.title}
+        listingUrl={listingUrl}
+        category={template.category}
+        xHandle={template.xHandle}
+        firstInJob={firstInJob}
+        compact
+      />
       <p className="flex flex-wrap gap-x-3 gap-y-1">
         <a
           href={template.botUrl}
@@ -53,14 +61,6 @@ export function ListingTrust({
           className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
         >
           Preview on x.ai
-        </a>
-        <a
-          href={intent}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
-        >
-          Post on X
         </a>
         <a
           href={report}
