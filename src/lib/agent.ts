@@ -1,6 +1,10 @@
 import { authorSlug, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
-import { authorIndex, filterTemplates } from "./templates";
+import {
+  authorIndex,
+  filterTemplates,
+  groupTemplatesByCategory,
+} from "./templates";
 import { parseSort, sortTemplates } from "./rank";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
 import { CATEGORIES, type ListedTemplate } from "./types";
@@ -227,6 +231,9 @@ export function pageMarkdown(
   if (path === "/templates") {
     return { status: 200, body: boardMarkdown(templates) };
   }
+  if (path === "/catalog") {
+    return { status: 200, body: catalogMarkdown(templates) };
+  }
   if (path === "/upload") return { status: 200, body: uploadMarkdown() };
   if (path === "/authors") return { status: 200, body: authorsIndexMarkdown(templates) };
   if (path === "/support") return { status: 200, body: supportMarkdown() };
@@ -271,8 +278,9 @@ Grokdex is independent. It is not affiliated with, endorsed by, or operated by x
 ## How to use it
 
 1. [Browse the board](${absUrl("/templates/index.md")}).
-2. Open a listing, preview on x.ai, then Add.
-3. [Share a bot](${absUrl("/upload/index.md")}) — free, no account.
+2. [Open the catalog](${absUrl("/catalog/index.md")}) — same listings, grouped by job.
+3. Open a listing, preview on x.ai, then Add.
+4. [Share a bot](${absUrl("/upload/index.md")}) — free, no account.
 
 Jobs on the board: ${jobs}.
 
@@ -298,6 +306,28 @@ JSON: ${absUrl("/api/bots")}
 ## Listings
 
 ${botList(ranked)}
+`;
+}
+
+function catalogMarkdown(templates: ListedTemplate[]) {
+  const lanes = groupTemplatesByCategory(templates);
+  const sections = lanes
+    .map((lane) => {
+      const items =
+        lane.templates.length === 0
+          ? `_Open — [list the first ${lane.category} bot](${absUrl(`/upload?category=${encodeURIComponent(lane.category)}`)})._`
+          : botList(lane.templates);
+      return `## ${lane.category}\n\n${items}`;
+    })
+    .join("\n\n");
+  return `# Catalog · ${SITE_NAME}
+
+Public Grok Bots grouped by job. The HTML page is a moving parade; this Markdown is the same listings by category.
+
+HTML: ${absUrl("/catalog")}
+Board: ${absUrl("/templates")}
+
+${sections}
 `;
 }
 
@@ -456,6 +486,7 @@ Grokdex indexes public Grok Bot share links (\`https://x.ai/bot/…\`). Rankings
 
 - [Overview](${absUrl("/index.md")}): What Grokdex is, how Add works, FAQ
 - [The board](${absUrl("/templates/index.md")}): Ranked public Grok Bots
+- [Catalog](${absUrl("/catalog/index.md")}): Grok Bots grouped by job
 - [Share a bot](${absUrl("/upload/index.md")}): List a public share URL
 - [Authors](${absUrl("/authors/index.md")}): People with a listed Grok Bot
 - [FAQ](${absUrl("/faq/index.md")}): Citable answers for assistants

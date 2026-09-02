@@ -483,6 +483,7 @@ test("updating a listing revalidates author pages", async () => {
   assert.ok(paths.includes("/authors"));
   assert.ok(paths.includes("/authors/andrew"));
   assert.ok(paths.includes("/templates/jarvis-n92u9t"));
+  assert.ok(paths.includes("/catalog"));
 });
 
 test("listBotFromAgent maps a bad share URL to 400", async () => {

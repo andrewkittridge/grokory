@@ -281,6 +281,7 @@ async function revalidateListing(
 ) {
   await revalidate("/");
   await revalidate("/templates");
+  await revalidate("/catalog");
   await revalidate(`/templates/${slug}`);
   await revalidate("/feed.xml");
   await revalidate("/authors");

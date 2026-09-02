@@ -92,6 +92,13 @@ test("homepage and listing markdown are citable", () => {
   assert.match(upload?.body ?? "", /list_bot/);
   assert.match(upload?.body ?? "", /\/api\/bots/);
 
+  const catalog = pageMarkdown("/catalog", [bot()]);
+  assert.equal(catalog?.status, 200);
+  assert.match(catalog?.body ?? "", /^# Catalog/m);
+  assert.match(catalog?.body ?? "", /## Research/);
+  assert.match(catalog?.body ?? "", /## Coding/);
+  assert.match(catalog?.body ?? "", /list the first Coding bot/);
+
   const authors = pageMarkdown("/authors", [bot()]);
   assert.equal(authors?.status, 200);
   assert.match(authors?.body ?? "", /# Authors/);
@@ -114,6 +121,7 @@ test("llms.txt is an LLM reading list", () => {
   assert.match(body, /^# Grokdex/m);
   assert.match(body, /llms-full\.txt/);
   assert.match(body, /templates\/research\/index\.md/);
+  assert.match(body, /catalog\/index\.md/);
 });
 
 test("discovery documents include required fields", async () => {
