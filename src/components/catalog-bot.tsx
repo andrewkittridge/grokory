@@ -1,0 +1,98 @@
+"use client";
+
+import type { CSSProperties } from "react";
+import { useRef } from "react";
+import Link from "next/link";
+import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
+import { GrokBotMark, hopGrokBot } from "@/components/grok-bot";
+import { usePrefersReducedMotion } from "@/lib/motion";
+import type { CatalogToken } from "@/lib/templates";
+import { cn } from "@/lib/utils";
+
+export function CatalogBot({
+  token,
+  index,
+  clone = false,
+}: {
+  token: CatalogToken;
+  index: number;
+  clone?: boolean;
+}) {
+  const reduced = usePrefersReducedMotion();
+  const botRef = useRef<HTMLSpanElement>(null);
+  const featured = token.kind === "listed" && token.featured;
+  const href =
+    token.kind === "listed"
+      ? `/templates/${token.template.slug}`
+      : token.vacancy.href;
+  const heading =
+    token.kind === "listed" ? token.template.title : token.vacancy.label;
+  const summary =
+    token.kind === "listed"
+      ? token.template.summary
+      : `List the first ${token.vacancy.label} bot`;
+  const label =
+    token.kind === "listed"
+      ? `${token.template.title}. ${token.template.summary}`
+      : `List the first ${token.vacancy.label} bot`;
+
+  return (
+    <Link
+      href={href}
+      data-catalog-token=""
+      aria-hidden={clone || undefined}
+      tabIndex={clone ? -1 : undefined}
+      aria-label={clone ? undefined : label}
+      className={cn(
+        "catalog-bot group/bot relative flex w-[7.25rem] shrink-0 flex-col items-center px-1 py-2 focus-visible:ring-1 focus-visible:ring-foreground sm:w-[8.25rem]",
+        featured && "w-[8.5rem] sm:w-[9.5rem]"
+      )}
+      onPointerDown={() => hopGrokBot(botRef.current, reduced)}
+      onAnimationEnd={(event) => {
+        if (event.animationName === "bot-hop") {
+          botRef.current?.classList.remove("grok-bot-hopping");
+        }
+      }}
+    >
+      <span className="relative flex min-h-[6.5rem] w-full items-end justify-center sm:min-h-[7.25rem]">
+        {featured ? <span className="grok-bot-rim" aria-hidden="true" /> : null}
+        <span
+          ref={botRef}
+          className={cn(
+            "grok-bot catalog-bot-figure relative block",
+            featured
+              ? "w-[5.9rem] sm:w-[6.6rem]"
+              : "w-[4.8rem] sm:w-[5.5rem]",
+            token.kind === "open" && "is-ghost"
+          )}
+          style={
+            {
+              "--bob-delay": `${(index % 5) * 0.35}s`,
+              "--blink-delay": `${1.05 + (index % 7) * 0.41}s`,
+              "--wake-delay": `${0.06 + (index % 4) * 0.08}s`,
+            } as CSSProperties
+          }
+        >
+          <GrokBotMark />
+        </span>
+      </span>
+      <span className="mt-1 flex min-w-0 flex-col items-center text-center">
+        {token.kind === "listed" && token.featured ? (
+          <FeaturedMark className="mb-0.5" />
+        ) : token.kind === "listed" && token.boosted ? (
+          <BoostedMark className="mb-0.5" />
+        ) : token.kind === "open" ? (
+          <span className="mb-0.5 font-mono text-[10px] tracking-[0.14em] text-sunset uppercase">
+            Open
+          </span>
+        ) : null}
+        <span className="w-full truncate text-[13px] leading-tight tracking-tight">
+          {heading}
+        </span>
+        <span className="catalog-bot-summary mt-0.5 w-full text-[11px] leading-4 text-muted-foreground">
+          {summary}
+        </span>
+      </span>
+    </Link>
+  );
+}

@@ -18,6 +18,12 @@ export function SiteFooter() {
               Browse
             </Link>
             <Link
+              href="/catalog"
+              className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            >
+              Catalog
+            </Link>
+            <Link
               href="/upload"
               className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
             >

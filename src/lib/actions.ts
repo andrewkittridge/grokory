@@ -79,6 +79,7 @@ export async function recordAdd(slug: string) {
   await bumpAdds(slug);
   revalidatePath("/");
   revalidatePath("/templates");
+  revalidatePath("/catalog");
   revalidatePath(`/templates/${slug}`);
 }
 
@@ -96,6 +97,7 @@ export async function castVote(formData: FormData) {
   if (!updated) return;
   revalidatePath("/");
   revalidatePath("/templates");
+  revalidatePath("/catalog");
   revalidatePath(`/templates/${updated.slug}`);
   revalidatePath("/authors/[slug]", "page");
 }

@@ -16,7 +16,7 @@ import {
   isFoundingBoard,
 } from "@/lib/founding";
 import { sortTemplates } from "@/lib/rank";
-import { populatedCategories } from "@/lib/templates";
+import { categoryAnchor, populatedCategories } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { CATEGORIES } from "@/lib/types";
 import { motionDelay } from "@/lib/utils";
@@ -116,7 +116,7 @@ async function Home() {
                 <Link
                   href={
                     listed.has(category)
-                      ? `/templates?category=${encodeURIComponent(category)}`
+                      ? `/catalog#${categoryAnchor(category)}`
                       : `/upload?category=${encodeURIComponent(category)}`
                   }
                   className={

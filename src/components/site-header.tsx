@@ -45,6 +45,9 @@ export function SiteHeader() {
           >
             Browse
           </HeaderLink>
+          <HeaderLink href="/catalog" active={pathname === "/catalog"}>
+            Catalog
+          </HeaderLink>
           <HeaderLink href="/upload" active={pathname === "/upload"} primary>
             Share a bot
           </HeaderLink>
@@ -62,6 +65,14 @@ export function SiteHeader() {
                 render={<Link href="/templates" />}
               >
                 Browse
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                nativeButton={false}
+                render={<Link href="/catalog" />}
+              >
+                Catalog
               </Button>
               <Button
                 className="w-full"

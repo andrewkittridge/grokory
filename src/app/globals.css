@@ -776,7 +776,7 @@ body {
   position: relative;
   z-index: 1;
   transform-origin: 50% 88%;
-  animation: bot-bob 4.2s ease-in-out infinite;
+  animation: bot-bob 4.2s ease-in-out var(--bob-delay, 0s) infinite;
 }
 
 .grok-bot-yaw {
@@ -809,8 +809,8 @@ body {
   transform-box: fill-box;
   transform-origin: center;
   animation:
-    bot-wake 0.7s var(--motion-ease) 0.12s both,
-    bot-blink 4.6s ease-in-out 1.5s infinite;
+    bot-wake 0.7s var(--motion-ease) var(--wake-delay, 0.12s) both,
+    bot-blink 4.6s ease-in-out var(--blink-delay, 1.5s) infinite;
 }
 
 .grok-bot-winking .grok-bot-lid-l {
@@ -1330,6 +1330,81 @@ body {
   color: var(--sunset);
 }
 
+@keyframes catalog-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.catalog-chips {
+  position: sticky;
+  top: 3.5rem;
+  z-index: 30;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--background) 88%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.catalog-lane {
+  scroll-margin-top: 8.25rem;
+}
+
+.catalog-lane-mask {
+  overflow: hidden;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 3.5%,
+    #000 96.5%,
+    transparent
+  );
+}
+
+.catalog-lane-track {
+  display: flex;
+  width: max-content;
+  animation: catalog-marquee var(--catalog-duration, 42s) linear infinite;
+  animation-direction: var(--catalog-dir, normal);
+  will-change: transform;
+}
+
+.catalog-lane:hover .catalog-lane-track,
+.catalog-lane:focus-within .catalog-lane-track,
+.catalog-parade[data-paused="true"] .catalog-lane-track,
+.catalog-parade[data-hidden="true"] .catalog-lane-track {
+  animation-play-state: paused;
+}
+
+.catalog-bot-summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    opacity 180ms ease,
+    max-height 180ms ease;
+}
+
+.catalog-bot:hover .catalog-bot-summary,
+.catalog-bot:focus-visible .catalog-bot-summary {
+  max-height: 2.6rem;
+  opacity: 1;
+}
+
+.catalog-bot-figure.is-ghost {
+  opacity: 0.42;
+}
+
+.catalog-bot:hover .catalog-bot-figure.is-ghost,
+.catalog-bot:focus-visible .catalog-bot-figure.is-ghost {
+  opacity: 0.72;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .motion-enter,
   .motion-board,
@@ -1373,7 +1448,9 @@ body {
   .site-field,
   .site-field-grid,
   .nav-pip,
-  .input-scan::after {
+  .input-scan::after,
+  .catalog-lane-track,
+  .catalog-bot-summary {
     animation: none;
   }
 
@@ -1451,6 +1528,29 @@ body {
   .btn-shine:hover::after {
     animation: none;
     transform: none;
+  }
+
+  .catalog-lane-track {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    transform: none;
+    will-change: auto;
+  }
+
+  .catalog-lane-clone {
+    display: none;
+  }
+
+  .catalog-lane-mask {
+    overflow: visible;
+    mask-image: none;
+  }
+
+  .catalog-bot-summary {
+    max-height: 2.6rem;
+    opacity: 1;
+    transition: none;
   }
 
   .animate-pulse {

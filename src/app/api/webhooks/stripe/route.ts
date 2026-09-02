@@ -68,6 +68,7 @@ export async function POST(request: Request) {
     if (result.applied) {
       revalidatePath("/");
       revalidatePath("/templates");
+      revalidatePath("/catalog");
       const slug = sessionSlug(metadata);
       if (slug) revalidatePath(`/templates/${slug}`);
     }

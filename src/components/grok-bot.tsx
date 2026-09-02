@@ -9,11 +9,122 @@ const EYE_L =
 const EYE_R =
   "M176.61 37.08L178.72 37.59L180.70 38.48L182.52 39.65L184.20 41.03L185.71 42.59L187.03 44.31L188.20 46.14L189.26 48.03L190.27 49.96L191.26 51.89L192.23 53.84L193.16 55.80L194.05 57.78L194.92 59.77L195.74 61.78L196.53 63.80L197.27 65.84L197.97 67.90L198.47 70.01L198.63 72.18L198.40 74.33L197.58 76.33L195.95 77.72L193.83 78.08L191.71 77.65L189.76 76.69L188.03 75.38L186.53 73.82L185.28 72.05L184.25 70.13L183.40 68.14L182.63 66.11L181.87 64.07L181.07 62.05L180.25 60.04L179.39 58.05L178.49 56.07L177.57 54.10L176.61 52.15L175.62 50.22L174.59 48.31L173.53 46.41L172.54 44.48L171.86 42.42L171.76 40.26L172.62 38.30L174.45 37.19Z";
 
+export function GrokBotMark({ className }: { className?: string }) {
+  const rawId = useId();
+  const id = `gb${rawId.replace(/[^a-zA-Z0-9]/g, "")}`;
+
+  return (
+    <>
+      <span className="grok-bot-ground" aria-hidden="true" />
+      <span className={cn("grok-bot-motion block", className)}>
+        <svg
+          viewBox="0 0 200 220"
+          fill="none"
+          aria-hidden="true"
+          className="block size-full overflow-visible"
+        >
+          <defs>
+            <radialGradient
+              id={`${id}-ball`}
+              cx="42%"
+              cy="30%"
+              fx="34%"
+              fy="24%"
+              r="78%"
+            >
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="22%" stopColor="#f4f4f5" />
+              <stop offset="58%" stopColor="#d4d4d8" />
+              <stop offset="86%" stopColor="#71717a" />
+              <stop offset="100%" stopColor="#3f3f46" />
+            </radialGradient>
+            <radialGradient id={`${id}-spec`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
+              <stop offset="42%" stopColor="#ffffff" stopOpacity="0.35" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <g className="grok-bot-yaw">
+            <g transform="translate(20 24.04) scale(0.7)">
+              <circle
+                cx="114.271"
+                cy="114.228"
+                r="114.271"
+                fill={`url(#${id}-ball)`}
+              />
+              <ellipse
+                className="grok-bot-spec"
+                cx="158"
+                cy="78"
+                rx="52"
+                ry="34"
+                fill={`url(#${id}-spec)`}
+              />
+              <g className="grok-bot-eyes">
+                <path
+                  className="grok-bot-lid grok-bot-lid-l"
+                  d={EYE_L}
+                  fill="#0a0a0a"
+                />
+                <path className="grok-bot-lid" d={EYE_R} fill="#0a0a0a" />
+              </g>
+            </g>
+            <g className="grok-bot-comet">
+              <path
+                d="M100 20 105.2 25.2 100 30.4 94.8 25.2Z"
+                fill="var(--sunset)"
+              />
+            </g>
+          </g>
+        </svg>
+      </span>
+    </>
+  );
+}
+
+export function hopGrokBot(el: HTMLElement | null, reduced: boolean) {
+  if (!el || reduced) return;
+  el.classList.remove("grok-bot-hopping");
+  void el.offsetWidth;
+  el.classList.add("grok-bot-hopping");
+}
+
+export function gazeGrokBot(
+  el: HTMLElement | null,
+  clientX: number,
+  clientY: number
+) {
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height * 0.42;
+  const gazeX = Math.max(
+    -1,
+    Math.min(1, (clientX - cx) / (rect.width * 1.7))
+  );
+  const gazeY = Math.max(
+    -1,
+    Math.min(1, (clientY - cy) / (rect.height * 1.7))
+  );
+  el.style.setProperty("--gaze-x", gazeX.toFixed(3));
+  el.style.setProperty("--gaze-y", gazeY.toFixed(3));
+  el.style.setProperty("--yaw", (gazeX * 5.2).toFixed(2));
+  el.style.setProperty("--spec-x", gazeX.toFixed(3));
+  el.style.setProperty("--spec-y", gazeY.toFixed(3));
+}
+
+export function clearGrokBotGaze(el: HTMLElement | null) {
+  if (!el) return;
+  el.style.removeProperty("--gaze-x");
+  el.style.removeProperty("--gaze-y");
+  el.style.removeProperty("--yaw");
+  el.style.removeProperty("--spec-x");
+  el.style.removeProperty("--spec-y");
+}
+
 export function GrokBot({ className }: { className?: string }) {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLButtonElement>(null);
-  const rawId = useId();
-  const id = `gb${rawId.replace(/[^a-zA-Z0-9]/g, "")}`;
 
   useEffect(() => {
     const el = rootRef.current;
@@ -112,20 +223,12 @@ export function GrokBot({ className }: { className?: string }) {
     };
   }, [reduced]);
 
-  const hop = () => {
-    const el = rootRef.current;
-    if (!el || reduced) return;
-    el.classList.remove("grok-bot-hopping");
-    void el.offsetWidth;
-    el.classList.add("grok-bot-hopping");
-  };
-
   return (
     <button
       ref={rootRef}
       type="button"
       aria-label="Grok Bot"
-      onClick={hop}
+      onClick={() => hopGrokBot(rootRef.current, reduced)}
       onAnimationEnd={(event) => {
         if (event.animationName === "bot-hop") {
           event.currentTarget.classList.remove("grok-bot-hopping");
@@ -139,62 +242,7 @@ export function GrokBot({ className }: { className?: string }) {
         className
       )}
     >
-      <span className="grok-bot-ground" aria-hidden="true" />
-      <span className="grok-bot-motion block">
-        <svg
-          viewBox="0 0 200 220"
-          fill="none"
-          aria-hidden="true"
-          className="block size-full overflow-visible"
-        >
-          <defs>
-            <radialGradient
-              id={`${id}-ball`}
-              cx="42%"
-              cy="30%"
-              fx="34%"
-              fy="24%"
-              r="78%"
-            >
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="22%" stopColor="#f4f4f5" />
-              <stop offset="58%" stopColor="#d4d4d8" />
-              <stop offset="86%" stopColor="#71717a" />
-              <stop offset="100%" stopColor="#3f3f46" />
-            </radialGradient>
-            <radialGradient id={`${id}-spec`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-              <stop offset="42%" stopColor="#ffffff" stopOpacity="0.35" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <g className="grok-bot-yaw">
-            <g transform="translate(20 24.04) scale(0.7)">
-              <circle
-                cx="114.271"
-                cy="114.228"
-                r="114.271"
-                fill={`url(#${id}-ball)`}
-              />
-              <ellipse
-                className="grok-bot-spec"
-                cx="158"
-                cy="78"
-                rx="52"
-                ry="34"
-                fill={`url(#${id}-spec)`}
-              />
-              <g className="grok-bot-eyes">
-                <path className="grok-bot-lid grok-bot-lid-l" d={EYE_L} fill="#0a0a0a" />
-                <path className="grok-bot-lid" d={EYE_R} fill="#0a0a0a" />
-              </g>
-            </g>
-            <g className="grok-bot-comet">
-              <path d="M100 20 105.2 25.2 100 30.4 94.8 25.2Z" fill="var(--sunset)" />
-            </g>
-          </g>
-        </svg>
-      </span>
+      <GrokBotMark />
     </button>
   );
 }

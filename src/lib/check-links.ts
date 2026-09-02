@@ -61,6 +61,7 @@ export async function refreshDueListings(limit = 15) {
   if (checked.length > 0) {
     revalidatePath("/");
     revalidatePath("/templates");
+    revalidatePath("/catalog");
     revalidatePath("/feed.xml");
     for (const item of checked) {
       revalidatePath(`/templates/${item.slug}`);

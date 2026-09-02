@@ -146,6 +146,7 @@ export async function publishListing(
       }
       await revalidate("/");
       await revalidate("/templates");
+      await revalidate("/catalog");
       await revalidate(`/templates/${linked.slug}`);
       return {
         ok: true,
@@ -251,6 +252,7 @@ export async function publishListing(
     const slug = result.template.slug;
     await revalidate("/");
     await revalidate("/templates");
+    await revalidate("/catalog");
     await revalidate(`/templates/${slug}`);
     await revalidate("/feed.xml");
     await revalidate(`/authors/${slugifyAuthor(resolvedAuthor)}`);

@@ -11,7 +11,7 @@ const SiteFieldCanvas = dynamic(() => import("./site-field-canvas"), {
 
 function fieldDensity(pathname: string) {
   if (pathname === "/privacy" || pathname === "/terms") return "legal";
-  if (pathname === "/") return "pad";
+  if (pathname === "/" || pathname === "/catalog") return "pad";
   return "whisper";
 }
 
