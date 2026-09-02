@@ -1,11 +1,15 @@
 import { authorSlug, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
-import { filterTemplates, groupTemplatesByCategory } from "./templates";
+import {
+  authorIndex,
+  filterTemplates,
+  groupTemplatesByCategory,
+} from "./templates";
 import { parseSort, sortTemplates } from "./rank";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
 import { CATEGORIES, type ListedTemplate } from "./types";
 
-export const AGENT_VERSION = "0.2.0";
+export const AGENT_VERSION = "0.3.0";
 export const CONTENT_SIGNAL =
   "search=yes, ai-input=yes, ai-train=yes, use=full";
 export const AI_CATALOG_PATH = "/.well-known/ai-catalog.json";
@@ -47,7 +51,7 @@ export const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "How do I list a Grok Bot on Grokdex?",
-    a: "Go to https://grokdex.net/upload and paste a public https://x.ai/bot/… share link, or paste the list-on-grokdex skill into your Grok Bot and tell it to list you. Listing is free and does not require an account. You can optionally add an X handle; it is a public label, not a login, and Grokdex does not verify that you own that account. Duplicate share URLs are not listed twice.",
+    a: "Go to https://grokdex.net/upload and paste a public https://x.ai/bot/… share link, or paste the list-on-grokdex skill into your Grok Bot and tell it to list you. Listing is free and does not require an account. You can optionally add an X handle; it is a public label, not a login, and Grokdex does not verify that you own that account. Paste the same share URL again to refresh the listing from x.ai or change the job, tags, or note. Duplicate share URLs are not listed twice.",
   },
   {
     q: "Can I link my X handle?",
@@ -58,12 +62,16 @@ export const FAQS: { q: string; a: string }[] = [
     a: "Yes. Copy the skill on https://grokdex.net/upload — or add https://grokdex.net/mcp as a custom connector — paste it into your Grok Bot, and say list me on Grokdex. The bot posts the public share URL. No Grokdex account.",
   },
   {
+    q: "Can I update a listing?",
+    a: "Yes. Paste the same public share URL on https://grokdex.net/upload, or call POST /api/bots / MCP list_bot again. Grokdex refreshes the name and description from x.ai and can change the job, tags, or note. The first X handle still sticks. Anyone with the public share link can do this; there is no Grokdex account.",
+  },
+  {
     q: "Is listing on Grokdex free?",
     a: "Yes. Browsing, voting, and listing a public share link are free. Optional paid placement (Featured) and category boosts exist; they are labeled and are not an xAI or Grokdex endorsement. Tips are optional and do not change rank.",
   },
   {
     q: "Where can agents read Grokdex without HTML?",
-    a: "Send Accept: text/markdown, or fetch /index.md on any page. Start with https://grokdex.net/llms.txt and https://grokdex.net/llms-full.txt. The public catalog is GET /api/bots. MCP is at https://grokdex.net/mcp. Agents can list a live share URL with POST /api/bots or MCP list_bot.",
+    a: "Send Accept: text/markdown, or fetch /index.md on any page. Start with https://grokdex.net/llms.txt and https://grokdex.net/llms-full.txt. The public catalog is GET /api/bots. MCP is at https://grokdex.net/mcp. Agents can list or refresh a live share URL with POST /api/bots or MCP list_bot, and refresh with MCP refresh_bot.",
   },
 ];
 
@@ -113,12 +121,19 @@ export function publicBot(template: ListedTemplate): PublicBot {
 
 export function searchPublicBots(
   templates: ListedTemplate[],
-  filters: { q?: string; category?: string; tag?: string; sort?: string }
+  filters: {
+    q?: string;
+    category?: string;
+    tag?: string;
+    skill?: string;
+    sort?: string;
+  }
 ) {
   const filtered = filterTemplates(templates, {
     q: filters.q,
     category: filters.category,
     tag: filters.tag,
+    skill: filters.skill,
   });
   return sortTemplates(filtered, parseSort(filters.sort)).map(publicBot);
 }
@@ -220,6 +235,7 @@ export function pageMarkdown(
     return { status: 200, body: catalogMarkdown(templates) };
   }
   if (path === "/upload") return { status: 200, body: uploadMarkdown() };
+  if (path === "/authors") return { status: 200, body: authorsIndexMarkdown(templates) };
   if (path === "/support") return { status: 200, body: supportMarkdown() };
   if (path === "/faq") return { status: 200, body: faqMarkdown() };
   if (path === "/privacy") return { status: 200, body: privacyMarkdown() };
@@ -257,7 +273,7 @@ Grokdex is independent. It is not affiliated with, endorsed by, or operated by x
 - Prefer Markdown: send \`Accept: text/markdown\` or fetch this page at [index.md](${absUrl("/index.md")}).
 - Site map for models: [llms.txt](${absUrl("/llms.txt")}), full text [llms-full.txt](${absUrl("/llms-full.txt")}).
 - Public JSON: [GET /api/bots](${absUrl("/api/bots")}). List a live share URL with POST.
-- MCP: [server card](${absUrl("/.well-known/mcp/server-card.json")}) · endpoint [ /mcp ](${absUrl(MCP_PATH)}). Tool \`list_bot\` publishes a listing.
+- MCP: [server card](${absUrl("/.well-known/mcp/server-card.json")}) · endpoint [ /mcp ](${absUrl(MCP_PATH)}). Tools \`list_bot\` (publish or update) and \`refresh_bot\`.
 
 ## How to use it
 
@@ -363,6 +379,27 @@ Tags: ${bot.tags.length ? bot.tags.join(", ") : "none"}
 `;
 }
 
+function authorsIndexMarkdown(templates: ListedTemplate[]) {
+  const authors = authorIndex(templates);
+  const rows =
+    authors.length === 0
+      ? "_No authors yet._"
+      : authors
+          .map(
+            (author) =>
+              `- [${author.name}](${absUrl(`/authors/${author.slug}/index.md`)}) — ${author.count} ${author.count === 1 ? "bot" : "bots"}`
+          )
+          .join("\n");
+  return `# Authors · ${SITE_NAME}
+
+People with a public Grok Bot on the board.
+
+HTML: ${absUrl("/authors")}
+
+${rows}
+`;
+}
+
 function authorMarkdown(listed: ListedTemplate[]) {
   const name = listed[0].authorName;
   const handles = [
@@ -387,13 +424,13 @@ ${botList(sortTemplates(listed, "hot"))}
 function uploadMarkdown() {
   return `# Share a Grok Bot · ${SITE_NAME}
 
-Paste a public share link — \`https://x.ai/bot/…\`. Pick a job, and it lists immediately. Listing is free. No account. Optional X handle is a public label, not a login.
+Paste a public share link — \`https://x.ai/bot/…\`. Pick a job, and it lists immediately. Listing is free. No account. Optional X handle is a public label, not a login. Paste the same URL again to update the listing.
 
 HTML form: ${absUrl("/upload")}
 
 Or paste the [list-on-grokdex skill](${absUrl("/.well-known/agent-skills/list-a-grok-bot/SKILL.md")}) into your Grok Bot and tell it to list you. Agents POST ${absUrl("/api/bots")} or call MCP \`list_bot\` on ${absUrl(MCP_PATH)}.
 
-Only paste a share link you are allowed to make public. Duplicate share URLs are not listed twice.
+Only paste a share link you are allowed to make public. Duplicate share URLs are not listed twice; re-pasting updates the existing listing.
 `;
 }
 
@@ -451,6 +488,7 @@ Grokdex indexes public Grok Bot share links (\`https://x.ai/bot/…\`). Rankings
 - [The board](${absUrl("/templates/index.md")}): Ranked public Grok Bots
 - [Catalog](${absUrl("/catalog/index.md")}): Grok Bots grouped by job
 - [Share a bot](${absUrl("/upload/index.md")}): List a public share URL
+- [Authors](${absUrl("/authors/index.md")}): People with a listed Grok Bot
 - [FAQ](${absUrl("/faq/index.md")}): Citable answers for assistants
 - [Full text](${absUrl("/llms-full.txt")}): Expanded board dump
 
@@ -459,7 +497,7 @@ Grokdex indexes public Grok Bot share links (\`https://x.ai/bot/…\`). Rankings
 - Markdown negotiation: \`Accept: text/markdown\` or append \`/index.md\`
 - JSON catalog: ${absUrl("/api/bots")} (GET read, POST list a live share URL)
 - OpenAPI: ${absUrl("/openapi.json")}
-- MCP: ${absUrl("/.well-known/mcp/server-card.json")} · ${absUrl(MCP_PATH)} (\`list_bot\` to publish)
+- MCP: ${absUrl("/.well-known/mcp/server-card.json")} · ${absUrl(MCP_PATH)} (\`list_bot\` to publish or update, \`refresh_bot\` for identity)
 - Skills: ${absUrl("/.well-known/agent-skills/index.json")}
 
 ## Public Grok Bots
@@ -497,7 +535,8 @@ AI agents and crawlers reading, querying, or listing public Grok Bot share links
 - Browse, search, and fetch listings: no authentication
 - MCP tools at ${absUrl(MCP_PATH)}: no authentication
 - JSON at ${absUrl("/api/bots")}: no authentication
-- List a bot with POST ${absUrl("/api/bots")} or MCP \`list_bot\`: no authentication. Proof is a live public \`https://x.ai/bot/…\` URL that Grokdex can fetch. Duplicate share URLs are rejected. Optional \`xHandle\` is stored as a public label; it is not an X login.
+- List a bot with POST ${absUrl("/api/bots")} or MCP \`list_bot\`: no authentication. Proof is a live public \`https://x.ai/bot/…\` URL that Grokdex can fetch. Re-pasting a listed share URL updates that listing (201 create, 200 update). A second X handle on the same bot returns 409. Optional \`xHandle\` is stored as a public label; it is not an X login.
+- Refresh identity with MCP \`refresh_bot\`: no authentication. Pass slug or shareUrl.
 - Listing via the HTML form uses Cloudflare Turnstile (human check).
 
 ## Agent registration
@@ -596,6 +635,16 @@ export function openApiSpec() {
               schema: { type: "string", enum: [...CATEGORIES] },
             },
             {
+              name: "tag",
+              in: "query",
+              schema: { type: "string" },
+            },
+            {
+              name: "skill",
+              in: "query",
+              schema: { type: "string" },
+            },
+            {
               name: "sort",
               in: "query",
               schema: { type: "string", enum: ["hot", "top", "new"] },
@@ -611,16 +660,16 @@ export function openApiSpec() {
           },
         },
         post: {
-          summary: "List a public Grok Bot",
+          summary: "List or update a public Grok Bot",
           description:
-            "Publish a live https://x.ai/bot/… share URL. Title, author, and description come from the x.ai preview. Duplicate share URLs return 409 with listingUrl.",
+            "Publish a live https://x.ai/bot/… share URL. Title, author, and description come from the x.ai preview. Re-pasting an existing share URL returns 200 and updates the listing. A conflicting X handle returns 409.",
           requestBody: {
             required: true,
             content: {
               "application/json": {
                 schema: {
                   type: "object",
-                  required: ["shareUrl", "category"],
+                  required: ["shareUrl"],
                   properties: {
                     shareUrl: {
                       type: "string",
@@ -647,9 +696,10 @@ export function openApiSpec() {
             },
           },
           responses: {
+            "200": { description: "Updated an existing listing" },
             "201": { description: "Listed" },
             "400": { description: "Invalid share URL, category, or preview" },
-            "409": { description: "Already listed" },
+            "409": { description: "X handle already set" },
             "429": { description: "Rate limited" },
           },
         },
@@ -686,7 +736,7 @@ export const MCP_TOOLS = [
     name: "search_bots",
     title: "Search Grok Bots",
     description:
-      "Search public Grok Bot listings on Grokdex by query, job category, or sort.",
+      "Search public Grok Bot listings on Grokdex by query, job category, skill, or sort.",
     inputSchema: {
       type: "object",
       properties: {
@@ -695,6 +745,7 @@ export const MCP_TOOLS = [
           type: "string",
           description: `One of: ${CATEGORIES.join(", ")}`,
         },
+        skill: { type: "string", description: "Exact skill name" },
         sort: { type: "string", enum: ["hot", "top", "new"] },
         limit: { type: "integer", minimum: 1, maximum: 50 },
       },
@@ -722,7 +773,7 @@ export const MCP_TOOLS = [
     name: "list_bot",
     title: "List a Grok Bot on Grokdex",
     description:
-      "Publish a live public https://x.ai/bot/… share URL to the Grokdex board. Title and description come from x.ai. Duplicate share URLs return the existing listingUrl.",
+      "Publish or update a live public https://x.ai/bot/… share URL on the Grokdex board. Title and description come from x.ai. Re-pasting updates the listing. A conflicting X handle returns the existing listingUrl.",
     inputSchema: {
       type: "object",
       properties: {
@@ -746,7 +797,23 @@ export const MCP_TOOLS = [
             "Optional X username. Shown on the listing. Not a login and not verified.",
         },
       },
-      required: ["shareUrl", "category"],
+      required: ["shareUrl"],
+    },
+  },
+  {
+    name: "refresh_bot",
+    title: "Refresh a Grokdex listing from x.ai",
+    description:
+      "Re-fetch a listed bot’s public x.ai share page and update identity on Grokdex. Does not change organic rank. Pass slug or shareUrl.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        slug: { type: "string" },
+        shareUrl: {
+          type: "string",
+          description: "Public https://x.ai/bot/… share URL",
+        },
+      },
     },
   },
 ] as const;
@@ -826,12 +893,19 @@ export function a2aAgentCard() {
         id: "list-bot",
         name: "List a Grok Bot",
         description:
-          "Publish a live public https://x.ai/bot/… share URL to Grokdex.",
+          "Publish or update a live public https://x.ai/bot/… share URL to Grokdex.",
         tags: ["grok", "bots", "publish"],
         examples: [
           "List my Grok Bot on Grokdex",
           "Publish this share link to the board",
         ],
+      },
+      {
+        id: "refresh-bot",
+        name: "Refresh a listing",
+        description: "Re-fetch a listed Grok Bot from its public x.ai share page.",
+        tags: ["grok", "bots"],
+        examples: ["Refresh this Grokdex listing from x.ai"],
       },
     ],
     supportedInterfaces: [
@@ -933,7 +1007,9 @@ Content-Type: application/json
 {"shareUrl":"https://x.ai/bot/…","category":"Work","xHandle":"optional"}
 \`\`\`
 
-5. Reply with the \`listingUrl\` from the response. If the bot is already listed (HTTP 409), give them that \`listingUrl\`. If you sent \`xHandle\` and the listing had none, a 200 means the handle was linked.
+5. Reply with the \`listingUrl\` from the response. A 201 means it is new. A 200 means the listing was updated (or an X handle was linked). If a different X handle is already set, HTTP 409 returns that \`listingUrl\`.
+
+To refresh identity only, call MCP \`refresh_bot\` with the slug or share URL.
 
 Do not send the user to the HTML form. Listing is free and needs no Grokdex account. Do not claim Grokdex verified the X account.
 `,

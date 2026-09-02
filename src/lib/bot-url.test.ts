@@ -6,6 +6,7 @@ import {
   grokbotTemplateUrl,
   isGoneError,
   listingPostText,
+  listingTweetIntent,
   parseShareUrl,
   parseTags,
   parseXHandle,
@@ -113,5 +114,41 @@ test("formatAdds and listingPostText", () => {
   assert.equal(
     listingPostText("Research", "https://grokdex.net/templates/research-q6nive"),
     "Research — a public Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
+  );
+  assert.equal(
+    listingPostText(
+      "Research",
+      "https://grokdex.net/templates/research-q6nive",
+      { category: "Research" }
+    ),
+    "Research — a public Research Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
+  );
+  assert.equal(
+    listingPostText(
+      "Research",
+      "https://grokdex.net/templates/research-q6nive",
+      { category: "Research", xHandle: "Ada" }
+    ),
+    "Research by @Ada — a public Research Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"
+  );
+  assert.equal(
+    listingPostText(
+      "Writer",
+      "https://grokdex.net/templates/writer-abc",
+      { category: "Writing", firstInJob: true }
+    ),
+    "Writer — first Writing bot on Grokdex https://grokdex.net/templates/writer-abc"
+  );
+  assert.equal(
+    listingPostText(
+      "Writer",
+      "https://grokdex.net/templates/writer-abc",
+      { category: "Writing", xHandle: "Ada", firstInJob: true }
+    ),
+    "Writer by @Ada — first Writing bot on Grokdex https://grokdex.net/templates/writer-abc"
+  );
+  assert.equal(
+    listingTweetIntent("Research — a public Grok Bot on Grokdex https://grokdex.net/templates/research-q6nive"),
+    "https://x.com/intent/tweet?text=Research%20%E2%80%94%20a%20public%20Grok%20Bot%20on%20Grokdex%20https%3A%2F%2Fgrokdex.net%2Ftemplates%2Fresearch-q6nive"
   );
 });

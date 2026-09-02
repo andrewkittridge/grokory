@@ -21,12 +21,14 @@ import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
-import { relatedTemplates } from "@/lib/templates";
+import { isFirstInJob, relatedTemplates } from "@/lib/templates";
 import { softwareJson } from "@/lib/json-ld";
 import { formatCount } from "@/lib/bot-url";
 import { isStripeConfigured } from "@/lib/stripe";
+import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
+import { RefreshListing } from "@/components/refresh-listing";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +75,7 @@ export default async function TemplateDetailPage({
   searchParams: Promise<{
     listed?: string;
     linked?: string;
+    updated?: string;
     featured?: string;
     boosted?: string;
   }>;
@@ -81,6 +84,7 @@ export default async function TemplateDetailPage({
   const paramsSearch = await searchParams;
   const listed = paramsSearch.listed === "1";
   const linked = paramsSearch.linked === "1";
+  const updated = paramsSearch.updated === "1";
   const justFeatured = paramsSearch.featured === "1";
   const justBoosted = paramsSearch.boosted === "1";
   const voterId = await readVoterId();
@@ -89,6 +93,7 @@ export default async function TemplateDetailPage({
 
   const listings = await listTemplates(voterId);
   const related = relatedTemplates(listings, template);
+  const firstInJob = isFirstInJob(listings, template);
   const listingHref = await listingUrl(template.slug);
   const payments = isStripeConfigured();
   const featured = isFeaturedActive(template);
@@ -98,7 +103,7 @@ export default async function TemplateDetailPage({
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <JsonLd data={softwareJson(template, listingHref)} />
       <ListedConversion listed={listed} />
-      {listed || linked ? (
+      {listed || linked || updated ? (
         <div className="motion-enter mb-10" style={motionDelay(0)}>
           <ListedBanner
             title={template.title}
@@ -106,7 +111,10 @@ export default async function TemplateDetailPage({
             featureHref={payments ? "#feature" : undefined}
             shareUrl={template.botUrl}
             xHandle={template.xHandle}
-            justLinked={linked}
+            category={template.category}
+            firstInJob={firstInJob}
+            justLinked={linked && !updated}
+            justUpdated={updated}
           />
         </div>
       ) : null}
@@ -127,7 +135,17 @@ export default async function TemplateDetailPage({
       <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
         <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-16 lg:self-start">
           <div className="motion-enter" style={motionDelay(1)}>
-            <AddProcedure template={template} listingUrl={listingHref} />
+            <AddProcedure
+              template={template}
+              listingUrl={listingHref}
+              firstInJob={firstInJob}
+              refresh={
+                <RefreshListing
+                  shareUrl={template.botUrl}
+                  siteKey={turnstileSiteKey()}
+                />
+              }
+            />
           </div>
           <div className="motion-enter" style={motionDelay(2)}>
             <Frame staticFrame matClassName="p-5">
@@ -245,7 +263,11 @@ export default async function TemplateDetailPage({
 
       {related.length > 0 ? (
         <section className="mt-16">
-          <h2 className="display-section">Same job</h2>
+          <h2 className="display-section">
+            {related.every((item) => item.category === template.category)
+              ? "Same job"
+              : "Related"}
+          </h2>
           <BotRankList
             templates={related}
             showVote

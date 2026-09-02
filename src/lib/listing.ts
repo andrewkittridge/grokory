@@ -1,11 +1,15 @@
 import {
   addTemplate,
+  checkedIdentity,
   findByBotId,
   linkXHandleIfEmpty,
+  updateListingFromShare,
+  type ListingPatch,
 } from "./templates-store";
 import { fetchBotPreview } from "./fetch-bot";
 import {
   ALREADY_LISTED,
+  HANDLE_ALREADY_SET,
   authorSlug as slugifyAuthor,
   isCategory,
   parseShareUrl,
@@ -15,7 +19,7 @@ import {
 } from "./bot-url";
 import { consumeKvRate, headerIp } from "./rate-limit";
 import { absUrl } from "./site";
-import type { BotPreview, BotTemplate } from "./types";
+import type { BotPreview, BotTemplate, Category, ListedTemplate } from "./types";
 
 const LIST_RATE_LIMIT = 8;
 const LIST_RATE_WINDOW_MS = 60 * 60 * 1000;
@@ -33,6 +37,8 @@ export type PublishListingInput = {
   xHandle?: string;
   description?: string;
   source: "form" | "agent";
+  intent?: "publish" | "refresh";
+  applyFields?: boolean;
 };
 
 export type PublishListingResult =
@@ -42,6 +48,7 @@ export type PublishListingResult =
       listingUrl: string;
       title: string;
       linked?: boolean;
+      updated?: boolean;
     }
   | {
       ok: false;
@@ -51,15 +58,25 @@ export type PublishListingResult =
       listingUrl?: string;
     };
 
+export type ExistingListing = {
+  slug: string;
+  title?: string;
+  authorName?: string;
+  xHandle?: string;
+  category?: Category;
+  tags?: string[];
+  note?: string;
+  submittedBy?: string;
+};
+
 export type PublishListingDeps = {
   findExisting?: (
     botId: string
-  ) => Promise<
-    { slug: string; title?: string; xHandle?: string } | null | undefined
-  >;
+  ) => Promise<ExistingListing | null | undefined>;
   preview?: typeof fetchBotPreview;
   save?: typeof addTemplate;
   linkHandle?: typeof linkXHandleIfEmpty;
+  update?: typeof updateListingFromShare;
   revalidate?: (path: string) => void | Promise<void>;
 };
 
@@ -109,52 +126,29 @@ export async function publishListing(
     deps.findExisting ??
     (async (botId: string) => {
       const existing = await findByBotId(botId);
-      return existing
-        ? {
-            slug: existing.slug,
-            title: existing.title,
-            xHandle: existing.xHandle,
-          }
-        : null;
+      return existing ? toExisting(existing) : null;
     });
   const previewFn = deps.preview ?? fetchBotPreview;
   const save = deps.save ?? addTemplate;
   const linkHandle = deps.linkHandle ?? linkXHandleIfEmpty;
+  const update = deps.update ?? updateListingFromShare;
   const revalidate = deps.revalidate ?? defaultRevalidate;
 
   try {
     const existing = await findExisting(parsed.botId);
     if (existing?.slug) {
-      if (!xHandle) {
-        return {
-          ok: false,
-          error: ALREADY_LISTED,
-          code: "already_listed",
-          slug: existing.slug,
-          listingUrl: listingUrlFor(existing.slug),
-        };
-      }
-      const linked = await linkHandle(parsed.botId, xHandle);
-      if (!linked.ok) {
-        return {
-          ok: false,
-          error: linked.error,
-          code: "already_listed",
-          slug: linked.slug ?? existing.slug,
-          listingUrl: listingUrlFor(linked.slug ?? existing.slug),
-        };
-      }
-      await revalidate("/");
-      await revalidate("/templates");
-      await revalidate("/catalog");
-      await revalidate(`/templates/${linked.slug}`);
-      return {
-        ok: true,
-        slug: linked.slug,
-        listingUrl: listingUrlFor(linked.slug),
-        title: existing.title || linked.slug,
-        linked: true,
-      };
+      return updateExistingListing(
+        {
+          input,
+          parsed,
+          xHandle,
+          existing,
+          previewFn,
+          linkHandle,
+          update,
+          revalidate,
+        }
+      );
     }
 
     if (!isCategory(input.category)) {
@@ -250,12 +244,7 @@ export async function publishListing(
     }
 
     const slug = result.template.slug;
-    await revalidate("/");
-    await revalidate("/templates");
-    await revalidate("/catalog");
-    await revalidate(`/templates/${slug}`);
-    await revalidate("/feed.xml");
-    await revalidate(`/authors/${slugifyAuthor(resolvedAuthor)}`);
+    await revalidateListing(revalidate, slug, [resolvedAuthor]);
 
     return {
       ok: true,
@@ -272,6 +261,170 @@ export async function publishListing(
   }
 }
 
+function toExisting(template: ListedTemplate): ExistingListing {
+  return {
+    slug: template.slug,
+    title: template.title,
+    authorName: template.authorName,
+    xHandle: template.xHandle,
+    category: template.category,
+    tags: template.tags,
+    note: template.note,
+    submittedBy: template.submittedBy,
+  };
+}
+
+async function revalidateListing(
+  revalidate: (path: string) => void | Promise<void>,
+  slug: string,
+  authors: string[]
+) {
+  await revalidate("/");
+  await revalidate("/templates");
+  await revalidate("/catalog");
+  await revalidate(`/templates/${slug}`);
+  await revalidate("/feed.xml");
+  await revalidate("/authors");
+  const seen = new Set<string>();
+  for (const name of authors) {
+    if (!name.trim()) continue;
+    const path = `/authors/${slugifyAuthor(name)}`;
+    if (seen.has(path)) continue;
+    seen.add(path);
+    await revalidate(path);
+  }
+}
+
+async function updateExistingListing(args: {
+  input: PublishListingInput;
+  parsed: { botId: string; botUrl: string };
+  xHandle?: string;
+  existing: ExistingListing;
+  previewFn: typeof fetchBotPreview;
+  linkHandle: typeof linkXHandleIfEmpty;
+  update: typeof updateListingFromShare;
+  revalidate: (path: string) => void | Promise<void>;
+}): Promise<PublishListingResult> {
+  const {
+    input,
+    parsed,
+    xHandle,
+    existing,
+    previewFn,
+    linkHandle,
+    update,
+    revalidate,
+  } = args;
+  const refreshOnly = input.intent === "refresh";
+
+  if (xHandle) {
+    const linked = await linkHandle(parsed.botId, xHandle);
+    if (!linked.ok) {
+      return {
+        ok: false,
+        error: linked.error,
+        code: "already_listed",
+        slug: linked.slug ?? existing.slug,
+        listingUrl: listingUrlFor(linked.slug ?? existing.slug),
+      };
+    }
+  }
+
+  const lookedUp = await previewFn(parsed.botUrl);
+  if (input.source === "agent" && !lookedUp.ok) {
+    if (xHandle) {
+      await revalidateListing(revalidate, existing.slug, [
+        existing.authorName ?? "",
+      ]);
+      return {
+        ok: true,
+        slug: existing.slug,
+        listingUrl: listingUrlFor(existing.slug),
+        title: existing.title || existing.slug,
+        linked: true,
+      };
+    }
+    return { ok: false, error: lookedUp.error, code: "preview" };
+  }
+
+  const preview: BotPreview | null = lookedUp.ok ? lookedUp.preview : null;
+  const identity = checkedIdentity({
+    title: preview?.title,
+    authorName: preview?.authorName,
+    description: preview?.description,
+    summary: preview?.summary,
+  });
+  const patch: ListingPatch = {};
+
+  if (preview) {
+    if (identity.title) patch.title = identity.title.slice(0, 80);
+    if (identity.authorName) patch.authorName = identity.authorName.slice(0, 60);
+    if (identity.description) {
+      patch.description = identity.description.slice(0, 2000);
+      patch.summary =
+        identity.summary && identity.summary.length <= 180
+          ? identity.summary
+          : patch.description.length > 180
+            ? `${patch.description.slice(0, 177).trimEnd()}…`
+            : patch.description;
+    }
+    if (preview.ogImage) patch.ogImage = preview.ogImage;
+    patch.skills = preview.skills;
+    patch.routines = preview.routines;
+    patch.live = true;
+    patch.lastCheckedAt = new Date().toISOString();
+  } else if (lookedUp.ok === false && lookedUp.gone) {
+    patch.live = false;
+    patch.lastCheckedAt = new Date().toISOString();
+  }
+
+  if (!refreshOnly && input.source === "form" && input.applyFields) {
+    if (isCategory(input.category)) patch.category = input.category;
+    const tags = normalizeTags(input.tags);
+    if (tags.length > 0) patch.tags = tags;
+    const note = (input.note ?? "").trim().slice(0, 400);
+    if (note) patch.note = note;
+    const submittedBy = (input.submittedBy ?? "").trim().slice(0, 60);
+    if (submittedBy) patch.submittedBy = submittedBy;
+  }
+
+  if (!refreshOnly && input.source === "agent") {
+    if (isCategory(input.category)) patch.category = input.category;
+    if (input.tags !== undefined) patch.tags = normalizeTags(input.tags);
+    if (input.note !== undefined) {
+      const note = input.note.trim().slice(0, 400);
+      patch.note = note || null;
+    }
+    const submittedBy = (input.submittedBy ?? "").trim().slice(0, 60);
+    if (submittedBy) patch.submittedBy = submittedBy;
+  }
+
+  const saved = await update(parsed.botId, patch);
+  if (!saved.ok) {
+    return {
+      ok: false,
+      error: saved.error,
+      code: saved.error === HANDLE_ALREADY_SET ? "already_listed" : "save",
+      slug: saved.slug ?? existing.slug,
+      listingUrl: listingUrlFor(saved.slug ?? existing.slug),
+    };
+  }
+
+  await revalidateListing(revalidate, saved.template.slug, [
+    existing.authorName ?? "",
+    saved.template.authorName,
+  ]);
+
+  return {
+    ok: true,
+    slug: saved.template.slug,
+    listingUrl: listingUrlFor(saved.template.slug),
+    title: saved.template.title,
+    updated: true,
+    linked: Boolean(xHandle) && !existing.xHandle,
+  };
+}
+
 export async function listBotFromAgent(
   input: {
     shareUrl?: string;
@@ -280,6 +433,7 @@ export async function listBotFromAgent(
     note?: string;
     submittedBy?: string;
     xHandle?: string;
+    intent?: "publish" | "refresh";
   },
   request: Request,
   deps: PublishListingDeps = {}
@@ -304,6 +458,7 @@ export async function listBotFromAgent(
       note: input.note,
       submittedBy: input.submittedBy,
       xHandle: input.xHandle,
+      intent: input.intent,
       source: "agent",
     },
     deps
@@ -311,7 +466,7 @@ export async function listBotFromAgent(
 
   if (result.ok) {
     return {
-      status: result.linked ? 200 : 201,
+      status: result.updated || result.linked ? 200 : 201,
       body: result,
     };
   }

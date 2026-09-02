@@ -46,7 +46,11 @@ export function UploadForm({
       parsedShare?.botUrl === lookupState.input);
   const lookupError =
     lookupPending || !lookupMatches ? null : lookupState.error ?? null;
-  const showIdentityFields = !preview || editFor === preview.botId;
+  const existing = lookupMatches ? lookupState.existing : undefined;
+  const updating = Boolean(existing);
+  const showIdentityFields =
+    !updating && (!preview || editFor === preview.botId);
+  const lookupReady = !parsedShare || (!lookupPending && lookupMatches);
 
   useEffect(() => {
     const parsed = parseShareUrl(shareUrl);
@@ -121,6 +125,19 @@ export function UploadForm({
         </p>
       </div>
 
+      {existing ? (
+        <>
+          <input type="hidden" name="updateFields" value="1" />
+          <p className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm leading-6 text-body">
+            {existing.title} is already on the board. Publishing refreshes the
+            name from x.ai and any job, tags, or note you set.{" "}
+            <a className="underline" href={`/templates/${existing.slug}`}>
+              Open listing
+            </a>
+          </p>
+        </>
+      ) : null}
+
       {lookupError ? (
         <p
           role="alert"
@@ -150,29 +167,37 @@ export function UploadForm({
               <p className="text-sm text-muted-foreground">
                 by {preview.authorName}
               </p>
-              <button
-                type="button"
-                className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-                onClick={() =>
-                  setEditFor((id) =>
-                    id === preview.botId ? null : preview.botId
-                  )
-                }
-              >
-                {editFor === preview.botId
-                  ? "Hide details"
-                  : "Edit name and description"}
-              </button>
+              {!updating ? (
+                <button
+                  type="button"
+                  className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+                  onClick={() =>
+                    setEditFor((id) =>
+                      id === preview.botId ? null : preview.botId
+                    )
+                  }
+                >
+                  {editFor === preview.botId
+                    ? "Hide details"
+                    : "Edit name and description"}
+                </button>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Name and description refresh from x.ai.
+                </p>
+              )}
             </div>
           </Frame>
         </div>
       ) : null}
 
-      <IdentityFields
-        key={preview?.botId ?? "none"}
-        preview={preview}
-        open={showIdentityFields}
-      />
+      {updating ? null : (
+        <IdentityFields
+          key={preview?.botId ?? "none"}
+          preview={preview}
+          open={showIdentityFields}
+        />
+      )}
 
       <div className="space-y-2">
         <Label htmlFor="xHandle">X handle (optional)</Label>
@@ -184,9 +209,11 @@ export function UploadForm({
           autoComplete="off"
         />
         <p className="text-xs text-muted-foreground">
-          Shown on the listing. Not a login, and we do not verify you own that
-          account. Already listed? Paste the same share link and add a handle —
-          the first one sticks.
+          {existing?.xHandle
+            ? "This listing already has an X handle. The first one sticks."
+            : updating
+              ? "Shown on the listing. Not a login, and we do not verify you own that account. The first handle sticks."
+              : "Shown on the listing. Not a login, and we do not verify you own that account. Already listed? Paste the same share link and add a handle — the first one sticks."}
         </p>
       </div>
 
@@ -195,9 +222,10 @@ export function UploadForm({
           Job category
         </Label>
         <select
+          key={existing?.slug ?? defaultCategory ?? "new"}
           id="category"
           name="category"
-          defaultValue={defaultCategory ?? "Work"}
+          defaultValue={existing?.category ?? defaultCategory ?? "Work"}
           className="h-10 w-full rounded-lg border border-input bg-canvas-soft px-3 text-sm text-foreground outline-none focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground"
         >
           {CATEGORIES.map((category) => (
@@ -208,7 +236,7 @@ export function UploadForm({
         </select>
       </div>
 
-      <details className="rounded-lg border border-border">
+      <details className="rounded-lg border border-border" open={updating}>
         <summary className="cursor-pointer px-3 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
           Tags, note, your name
         </summary>
@@ -216,8 +244,10 @@ export function UploadForm({
           <div className="space-y-2">
             <Label htmlFor="tags">Tags</Label>
             <Input
+              key={`${existing?.slug ?? "new"}-tags`}
               id="tags"
               name="tags"
+              defaultValue={existing?.tags.join(", ") ?? ""}
               placeholder="chief-of-staff, routing"
               className="h-10"
             />
@@ -225,9 +255,11 @@ export function UploadForm({
           <div className="space-y-2">
             <Label htmlFor="note">Why people should add it (optional)</Label>
             <Textarea
+              key={`${existing?.slug ?? "new"}-note`}
               id="note"
               name="note"
               rows={3}
+              defaultValue={existing?.note ?? ""}
               placeholder="Best as the top of a solo-founder roster. Let it spawn specialists instead of doing the work itself."
             />
           </div>
@@ -266,10 +298,18 @@ export function UploadForm({
 
       <Button
         type="submit"
-        disabled={pending}
+        disabled={pending || !lookupReady}
         className="btn-ignite h-10 w-full sm:w-auto"
       >
-        {pending ? "Publishing…" : "Publish to Grokdex"}
+        {pending
+          ? updating
+            ? "Updating…"
+            : "Publishing…"
+          : !lookupReady
+            ? "Looking up…"
+            : updating
+              ? "Update listing"
+              : "Publish to Grokdex"}
       </Button>
     </form>
   );

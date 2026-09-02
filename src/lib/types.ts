@@ -73,5 +73,6 @@ export type TemplateFilters = {
   q?: string;
   category?: string;
   tag?: string;
+  skill?: string;
   sort?: SortMode;
 };

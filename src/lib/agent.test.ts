@@ -98,6 +98,11 @@ test("homepage and listing markdown are citable", () => {
   assert.match(catalog?.body ?? "", /## Research/);
   assert.match(catalog?.body ?? "", /## Coding/);
   assert.match(catalog?.body ?? "", /list the first Coding bot/);
+
+  const authors = pageMarkdown("/authors", [bot()]);
+  assert.equal(authors?.status, 200);
+  assert.match(authors?.body ?? "", /# Authors/);
+  assert.match(authors?.body ?? "", /Andrew/);
 });
 
 test("auth.md documents anonymous agent access", () => {
@@ -130,6 +135,7 @@ test("discovery documents include required fields", async () => {
   assert.equal(mcp.authentication.required, false);
   assert.ok(mcp.tools.length >= 4);
   assert.ok(mcp.tools.some((tool) => tool.name === "list_bot"));
+  assert.ok(mcp.tools.some((tool) => tool.name === "refresh_bot"));
 
   const spec = openApiSpec();
   assert.ok(spec.paths["/api/bots"].post);

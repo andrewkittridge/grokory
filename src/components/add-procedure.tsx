@@ -4,13 +4,18 @@ import { Frame } from "@/components/frame";
 import { ListingTrust } from "@/components/listing-trust";
 import { cn } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
+import type { ReactNode } from "react";
 
 export function AddProcedure({
   template,
   listingUrl,
+  refresh,
+  firstInJob = false,
 }: {
   template: ListedTemplate;
   listingUrl: string;
+  refresh?: ReactNode;
+  firstInJob?: boolean;
 }) {
   return (
     <Frame staticFrame matClassName="p-5">
@@ -73,7 +78,12 @@ export function AddProcedure({
         </li>
       </ol>
       <div className="mt-5 border-t border-border pt-4">
-        <ListingTrust template={template} listingUrl={listingUrl} />
+        <ListingTrust
+          template={template}
+          listingUrl={listingUrl}
+          refresh={refresh}
+          firstInJob={firstInJob}
+        />
         <p className="mt-3 text-xs text-muted-foreground">
           Listed by {template.submittedBy}
         </p>

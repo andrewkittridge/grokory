@@ -52,8 +52,8 @@ export default function PrivacyPage() {
           <strong className="text-foreground">Abuse checks.</strong> Publish on
           /upload may run Cloudflare Turnstile so automated posting is harder.
           Agent listings (POST /api/bots or MCP list_bot) are gated by fetching
-          the public x.ai share page for that bot. Duplicate share URLs are
-          rejected.
+          the public x.ai share page for that bot. Re-pasting a listed share URL
+          updates that listing. A second X handle on the same bot is rejected.
         </li>
         <li>
           <strong className="text-foreground">Link checks.</strong> We

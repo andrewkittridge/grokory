@@ -3,10 +3,14 @@ import { test } from "node:test";
 import {
   CATALOG_EMPTY_OPENS,
   CATALOG_LANE_FLOOR,
+  authorIndex,
   catalogLaneTokens,
   categoryAnchor,
   filterTemplates,
   groupTemplatesByCategory,
+  isFirstInJob,
+  jobRank,
+  relatedTemplates,
 } from "./templates";
 import { CATEGORIES, type ListedTemplate } from "./types";
 
@@ -50,6 +54,13 @@ test("filterTemplates matches category, tag, and query", () => {
 
   assert.equal(filterTemplates(all, { category: "Coding" }).length, 1);
   assert.equal(filterTemplates(all, { tag: "citations" })[0]?.id, "id");
+  assert.equal(
+    filterTemplates(
+      [research, bot({ id: "cite", skills: ["Cite sources"] })],
+      { skill: "cite sources" }
+    )[0]?.id,
+    "cite"
+  );
   assert.equal(filterTemplates(all, { q: "outer loop" })[0]?.id, "loops");
   assert.equal(filterTemplates(all, { category: "Coding", tag: "citations" }).length, 0);
   assert.equal(
@@ -171,4 +182,80 @@ test("catalogLaneTokens pads empty and sparse jobs with Open seats", () => {
     assert.equal(featured[0].featured, true);
     assert.equal(featured[0].boosted, true);
   }
+});
+
+test("relatedTemplates falls back to overlapping skills when a job is empty", () => {
+  const current = bot({
+    id: "writer",
+    slug: "writer",
+    category: "Writing",
+    skills: ["draft"],
+  });
+  const otherJob = bot({
+    id: "ops",
+    slug: "ops",
+    category: "Ops",
+    skills: ["draft"],
+  });
+  const unrelated = bot({
+    id: "code",
+    slug: "code",
+    category: "Coding",
+    skills: ["lint"],
+  });
+  assert.equal(
+    relatedTemplates([current, otherJob, unrelated], current)[0]?.id,
+    "ops"
+  );
+  assert.equal(authorIndex([current, bot({ authorName: "Andrew" })]).length, 1);
+});
+
+test("isFirstInJob is true only when that listing is alone in its job", () => {
+  const writer = bot({ id: "writer", slug: "writer", category: "Writing" });
+  const research = bot({
+    id: "research",
+    slug: "research",
+    category: "Research",
+  });
+  const otherWriter = bot({
+    id: "essay",
+    slug: "essay",
+    category: "Writing",
+    createdAt: "2026-08-01T00:00:00.000Z",
+    score: 4,
+  });
+
+  assert.equal(isFirstInJob([writer], writer), true);
+  assert.equal(isFirstInJob([writer, research], writer), true);
+  assert.equal(isFirstInJob([writer, otherWriter], writer), false);
+  assert.equal(isFirstInJob([research], writer), false);
+});
+
+test("jobRank is hot order within a job, not the global board", () => {
+  const lead = bot({
+    id: "lead",
+    slug: "lead",
+    category: "Writing",
+    score: 8,
+    createdAt: "2026-08-01T00:00:00.000Z",
+  });
+  const newer = bot({
+    id: "newer",
+    slug: "newer",
+    category: "Writing",
+    score: 1,
+    createdAt: "2026-09-01T00:00:00.000Z",
+  });
+  const research = bot({
+    id: "research",
+    slug: "research",
+    category: "Research",
+    score: 20,
+  });
+  const all = [research, newer, lead];
+
+  assert.equal(jobRank(all, lead), 1);
+  assert.equal(jobRank(all, newer), 2);
+  assert.equal(jobRank(all, research), 1);
+  assert.equal(jobRank([research], newer), 0);
 });
