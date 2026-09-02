@@ -93,7 +93,6 @@ function CatalogLaneSet({
         clone && "catalog-lane-clone"
       )}
       aria-hidden={clone || undefined}
-      inert={clone || undefined}
     >
       {tokens.map((token, tokenIndex) => (
         <CatalogBot
