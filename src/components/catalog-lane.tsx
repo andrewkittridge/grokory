@@ -10,10 +10,12 @@ export function CatalogLane({
   id,
   tokens,
   index,
+  query = "",
 }: {
   id: string;
   tokens: CatalogToken[];
   index: number;
+  query?: string;
 }) {
   const listed = tokens.filter((token) => token.kind === "listed").length;
   const reverse = index % 2 === 1;
@@ -62,8 +64,8 @@ export function CatalogLane({
             } as CSSProperties
           }
         >
-          <CatalogLaneSet tokens={tokens} />
-          <CatalogLaneSet tokens={tokens} clone />
+          <CatalogLaneSet tokens={tokens} query={query} />
+          <CatalogLaneSet tokens={tokens} query={query} clone />
         </div>
       </div>
     </section>
@@ -73,9 +75,11 @@ export function CatalogLane({
 function CatalogLaneSet({
   tokens,
   clone = false,
+  query = "",
 }: {
   tokens: CatalogToken[];
   clone?: boolean;
+  query?: string;
 }) {
   return (
     <div
@@ -91,6 +95,7 @@ function CatalogLaneSet({
           token={token}
           index={tokenIndex}
           clone={clone}
+          query={query}
         />
       ))}
     </div>

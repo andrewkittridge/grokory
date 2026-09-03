@@ -309,7 +309,7 @@ function catalogMarkdown(templates: ListedTemplate[]) {
   const ranked = sortTemplates(templates, "hot");
   return `# Catalog · ${SITE_NAME}
 
-Public Grok Bots. The HTML page is a moving parade; this Markdown is the same listings.
+Public Grok Bots. The HTML page is a moving parade; this Markdown is the same listings. On the HTML parade, search with \`?q=\` to hop matching bots.
 
 HTML: ${absUrl("/catalog")}
 Board: ${absUrl("/templates")}
@@ -451,7 +451,8 @@ function botList(templates: ListedTemplate[]) {
   return templates
     .map((template) => {
       const url = absUrl(`/templates/${template.slug}/index.md`);
-      return `- [${template.title}](${url}) — ${template.summary}`;
+      const handle = template.xHandle ? ` · @${template.xHandle}` : "";
+      return `- [${template.title}](${url})${handle} — ${template.summary}`;
     })
     .join("\n");
 }

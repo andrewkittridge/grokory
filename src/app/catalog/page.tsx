@@ -15,11 +15,20 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Catalog",
   description:
-    "Public Grok Bots in a moving parade. Hover a lane to pause, then open a bot to add a copy on x.ai.",
+    "Public Grok Bots in a moving parade. Whistle a name or @handle to hop a match, then open a bot to add a copy on x.ai.",
   alternates: { canonical: "/catalog" },
 };
 
-export default async function CatalogPage() {
+type Search = {
+  q?: string;
+};
+
+export default async function CatalogPage({
+  searchParams,
+}: {
+  searchParams: Promise<Search>;
+}) {
+  const q = (await searchParams).q?.trim() ?? "";
   const templates = await listTemplates(await readVoterId());
   const founding = isFoundingBoard(templates.length);
   const lanes = catalogParadeLanes(templates).map((lane) => ({
@@ -37,8 +46,8 @@ export default async function CatalogPage() {
           style={motionDelay(1)}
         >
           {founding
-            ? "Just opened. Listed bots march; empty seats wait for the next share link."
-            : "Every public Grok Bot in a moving parade. Hover a lane to pause. Open a bot to add a copy on x.ai."}{" "}
+            ? "Just opened. Listed bots march; empty seats wait for the next share link. Whistle a name or @handle to hop a match."
+            : "Every public Grok Bot in a moving parade. Whistle a name or @handle to hop a match. Hover a lane to pause. Open a bot to add a copy on x.ai."}{" "}
           <Link
             href="/templates"
             className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
@@ -48,7 +57,7 @@ export default async function CatalogPage() {
           <span aria-hidden="true"> →</span>
         </p>
       </div>
-      <CatalogParade lanes={lanes} />
+      <CatalogParade lanes={lanes} initialQuery={q} />
     </main>
   );
 }

@@ -45,10 +45,12 @@ export function filterTemplates(
       return false;
     }
     if (!q) return true;
+    const handle = template.xHandle?.trim();
     const haystack = [
       template.title,
       template.authorName,
-      template.xHandle ?? "",
+      handle ?? "",
+      handle ? `@${handle}` : "",
       template.summary,
       template.description,
       template.note ?? "",
@@ -60,6 +62,19 @@ export function filterTemplates(
       .toLowerCase();
     return haystack.includes(q);
   });
+}
+
+export function catalogTokenMatches(token: CatalogToken, q: string) {
+  const query = q.trim();
+  if (!query) return true;
+  if (token.kind === "open") return false;
+  return filterTemplates([token.template], { q: query }).length > 0;
+}
+
+export function catalogListedHitCount(tokens: CatalogToken[], q: string) {
+  return tokens.filter(
+    (token) => token.kind === "listed" && catalogTokenMatches(token, q)
+  ).length;
 }
 
 export function relatedTemplates(
