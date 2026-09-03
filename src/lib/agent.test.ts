@@ -100,10 +100,12 @@ test("homepage and listing markdown are citable", () => {
   assert.match(upload?.body ?? "", /list_bot/);
   assert.match(upload?.body ?? "", /\/api\/bots/);
 
-  const catalog = pageMarkdown("/catalog", [bot()]);
+  const catalog = pageMarkdown("/catalog", [bot({ xHandle: "andrew" })]);
   assert.equal(catalog?.status, 200);
   assert.match(catalog?.body ?? "", /^# Catalog/m);
   assert.match(catalog?.body ?? "", /Research/);
+  assert.match(catalog?.body ?? "", /@andrew/);
+  assert.match(catalog?.body ?? "", /\?q=/);
   assert.doesNotMatch(catalog?.body ?? "", /grouped by job/);
 
   const authors = pageMarkdown("/authors", [bot()]);

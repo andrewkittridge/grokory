@@ -7,12 +7,9 @@ export default function CatalogLoading() {
       </div>
       <div className="border-y border-border">
         <div className="mx-auto flex h-12 w-full max-w-6xl items-center gap-2 px-4 sm:px-6">
-          {Array.from({ length: 9 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-6 w-16 shrink-0 animate-pulse rounded-full bg-canvas-soft"
-            />
-          ))}
+          <div className="h-8 min-w-0 flex-1 animate-pulse rounded-lg bg-canvas-soft" />
+          <div className="h-8 w-20 shrink-0 animate-pulse rounded-full bg-canvas-soft" />
+          <div className="h-8 w-28 shrink-0 animate-pulse rounded-full bg-canvas-soft" />
         </div>
       </div>
       <div className="divide-y divide-border">

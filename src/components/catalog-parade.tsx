@@ -1,20 +1,55 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CatalogLane } from "@/components/catalog-lane";
-import { clearGrokBotGaze, gazeGrokBot } from "@/components/grok-bot";
+import { CatalogSearch } from "@/components/catalog-search";
+import { clearGrokBotGaze, gazeGrokBot, hopGrokBot } from "@/components/grok-bot";
 import { Button } from "@/components/ui/button";
-import type { CatalogToken } from "@/lib/templates";
+import { usePrefersReducedMotion } from "@/lib/motion";
+import {
+  catalogListedHitCount,
+  catalogTokenMatches,
+  type CatalogToken,
+} from "@/lib/templates";
 
 export type CatalogLaneData = {
   id: string;
   tokens: CatalogToken[];
 };
 
-export function CatalogParade({ lanes }: { lanes: CatalogLaneData[] }) {
+export function CatalogParade({
+  lanes,
+  initialQuery = "",
+}: {
+  lanes: CatalogLaneData[];
+  initialQuery?: string;
+}) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
   const [paused, setPaused] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [q, setQ] = useState(initialQuery);
+  const [hopNonce, setHopNonce] = useState(0);
+  const searching = q.trim().length > 0;
+  const hits = useMemo(
+    () =>
+      lanes.reduce(
+        (total, lane) => total + catalogListedHitCount(lane.tokens, q),
+        0
+      ),
+    [lanes, q]
+  );
+  const hitKey = useMemo(
+    () =>
+      lanes
+        .flatMap((lane) => lane.tokens)
+        .filter(
+          (token) => token.kind === "listed" && catalogTokenMatches(token, q)
+        )
+        .map((token) => token.key)
+        .join("|"),
+    [lanes, q]
+  );
 
   useEffect(() => {
     const onVisibility = () => setHidden(document.hidden);
@@ -22,6 +57,40 @@ export function CatalogParade({ lanes }: { lanes: CatalogLaneData[] }) {
     document.addEventListener("visibilitychange", onVisibility);
     return () => document.removeEventListener("visibilitychange", onVisibility);
   }, []);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const current = url.searchParams.get("q") ?? "";
+    if (q === current) return;
+    if (q) url.searchParams.set("q", q);
+    else url.searchParams.delete("q");
+    const next = `${url.pathname}${url.search}${url.hash}`;
+    window.history.replaceState(null, "", next);
+  }, [q]);
+
+  useEffect(() => {
+    if (reduced) return;
+    if (!searching && hopNonce === 0) return;
+    const timeouts: number[] = [];
+    const frame = window.requestAnimationFrame(() => {
+      const root = rootRef.current;
+      if (!root) return;
+      const bots = root.querySelectorAll<HTMLElement>(
+        searching
+          ? '[data-catalog-hit="true"] .catalog-bot-figure'
+          : ".catalog-bot-figure"
+      );
+      bots.forEach((el, index) => {
+        timeouts.push(
+          window.setTimeout(() => hopGrokBot(el, reduced), index * 55)
+        );
+      });
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      for (const id of timeouts) window.clearTimeout(id);
+    };
+  }, [hitKey, hopNonce, reduced, searching]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -68,13 +137,22 @@ export function CatalogParade({ lanes }: { lanes: CatalogLaneData[] }) {
       className="catalog-parade"
       data-paused={paused ? "true" : "false"}
       data-hidden={hidden ? "true" : "false"}
+      data-query={searching ? "true" : "false"}
     >
       <div className="catalog-chips">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-end gap-2 px-4 py-2.5 sm:px-6">
+        <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2.5 sm:px-6">
+          <CatalogSearch
+            q={q}
+            hits={hits}
+            searching={searching}
+            onQuery={setQ}
+            onWhistle={() => setHopNonce((value) => value + 1)}
+          />
           <Button
             type="button"
             size="sm"
             variant="outline"
+            className="shrink-0"
             aria-pressed={paused}
             onClick={() => setPaused((value) => !value)}
           >
@@ -88,6 +166,7 @@ export function CatalogParade({ lanes }: { lanes: CatalogLaneData[] }) {
           id={lane.id}
           tokens={lane.tokens}
           index={index}
+          query={q}
         />
       ))}
     </div>

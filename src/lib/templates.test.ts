@@ -5,7 +5,9 @@ import {
   CATALOG_LANE_FLOOR,
   authorIndex,
   catalogLaneTokens,
+  catalogListedHitCount,
   catalogParadeLanes,
+  catalogTokenMatches,
   filterTemplates,
   relatedTemplates,
 } from "./templates";
@@ -59,6 +61,11 @@ test("filterTemplates matches tag, skill, and query", () => {
   assert.equal(filterTemplates(all, { tag: "citations", q: "outer" }).length, 0);
   assert.equal(
     filterTemplates([bot({ xHandle: "kittridge" })], { q: "kittridge" })[0]
+      ?.xHandle,
+    "kittridge"
+  );
+  assert.equal(
+    filterTemplates([bot({ xHandle: "kittridge" })], { q: "@kitt" })[0]
       ?.xHandle,
     "kittridge"
   );
@@ -153,6 +160,25 @@ test("catalogLaneTokens pads empty and sparse lanes with Open seats", () => {
     assert.equal(featured[0].featured, true);
     assert.equal(featured[0].boosted, true);
   }
+});
+
+test("catalogTokenMatches hops listed bots and ignores open seats", () => {
+  const listed = catalogLaneTokens(
+    { id: "lane-0", templates: [bot({ xHandle: "kittridge" })] },
+    NOW
+  );
+  const token = listed[0];
+  const open = listed.find((item) => item.kind === "open");
+  assert.equal(token?.kind, "listed");
+  assert.ok(open);
+  assert.equal(catalogTokenMatches(token!, ""), true);
+  assert.equal(catalogTokenMatches(token!, "research"), true);
+  assert.equal(catalogTokenMatches(token!, "@kittridge"), true);
+  assert.equal(catalogTokenMatches(token!, "nope"), false);
+  assert.equal(catalogTokenMatches(open!, ""), true);
+  assert.equal(catalogTokenMatches(open!, "research"), false);
+  assert.equal(catalogListedHitCount(listed, "@kittridge"), 1);
+  assert.equal(catalogListedHitCount(listed, "nope"), 0);
 });
 
 test("catalogLaneTokens keep the share-page mark on listed bots", () => {

@@ -1409,6 +1409,23 @@ body {
   animation-play-state: paused;
 }
 
+.catalog-bot {
+  transition: opacity 200ms ease;
+}
+
+.catalog-bot-handle {
+  max-width: 100%;
+}
+
+.catalog-bot.is-miss {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.catalog-bot.is-miss .catalog-bot-figure {
+  filter: grayscale(0.4);
+}
+
 .catalog-bot-summary {
   display: -webkit-box;
   overflow: hidden;
@@ -1422,7 +1439,7 @@ body {
 }
 
 .catalog-bot:hover .catalog-bot-summary,
-.catalog-bot:focus-visible .catalog-bot-summary {
+.catalog-bot:focus-within .catalog-bot-summary {
   max-height: 2.6rem;
   opacity: 1;
 }
@@ -1482,6 +1499,7 @@ body {
   .nav-pip,
   .input-scan::after,
   .catalog-lane-track,
+  .catalog-bot,
   .catalog-bot-summary {
     animation: none;
   }
@@ -1576,6 +1594,14 @@ body {
   .catalog-lane-mask {
     overflow: visible;
     mask-image: none;
+  }
+
+  .catalog-bot {
+    transition: none;
+  }
+
+  .catalog-bot.is-miss .catalog-bot-figure {
+    filter: none;
   }
 
   .catalog-bot-summary {
