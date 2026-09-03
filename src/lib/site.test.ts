@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  SITE_DESCRIPTION,
+  SITE_TITLE,
   TWITTER_SITE,
   pageMetadata,
   twitterMeta,
@@ -33,4 +35,10 @@ test("pageMetadata sets page-specific OG url and title", () => {
   });
   assert.equal(board.openGraph?.url, "https://grokdex.net/templates");
   assert.equal(board.openGraph?.title, "The board · Grokdex");
+});
+
+test("site title and description name the ranked directory", () => {
+  assert.match(SITE_TITLE, /directory/i);
+  assert.match(SITE_DESCRIPTION, /ranked/i);
+  assert.match(SITE_DESCRIPTION, /x\.ai/);
 });

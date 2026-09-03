@@ -106,7 +106,7 @@ export default async function AuthorPage({
         templates={templates}
         showVote
         scramble
-        className="mt-10 border-y border-border"
+        className="board-panel mt-10"
       />
     </main>
   );

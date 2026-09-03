@@ -93,6 +93,7 @@ test("homepage and listing markdown are citable", () => {
   assert.equal(home?.status, 200);
   assert.match(home?.body ?? "", /# Grokdex/);
   assert.match(home?.body ?? "", /What is Grokdex\?/);
+  assert.match(home?.body ?? "", /How is Grokdex different/);
   assert.equal(pageMarkdown("/templates/missing", [bot()])?.status, 404);
 
   const upload = pageMarkdown("/upload", []);

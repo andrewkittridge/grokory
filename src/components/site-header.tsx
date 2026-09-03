@@ -5,8 +5,27 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
+import { SiteSearch } from "@/components/site-search";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+const NAV = [
+  {
+    href: "/templates",
+    label: "Board",
+    match: (path: string) => path.startsWith("/templates"),
+  },
+  {
+    href: "/catalog",
+    label: "Catalog",
+    match: (path: string) => path === "/catalog",
+  },
+  {
+    href: "/authors",
+    label: "Authors",
+    match: (path: string) => path.startsWith("/authors"),
+  },
+] as const;
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -28,26 +47,27 @@ export function SiteHeader() {
         dense && "header-dense"
       )}
     >
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-        <Link href="/" className="group/mark flex min-w-0 items-center gap-2.5">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-3 px-4 sm:px-6">
+        <Link
+          href="/"
+          className="group/mark flex min-w-0 shrink-0 items-center gap-2.5"
+        >
           <BrandMark className="site-brand-mark size-[1.15rem] text-foreground" />
           <span className="text-[15px] font-normal tracking-tight">
             Grokdex
           </span>
-          <span className="hidden font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase lg:inline">
-            Public Grok Bots
-          </span>
         </Link>
-        <nav className="hidden items-center gap-1 lg:flex">
-          <HeaderLink
-            href="/templates"
-            active={pathname.startsWith("/templates")}
-          >
-            Browse
-          </HeaderLink>
-          <HeaderLink href="/catalog" active={pathname === "/catalog"}>
-            Catalog
-          </HeaderLink>
+        <SiteSearch className="mx-2 hidden min-w-0 flex-1 md:flex" />
+        <nav className="ml-auto hidden items-center gap-1 lg:flex">
+          {NAV.map((item) => (
+            <HeaderLink
+              key={item.href}
+              href={item.href}
+              active={item.match(pathname)}
+            >
+              {item.label}
+            </HeaderLink>
+          ))}
           <HeaderLink
             href="/upload"
             active={pathname === "/upload"}
@@ -56,28 +76,24 @@ export function SiteHeader() {
             Share a bot
           </HeaderLink>
         </nav>
-        <details className="group relative lg:hidden">
+        <details className="group relative ml-auto lg:hidden">
           <summary className="flex cursor-pointer list-none items-center rounded-full border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
             Menu
           </summary>
-          <div className="absolute right-0 z-50 mt-2 w-52 rounded-lg border border-border bg-popover p-1">
+          <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover p-2">
+            <SiteSearch size="menu" className="mb-2" />
             <nav className="flex flex-col">
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                nativeButton={false}
-                render={<Link href="/templates" />}
-              >
-                Browse
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                nativeButton={false}
-                render={<Link href="/catalog" />}
-              >
-                Catalog
-              </Button>
+              {NAV.map((item) => (
+                <Button
+                  key={item.href}
+                  variant="ghost"
+                  className="w-full justify-start"
+                  nativeButton={false}
+                  render={<Link href={item.href} />}
+                >
+                  {item.label}
+                </Button>
+              ))}
               <Button
                 className="w-full"
                 variant={pathname === "/" ? "outline" : "default"}

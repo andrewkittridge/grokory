@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
+import { LandingCta } from "@/components/landing-cta";
 import {
   LandingBoard,
   LandingBoardSkeleton,
   LandingHero,
 } from "@/components/landing-hero";
+import { LandingHow } from "@/components/landing-how";
+import { LandingWhy } from "@/components/landing-why";
 import { faqJson, itemListJson } from "@/lib/json-ld";
 import { partitionFeatured } from "@/lib/featured";
 import {
@@ -51,7 +54,7 @@ async function Home() {
   const templates = await listTemplates(await readVoterId());
   const founding = isFoundingBoard(templates.length);
   const { featured, organic } = partitionFeatured(templates);
-  const ranked = sortTemplates(organic, "hot").slice(0, 5);
+  const ranked = sortTemplates(organic, "hot").slice(0, HOME_BOARD_SLOTS);
   const vacancies = boardVacancies(
     templates.length,
     ranked.length + featured.length,
@@ -60,28 +63,33 @@ async function Home() {
   const taglineDelay = templates.length === 0 ? 6 : 7 + ranked.length;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <LandingHero founding={founding}>
-        <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
-        <JsonLd data={faqJson()} />
-        <LandingBoard
-          ranked={ranked}
-          featured={featured}
-          count={templates.length}
-          founding={founding}
-          vacancies={vacancies}
-        />
-      </LandingHero>
-      <p
-        className="motion-enter mt-8 border-t border-border pt-5 text-sm leading-7 text-body sm:mt-10"
-        style={motionDelay(taglineDelay)}
-      >
-        Public share links
-        <span aria-hidden="true"> · </span>
-        Ranked by votes
-        <span aria-hidden="true"> · </span>
-        Add copies the template
-      </p>
-    </div>
+    <>
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+        <LandingHero founding={founding}>
+          <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
+          <JsonLd data={faqJson()} />
+          <LandingBoard
+            ranked={ranked}
+            featured={featured}
+            count={templates.length}
+            founding={founding}
+            vacancies={vacancies}
+          />
+        </LandingHero>
+        <LandingWhy />
+        <LandingHow />
+        <p
+          className="motion-enter mt-12 border-t border-border pt-5 text-sm leading-7 text-body"
+          style={motionDelay(taglineDelay)}
+        >
+          Public share links
+          <span aria-hidden="true"> · </span>
+          Ranked by votes
+          <span aria-hidden="true"> · </span>
+          Add copies the template
+        </p>
+      </div>
+      <LandingCta founding={founding} />
+    </>
   );
 }

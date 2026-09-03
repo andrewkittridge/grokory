@@ -2,7 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { AddProcedure } from "@/components/add-procedure";
-import { BotCover } from "@/components/bot-cover";
+import { BotIdentityStage } from "@/components/bot-identity";
 import { BotRankList } from "@/components/bot-rank-row";
 import {
   BoostCta,
@@ -100,7 +100,7 @@ export default async function TemplateDetailPage({
   const boosted = isBoostedActive(template);
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <JsonLd data={softwareJson(template, listingHref)} />
       <JsonLd
         data={breadcrumbListJson([
@@ -181,6 +181,8 @@ export default async function TemplateDetailPage({
                 </span>
                 {" · "}
                 {formatCount(template.adds)} adds
+                {" · "}
+                {template.live ? "Live on x.ai" : "Share link down"}
               </p>
             </Frame>
           </div>
@@ -203,12 +205,10 @@ export default async function TemplateDetailPage({
         <article className="order-2 lg:order-1">
           <div className="motion-enter" style={motionDelay(3)}>
             <Frame staticFrame>
-              <BotCover
-                botId={template.botId}
+              <BotIdentityStage
+                mark={template.mark}
                 title={template.title}
                 ogImage={template.ogImage}
-                className="h-36 sm:h-44"
-                acquire
               />
               <div className="px-5 py-6 sm:px-8 sm:py-8">
                 <div className="flex flex-wrap gap-1.5">
@@ -253,7 +253,7 @@ export default async function TemplateDetailPage({
                   {template.description}
                 </p>
                 {template.note ? (
-                  <blockquote className="mt-6 border-l border-border pl-4 text-sm leading-6 text-muted-foreground">
+                  <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
                     {template.note}
                   </blockquote>
                 ) : null}
@@ -276,12 +276,9 @@ export default async function TemplateDetailPage({
       {related.length > 0 ? (
         <section className="mt-16">
           <h2 className="display-section">Related</h2>
-          <BotRankList
-            templates={related}
-            showVote
-            scramble
-            className="mt-5 border-y border-border"
-          />
+          <div className="board-panel mt-5">
+            <BotRankList templates={related} showVote scramble />
+          </div>
         </section>
       ) : null}
     </main>

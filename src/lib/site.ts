@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 
 export const SITE_URL = "https://grokdex.net";
 export const SITE_NAME = "Grokdex";
-export const SITE_TITLE = "Grokdex — Public Grok Bot board";
+export const SITE_TITLE = "Grokdex — Ranked Grok Bot directory";
 export const SITE_DESCRIPTION =
-  "A public board of Grok Bot templates. List yours, or add a copy to your Grok account.";
+  "The ranked public board of Grok Bot templates. Live share links from x.ai. Vote, add a copy to your Grok account, or list yours — no account.";
 export const REPORT_EMAIL = "report@grokdex.net";
 
 /** Product X handle for `twitter:site`. Unset until Grokdex has a stable one. */

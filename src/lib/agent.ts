@@ -36,7 +36,11 @@ const AI_USER_AGENTS = [
 export const FAQS: { q: string; a: string }[] = [
   {
     q: "What is Grokdex?",
-    a: "Grokdex is a public board of Grok Bot templates at grokdex.net. Anyone can list a public x.ai/bot share link, upvote useful ones, and add a copy onto their own Grok account. Grokdex is independent and is not affiliated with xAI or SpaceXAI.",
+    a: "Grokdex is the ranked public board of Grok Bot templates at grokdex.net. Anyone can list a public x.ai/bot share link, upvote useful ones, and add a copy onto their own Grok account. Identity comes from the live x.ai preview. Grokdex is independent and is not affiliated with xAI or SpaceXAI.",
+  },
+  {
+    q: "How is Grokdex different from other Grok Bot directories?",
+    a: "Grokdex ranks live public share links. Name, description, and silhouette come from the x.ai preview, not from a scraped post. Votes happen on this board. Listing is free, needs no account, and a Grok Bot can list itself over MCP. Paid placement is labeled and does not change organic rank. Grokdex is independent and is not affiliated with xAI or SpaceXAI.",
   },
   {
     q: "What is a Grok Bot?",
@@ -294,7 +298,7 @@ function boardMarkdown(templates: ListedTemplate[]) {
   const ranked = sortTemplates(templates, "hot");
   return `# The board · ${SITE_NAME}
 
-A public board of Grok Bot share links. Upvote the useful ones, then add a copy on x.ai.
+The ranked public board of Grok Bot share links. Upvote the useful ones, then add a copy on x.ai.
 
 Browse HTML: ${absUrl("/templates")}
 JSON: ${absUrl("/api/bots")}

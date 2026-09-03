@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
+import { BotIdentityThumb } from "@/components/bot-identity";
 import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
@@ -83,34 +84,44 @@ export function BotRankRow({
           className={cn(
             "relative z-10 shrink-0",
             roster && "w-8",
-            leader ? "pt-1" : undefined,
+            leader ? "pt-1" : "pt-1",
             rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
           )}
         />
       ) : (
         <span
           className={cn(
-            "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide",
+            "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
             roster && "w-8",
-            leader ? "pt-1" : undefined,
             rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
           )}
         >
           {String(rank).padStart(2, "0")}
         </span>
       )}
+      <span className="relative z-10 pointer-events-none">
+        <BotIdentityThumb
+          mark={template.mark}
+          size={leader ? "lg" : "md"}
+        />
+      </span>
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span
           className={cn(
-            "font-normal tracking-tight",
+            "inline-flex max-w-full items-baseline gap-2",
             leader
               ? roster
-                ? "line-clamp-2 text-xl leading-tight sm:text-2xl"
-                : "line-clamp-2 text-lg leading-tight sm:text-xl"
-              : "block truncate text-[15px] leading-tight"
+                ? "font-heading text-xl leading-tight tracking-tight sm:text-2xl"
+                : "font-heading text-lg leading-tight tracking-tight sm:text-xl"
+              : "text-[15px] leading-tight tracking-tight"
           )}
         >
-          {template.title}
+          <span className={leader ? "line-clamp-2" : "truncate"}>
+            {template.title}
+          </span>
+          {template.live ? (
+            <span className="live-dot shrink-0" title="Live share link" />
+          ) : null}
         </span>
         <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
           {isFeaturedActive(template) ? (
@@ -268,11 +279,12 @@ export function BotRankRowSkeleton({
   return (
     <div
       className={cn(
-        "grid grid-cols-[2.25rem_minmax(0,1fr)_4rem] items-center gap-x-3",
+        "grid grid-cols-[2.25rem_2.65rem_minmax(0,1fr)_4rem] items-center gap-x-3",
         roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
       <div className="h-3 w-5 animate-pulse bg-canvas-soft" />
+      <div className="size-10 animate-pulse rounded-full bg-canvas-soft" />
       <div className="space-y-2">
         <div className="h-3.5 w-2/5 max-w-56 animate-pulse bg-canvas-soft" />
         <div className="h-2.5 w-1/4 max-w-32 animate-pulse bg-canvas-soft" />

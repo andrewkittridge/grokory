@@ -1,7 +1,7 @@
 import { isBoostedActive, partitionBoosted } from "./boost";
 import { isFeaturedActive, partitionFeatured } from "./featured";
 import { openVacancy, type BoardVacancy } from "./founding";
-import type { ListedTemplate, TemplateFilters } from "./types";
+import type { BotMark, ListedTemplate, TemplateFilters } from "./types";
 import { authorSlug } from "./bot-url";
 import { sortTemplates } from "./rank";
 
@@ -114,12 +114,13 @@ export type AuthorIndexRow = {
   name: string;
   handles: string[];
   count: number;
+  mark?: BotMark;
 };
 
 export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
   const bySlug = new Map<
     string,
-    { name: string; handles: Set<string>; count: number }
+    { name: string; handles: Set<string>; count: number; mark?: BotMark }
   >();
   for (const template of templates) {
     const slug = authorSlug(template.authorName);
@@ -130,6 +131,7 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
     };
     row.count += 1;
     if (template.xHandle) row.handles.add(template.xHandle);
+    if (!row.mark && template.mark) row.mark = template.mark;
     bySlug.set(slug, row);
   }
   return [...bySlug.entries()]
@@ -138,6 +140,7 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
       name: row.name,
       handles: [...row.handles],
       count: row.count,
+      mark: row.mark,
     }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
