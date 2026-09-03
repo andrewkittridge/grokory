@@ -24,7 +24,7 @@ import { isFoundingBoard } from "@/lib/founding";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
 import { breadcrumbListJson, softwareJson } from "@/lib/json-ld";
-import { formatCount } from "@/lib/bot-url";
+import { authorIdentity, formatCount, preferredAuthorName } from "@/lib/bot-url";
 import { isStripeConfigured } from "@/lib/stripe";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
@@ -98,6 +98,10 @@ export default async function TemplateDetailPage({
   const payments = isStripeConfigured();
   const featured = isFeaturedActive(template);
   const boosted = isBoostedActive(template);
+  const authorSlugKey = authorIdentity(template).slug;
+  const authorName = preferredAuthorName(
+    listings.filter((item) => authorIdentity(item).slug === authorSlugKey)
+  );
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -141,7 +145,7 @@ export default async function TemplateDetailPage({
       <div className="motion-enter mt-8 lg:sr-only" style={motionDelay(1)}>
         <LockTitle>{template.title}</LockTitle>
         <AuthorByline
-          name={template.authorName}
+          name={authorName}
           xHandle={template.xHandle}
           shareUrl={template.botUrl}
           className="mt-2 text-muted-foreground lg:hidden"
@@ -244,7 +248,7 @@ export default async function TemplateDetailPage({
                   {template.title}
                 </LockTitle>
                 <AuthorByline
-                  name={template.authorName}
+                  name={authorName}
                   xHandle={template.xHandle}
                   shareUrl={template.botUrl}
                   className="mt-2 hidden text-muted-foreground lg:block"

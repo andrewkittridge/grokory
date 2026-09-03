@@ -8,6 +8,7 @@ import {
   grokbotTemplateUrl,
   isGoneError,
   isPlaceholderAuthor,
+  preferredAuthorName,
   listingPostText,
   listingTweetIntent,
   parseShareUrl,
@@ -99,6 +100,13 @@ test("authorIdentity uses the X handle when the listed name is a placeholder", (
     name: "Unknown",
     slug: "unknown",
   });
+  assert.equal(
+    preferredAuthorName([
+      { authorName: "Unknown", xHandle: "poteto" },
+      { authorName: "Lauren Tan", xHandle: "poteto" },
+    ]),
+    "Lauren Tan"
+  );
 });
 
 test("parseXHandle accepts @handle, bare handle, and x.com URLs", () => {

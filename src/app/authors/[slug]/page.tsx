@@ -5,7 +5,7 @@ import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
-import { authorIdentity, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
+import { authorIdentity, preferredAuthorName, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
 import { itemListJson } from "@/lib/json-ld";
 import { sortTemplates } from "@/lib/rank";
 import { listTemplates } from "@/lib/templates-store";
@@ -24,7 +24,7 @@ export async function generateMetadata({
   const listed = templates.filter(
     (template) => authorIdentity(template).slug === slug
   );
-  const name = listed[0] ? authorIdentity(listed[0]).name : slug;
+  const name = listed[0] ? preferredAuthorName(listed) : slug;
   return {
     title: name,
     description: `Public Grok Bot templates by ${name} on Grokdex.`,
@@ -45,7 +45,7 @@ export default async function AuthorPage({
     "hot"
   );
   if (templates.length === 0) notFound();
-  const name = authorIdentity(templates[0]).name;
+  const name = preferredAuthorName(templates);
   const handles = [
     ...new Set(
       templates

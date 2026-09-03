@@ -179,6 +179,17 @@ export function authorIdentity(template: {
   return { name: "Unknown", slug: "unknown" };
 }
 
+export function preferredAuthorName(
+  templates: Array<{ authorName: string; xHandle?: string }>
+) {
+  const named = templates.find(
+    (template) => !isPlaceholderAuthor(template.authorName)
+  );
+  if (named) return named.authorName.trim();
+  if (templates[0]) return authorIdentity(templates[0]).name;
+  return "Unknown";
+}
+
 export function formatCheckedAt(iso?: string) {
   if (!iso) return "Not checked yet";
   const then = Date.parse(iso);

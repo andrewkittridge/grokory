@@ -1,4 +1,4 @@
-import { authorIdentity, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
+import { authorIdentity, grokbotTemplateUrl, preferredAuthorName, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
 import { getGuide, guideMarkdown } from "./guides";
 import { authorIndex, filterTemplates } from "./templates";
@@ -387,7 +387,7 @@ ${rows}
 }
 
 function authorMarkdown(listed: ListedTemplate[]) {
-  const name = authorIdentity(listed[0]).name;
+  const name = preferredAuthorName(listed);
   const handles = [
     ...new Set(
       listed
