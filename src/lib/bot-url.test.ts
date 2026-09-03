@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   addHandleHref,
+  authorIdentity,
   authorSlug,
   formatAdds,
   grokbotTemplateUrl,
   isGoneError,
+  isPlaceholderAuthor,
   listingPostText,
   listingTweetIntent,
   parseShareUrl,
@@ -79,6 +81,24 @@ test("authorSlug and gone detection", () => {
   assert.equal(authorSlug("  "), "unknown");
   assert.equal(isGoneError("x.ai returned 404. That share link may have been taken down."), true);
   assert.equal(isGoneError("Could not reach x.ai"), false);
+});
+
+test("authorIdentity uses the X handle when the listed name is a placeholder", () => {
+  assert.equal(isPlaceholderAuthor("Unknown"), true);
+  assert.equal(isPlaceholderAuthor("anonymous"), true);
+  assert.equal(isPlaceholderAuthor("Andrew"), false);
+  assert.deepEqual(
+    authorIdentity({ authorName: "Unknown", xHandle: "poteto" }),
+    { name: "@poteto", slug: "poteto" }
+  );
+  assert.deepEqual(
+    authorIdentity({ authorName: "Andrew", xHandle: "poteto" }),
+    { name: "Andrew", slug: "andrew" }
+  );
+  assert.deepEqual(authorIdentity({ authorName: "Unknown" }), {
+    name: "Unknown",
+    slug: "unknown",
+  });
 });
 
 test("parseXHandle accepts @handle, bare handle, and x.com URLs", () => {

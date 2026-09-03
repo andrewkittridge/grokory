@@ -1,4 +1,4 @@
-import { formatAdds } from "@/lib/bot-url";
+import { authorIdentity, formatAdds, xHandleLabel } from "@/lib/bot-url";
 import { ogImage, OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og-card";
 import { sortTemplates } from "@/lib/rank";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
@@ -30,12 +30,16 @@ export default async function Image({
     (item) => item.slug === template.slug
   );
   const rank = rankIndex >= 0 ? rankIndex + 1 : 0;
-  const handle = template.xHandle ? `  ·  @${template.xHandle}` : "";
+  const identity = authorIdentity(template);
+  const handle =
+    template.xHandle && identity.name !== xHandleLabel(template.xHandle)
+      ? `  ·  ${xHandleLabel(template.xHandle)}`
+      : "";
   const points = template.score === 1 ? "1 pt" : `${template.score} pts`;
 
   return ogImage({
     title: template.title,
-    kicker: `${template.authorName}${handle}`,
+    kicker: `${identity.name}${handle}`,
     summary: template.summary,
     footerLeft: `${points}  ·  ${formatAdds(template.adds)}`,
     badge: rank > 0 ? String(rank).padStart(2, "0") : undefined,

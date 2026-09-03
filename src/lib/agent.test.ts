@@ -114,6 +114,13 @@ test("homepage and listing markdown are citable", () => {
   assert.match(authors?.body ?? "", /# Authors/);
   assert.match(authors?.body ?? "", /Andrew/);
 
+  const listedAuthor = pageMarkdown("/authors/poteto", [
+    bot({ authorName: "Unknown", xHandle: "poteto" }),
+  ]);
+  assert.equal(listedAuthor?.status, 200);
+  assert.match(listedAuthor?.body ?? "", /# @poteto/);
+  assert.doesNotMatch(listedAuthor?.body ?? "", /# Unknown/);
+
   const howToList = pageMarkdown("/guides/how-to-list", []);
   assert.equal(howToList?.status, 200);
   assert.match(howToList?.body ?? "", /# How to list a Grok Bot on Grokdex/);
@@ -197,4 +204,8 @@ test("searchPublicBots filters without voter fields leaking", () => {
   assert.equal("userVote" in publicBot(bot()), false);
   assert.equal(publicBot(bot()).xHandle, null);
   assert.equal(publicBot(bot({ xHandle: "andrew" })).xUrl, "https://x.com/andrew");
+  assert.equal(
+    publicBot(bot({ authorName: "Unknown", xHandle: "poteto" })).authorName,
+    "@poteto"
+  );
 });

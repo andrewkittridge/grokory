@@ -2,7 +2,7 @@ import { isBoostedActive, partitionBoosted } from "./boost";
 import { isFeaturedActive, partitionFeatured } from "./featured";
 import { openVacancy, type BoardVacancy } from "./founding";
 import type { BotMark, ListedTemplate, TemplateFilters } from "./types";
-import { authorSlug } from "./bot-url";
+import { authorIdentity } from "./bot-url";
 import { sortTemplates } from "./rank";
 
 export const CATALOG_LANE_FLOOR = 4;
@@ -123,9 +123,10 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
     { name: string; handles: Set<string>; count: number; mark?: BotMark }
   >();
   for (const template of templates) {
-    const slug = authorSlug(template.authorName);
+    const identity = authorIdentity(template);
+    const slug = identity.slug;
     const row = bySlug.get(slug) ?? {
-      name: template.authorName,
+      name: identity.name,
       handles: new Set<string>(),
       count: 0,
     };

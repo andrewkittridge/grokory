@@ -154,6 +154,26 @@ export function authorSlug(name: string) {
   );
 }
 
+export function isPlaceholderAuthor(name?: string) {
+  const n = name?.trim().toLowerCase() ?? "";
+  return !n || n === "unknown" || n === "anonymous";
+}
+
+export function authorIdentity(template: {
+  authorName: string;
+  xHandle?: string;
+}) {
+  if (!isPlaceholderAuthor(template.authorName)) {
+    const name = template.authorName.trim();
+    return { name, slug: authorSlug(name) };
+  }
+  const handle = template.xHandle?.trim();
+  if (handle) {
+    return { name: xHandleLabel(handle), slug: authorSlug(handle) };
+  }
+  return { name: "Unknown", slug: "unknown" };
+}
+
 export function formatCheckedAt(iso?: string) {
   if (!iso) return "Not checked yet";
   const then = Date.parse(iso);

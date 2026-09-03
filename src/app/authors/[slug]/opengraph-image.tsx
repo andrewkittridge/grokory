@@ -1,4 +1,4 @@
-import { authorSlug, xHandleLabel } from "@/lib/bot-url";
+import { authorIdentity, xHandleLabel } from "@/lib/bot-url";
 import { ogImage, OG_CONTENT_TYPE, OG_SIZE } from "@/lib/og-card";
 import { listTemplates } from "@/lib/templates-store";
 
@@ -14,16 +14,16 @@ export default async function Image({
 }) {
   const { slug } = await params;
   const listed = (await listTemplates()).filter(
-    (template) => authorSlug(template.authorName) === slug
+    (template) => authorIdentity(template).slug === slug
   );
-  const name = listed[0]?.authorName ?? slug;
+  const name = listed[0] ? authorIdentity(listed[0]).name : slug;
   const handles = [
     ...new Set(
       listed
         .map((template) => template.xHandle)
         .filter((handle): handle is string => Boolean(handle))
     ),
-  ];
+  ].filter((handle) => xHandleLabel(handle) !== name);
   const count = listed.length;
   const bots = count === 1 ? "1 bot on the board" : `${count} bots on the board`;
 

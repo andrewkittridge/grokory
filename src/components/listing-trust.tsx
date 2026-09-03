@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ShareListing } from "@/components/share-listing";
 import {
   addHandleHref,
-  authorSlug,
+  authorIdentity,
   formatCheckedAt,
   reportMailto,
   xHandleLabel,
@@ -141,17 +141,20 @@ function LabeledList({
 
 export function AuthorLink({
   name,
+  xHandle,
   className,
 }: {
   name: string;
+  xHandle?: string;
   className?: string;
 }) {
+  const identity = authorIdentity({ authorName: name, xHandle });
   return (
     <Link
-      href={`/authors/${encodeURIComponent(authorSlug(name))}`}
+      href={`/authors/${encodeURIComponent(identity.slug)}`}
       className={className}
     >
-      {name}
+      {identity.name}
     </Link>
   );
 }
@@ -186,14 +189,18 @@ export function AuthorByline({
   shareUrl?: string;
   className?: string;
 }) {
+  const identity = authorIdentity({ authorName: name, xHandle });
+  const showHandle =
+    Boolean(xHandle) && identity.name !== xHandleLabel(xHandle ?? "");
   return (
     <p className={className}>
       by{" "}
       <AuthorLink
         name={name}
+        xHandle={xHandle}
         className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
       />
-      {xHandle ? (
+      {showHandle && xHandle ? (
         <>
           {" · "}
           <XHandleLink
@@ -201,7 +208,7 @@ export function AuthorByline({
             className="hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
           />
         </>
-      ) : shareUrl ? (
+      ) : !xHandle && shareUrl ? (
         <>
           {" · "}
           <Link

@@ -10,7 +10,7 @@ import { fetchBotPreview } from "./fetch-bot";
 import {
   ALREADY_LISTED,
   HANDLE_ALREADY_SET,
-  authorSlug as slugifyAuthor,
+  authorIdentity,
   parseShareUrl,
   parseTags,
   parseXHandle,
@@ -233,7 +233,9 @@ export async function publishListing(
     }
 
     const slug = result.template.slug;
-    await revalidateListing(revalidate, slug, [resolvedAuthor]);
+    await revalidateListing(revalidate, slug, [
+      { authorName: resolvedAuthor, xHandle },
+    ]);
 
     return {
       ok: true,
@@ -265,7 +267,7 @@ function toExisting(template: ListedTemplate): ExistingListing {
 async function revalidateListing(
   revalidate: (path: string) => void | Promise<void>,
   slug: string,
-  authors: string[]
+  authors: Array<{ authorName?: string; xHandle?: string }>
 ) {
   await revalidate("/");
   await revalidate("/templates");
@@ -274,9 +276,11 @@ async function revalidateListing(
   await revalidate("/feed.xml");
   await revalidate("/authors");
   const seen = new Set<string>();
-  for (const name of authors) {
-    if (!name.trim()) continue;
-    const path = `/authors/${slugifyAuthor(name)}`;
+  for (const author of authors) {
+    const name = author.authorName ?? "";
+    const handle = author.xHandle?.trim();
+    if (!name.trim() && !handle) continue;
+    const path = `/authors/${authorIdentity({ authorName: name, xHandle: handle }).slug}`;
     if (seen.has(path)) continue;
     seen.add(path);
     await revalidate(path);
@@ -322,7 +326,8 @@ async function updateExistingListing(args: {
   if (input.source === "agent" && !lookedUp.ok) {
     if (xHandle) {
       await revalidateListing(revalidate, existing.slug, [
-        existing.authorName ?? "",
+        { authorName: existing.authorName ?? "", xHandle: existing.xHandle },
+        { authorName: existing.authorName ?? "", xHandle },
       ]);
       return {
         ok: true,
@@ -398,8 +403,11 @@ async function updateExistingListing(args: {
   }
 
   await revalidateListing(revalidate, saved.template.slug, [
-    existing.authorName ?? "",
-    saved.template.authorName,
+    { authorName: existing.authorName ?? "", xHandle: existing.xHandle },
+    {
+      authorName: saved.template.authorName,
+      xHandle: saved.template.xHandle ?? xHandle,
+    },
   ]);
 
   return {

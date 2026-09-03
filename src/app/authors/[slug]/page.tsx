@@ -5,7 +5,7 @@ import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
-import { authorSlug, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
+import { authorIdentity, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
 import { itemListJson } from "@/lib/json-ld";
 import { sortTemplates } from "@/lib/rank";
 import { listTemplates } from "@/lib/templates-store";
@@ -22,9 +22,9 @@ export async function generateMetadata({
   const { slug } = await params;
   const templates = await listTemplates();
   const listed = templates.filter(
-    (template) => authorSlug(template.authorName) === slug
+    (template) => authorIdentity(template).slug === slug
   );
-  const name = listed[0]?.authorName ?? slug;
+  const name = listed[0] ? authorIdentity(listed[0]).name : slug;
   return {
     title: name,
     description: `Public Grok Bot templates by ${name} on Grokdex.`,
@@ -40,19 +40,19 @@ export default async function AuthorPage({
   const { slug } = await params;
   const templates = sortTemplates(
     (await listTemplates(await readVoterId())).filter(
-      (template) => authorSlug(template.authorName) === slug
+      (template) => authorIdentity(template).slug === slug
     ),
     "hot"
   );
   if (templates.length === 0) notFound();
-  const name = templates[0].authorName;
+  const name = authorIdentity(templates[0]).name;
   const handles = [
     ...new Set(
       templates
         .map((template) => template.xHandle)
         .filter((handle): handle is string => Boolean(handle))
     ),
-  ];
+  ].filter((handle) => xHandleLabel(handle) !== name);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">

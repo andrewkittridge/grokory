@@ -1,4 +1,4 @@
-import { authorSlug, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
+import { authorIdentity, grokbotTemplateUrl, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
 import { getGuide, guideMarkdown } from "./guides";
 import { authorIndex, filterTemplates } from "./templates";
@@ -100,7 +100,7 @@ export function publicBot(template: ListedTemplate): PublicBot {
   return {
     slug: template.slug,
     title: template.title,
-    authorName: template.authorName,
+    authorName: authorIdentity(template).name,
     xHandle: template.xHandle ?? null,
     xUrl: template.xHandle ? xHandleUrl(template.xHandle) : null,
     summary: template.summary,
@@ -252,7 +252,7 @@ export function pageMarkdown(
   const author = path.match(/^\/authors\/([^/]+)$/);
   if (author) {
     const listed = templates.filter(
-      (item) => authorSlug(item.authorName) === author[1]
+      (item) => authorIdentity(item).slug === author[1]
     );
     if (listed.length === 0) return { status: 404, body: "# Not found\n" };
     return { status: 200, body: authorMarkdown(listed) };
@@ -387,7 +387,7 @@ ${rows}
 }
 
 function authorMarkdown(listed: ListedTemplate[]) {
-  const name = listed[0].authorName;
+  const name = authorIdentity(listed[0]).name;
   const handles = [
     ...new Set(
       listed

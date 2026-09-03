@@ -469,6 +469,27 @@ test("updating a listing revalidates author pages", async () => {
   assert.ok(paths.includes("/catalog"));
 });
 
+test("placeholder authors revalidate the X handle slug", async () => {
+  const paths: string[] = [];
+  await publishListing(
+    { shareUrl: SHARE, source: "agent", xHandle: "poteto" },
+    deps({
+      findExisting: async () => ({
+        slug: "jarvis-n92u9t",
+        title: "Jarvis",
+        authorName: "Unknown",
+      }),
+      preview: async () => ({ ok: false, error: "x.ai is down", gone: false }),
+      linkHandle: async () => ({ ok: true, slug: "jarvis-n92u9t" }),
+      revalidate: (path) => {
+        paths.push(path);
+      },
+    })
+  );
+  assert.ok(paths.includes("/authors/poteto"));
+  assert.ok(paths.includes("/authors/unknown"));
+});
+
 test("listBotFromAgent maps a bad share URL to 400", async () => {
   const result = await listBotFromAgent(
     { shareUrl: "not-a-bot" },

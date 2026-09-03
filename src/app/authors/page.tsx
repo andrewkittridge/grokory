@@ -64,9 +64,14 @@ export default async function AuthorsPage() {
                     <span className="block truncate font-heading text-[1.05rem] tracking-tight">
                       {author.name}
                     </span>
-                    {author.handles.length > 0 ? (
+                    {author.handles.some(
+                      (handle) => xHandleLabel(handle) !== author.name
+                    ) ? (
                       <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                        {author.handles.map((handle) => xHandleLabel(handle)).join(" · ")}
+                        {author.handles
+                          .filter((handle) => xHandleLabel(handle) !== author.name)
+                          .map((handle) => xHandleLabel(handle))
+                          .join(" · ")}
                       </span>
                     ) : null}
                   </span>
