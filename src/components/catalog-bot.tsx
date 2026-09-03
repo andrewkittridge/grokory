@@ -118,9 +118,6 @@ export function CatalogBot({
           <span className="w-full truncate text-[13px] leading-tight tracking-tight">
             {heading}
           </span>
-          <span className="catalog-bot-summary mt-0.5 w-full text-[11px] leading-4 text-muted-foreground">
-            {summary}
-          </span>
         </span>
       </Link>
       {token.kind === "listed" ? (
@@ -131,7 +128,7 @@ export function CatalogBot({
             rel="noopener noreferrer"
             tabIndex={inert ? -1 : undefined}
             title={xHandleLabel(token.template.xHandle)}
-            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[10px] leading-4 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[11px] leading-4 text-body hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
           >
             {xHandleLabel(token.template.xHandle)}
           </a>
@@ -139,16 +136,22 @@ export function CatalogBot({
           <Link
             href={addHandleHref(token.template.botUrl)}
             tabIndex={inert ? -1 : undefined}
-            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[10px] leading-4 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[11px] leading-4 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
           >
             add @handle
           </Link>
         )
       ) : (
-        <span className="catalog-bot-handle mt-0.5 w-full text-[10px] leading-4" aria-hidden="true">
+        <span
+          className="catalog-bot-handle mt-0.5 w-full text-[11px] leading-4"
+          aria-hidden="true"
+        >
           &nbsp;
         </span>
       )}
+      <span className="catalog-bot-summary mt-0.5 w-full text-center text-[11px] leading-4 text-muted-foreground">
+        {summary}
+      </span>
     </div>
   );
 }

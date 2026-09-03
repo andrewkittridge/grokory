@@ -1449,7 +1449,7 @@ body {
 }
 
 .catalog-bot:hover .catalog-bot-figure.is-ghost,
-.catalog-bot:focus-visible .catalog-bot-figure.is-ghost {
+.catalog-bot:focus-within .catalog-bot-figure.is-ghost {
   opacity: 0.72;
 }
 
