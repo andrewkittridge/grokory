@@ -163,13 +163,18 @@ export function authorIdentity(template: {
   authorName: string;
   xHandle?: string;
 }) {
-  if (!isPlaceholderAuthor(template.authorName)) {
-    const name = template.authorName.trim();
-    return { name, slug: authorSlug(name) };
-  }
   const handle = template.xHandle?.trim();
+  const realName = isPlaceholderAuthor(template.authorName)
+    ? undefined
+    : template.authorName.trim();
   if (handle) {
-    return { name: xHandleLabel(handle), slug: authorSlug(handle) };
+    return {
+      name: realName ?? xHandleLabel(handle),
+      slug: authorSlug(handle),
+    };
+  }
+  if (realName) {
+    return { name: realName, slug: authorSlug(realName) };
   }
   return { name: "Unknown", slug: "unknown" };
 }

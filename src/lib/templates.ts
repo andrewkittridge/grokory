@@ -2,7 +2,7 @@ import { isBoostedActive, partitionBoosted } from "./boost";
 import { isFeaturedActive, partitionFeatured } from "./featured";
 import { openVacancy, type BoardVacancy } from "./founding";
 import type { BotMark, ListedTemplate, TemplateFilters } from "./types";
-import { authorIdentity } from "./bot-url";
+import { authorIdentity, isPlaceholderAuthor } from "./bot-url";
 import { sortTemplates } from "./rank";
 
 export const CATALOG_LANE_FLOOR = 4;
@@ -131,6 +131,9 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
       count: 0,
     };
     row.count += 1;
+    if (!isPlaceholderAuthor(template.authorName)) {
+      row.name = template.authorName.trim();
+    }
     if (template.xHandle) row.handles.add(template.xHandle);
     if (!row.mark && template.mark) row.mark = template.mark;
     bySlug.set(slug, row);

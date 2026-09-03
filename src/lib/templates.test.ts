@@ -258,3 +258,24 @@ test("authorIndex splits placeholder authors by X handle", () => {
   assert.equal(andrew?.name, "Andrew");
   assert.equal(andrew?.count, 2);
 });
+
+test("authorIndex merges placeholder and named listings that share an X handle", () => {
+  const rows = authorIndex([
+    bot({
+      id: "a",
+      slug: "a",
+      authorName: "Unknown",
+      xHandle: "mattyp",
+    }),
+    bot({
+      id: "b",
+      slug: "b",
+      authorName: "Matt Palmer",
+      xHandle: "mattyp",
+    }),
+  ]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.slug, "mattyp");
+  assert.equal(rows[0]?.name, "Matt Palmer");
+  assert.equal(rows[0]?.count, 2);
+});

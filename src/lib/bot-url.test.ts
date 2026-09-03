@@ -93,7 +93,7 @@ test("authorIdentity uses the X handle when the listed name is a placeholder", (
   );
   assert.deepEqual(
     authorIdentity({ authorName: "Andrew", xHandle: "poteto" }),
-    { name: "Andrew", slug: "andrew" }
+    { name: "Andrew", slug: "poteto" }
   );
   assert.deepEqual(authorIdentity({ authorName: "Unknown" }), {
     name: "Unknown",
