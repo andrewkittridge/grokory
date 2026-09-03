@@ -1,13 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { BotListPaste } from "@/components/bot-list-paste";
 import {
   BotRankList,
   BotRankRowSkeleton,
 } from "@/components/bot-rank-row";
 import { GrokBot } from "@/components/grok-bot";
 import { HeroWordmark } from "@/components/hero-wordmark";
-import { LockTitle } from "@/components/lock-title";
+import { SiteSearch } from "@/components/site-search";
 import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
@@ -28,19 +27,43 @@ export function LandingHero({
       <div className="relative z-10">
         <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_7rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_9rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-10">
           <div className="min-w-0">
-            <div className="max-sm:flex max-sm:min-h-[4.75rem] max-sm:items-center max-sm:pr-[5.25rem]">
+            <p
+              className="motion-enter flex flex-wrap items-center gap-x-3 gap-y-1"
+              style={motionDelay(0)}
+            >
+              <span className="trust-chip">
+                <span className="live-dot" aria-hidden="true" />
+                Live from x.ai
+              </span>
+              <span className="trust-chip">Ranked by votes</span>
+              <span className="trust-chip max-sm:hidden">
+                Bots can list themselves
+              </span>
+            </p>
+            <div className="mt-4 max-sm:flex max-sm:min-h-[4.75rem] max-sm:items-center max-sm:pr-[5.25rem]">
               <HeroWordmark as={heading ? "h1" : "p"} />
             </div>
-            <LockTitle
-              as="p"
-              display="section"
-              delay={8}
-              className="mt-3 max-w-2xl text-balance sm:mt-4"
+            <p
+              className="promise-serif motion-enter mt-4 max-w-2xl text-2xl leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[1.85rem]"
+              style={motionDelay(8)}
             >
-              A ranked board of public Grok Bots.
-            </LockTitle>
+              The ranked board of public Grok Bots.
+            </p>
+            <p
+              className="motion-enter mt-3 max-w-xl text-sm leading-6 text-body sm:text-[15px]"
+              style={motionDelay(10)}
+            >
+              Identity from x.ai. Votes on this board. Add copies the template
+              onto your Grok account.
+            </p>
             <div
-              className="motion-enter mt-5 flex flex-col gap-2 sm:mt-6 sm:flex-row"
+              className="motion-enter mt-6"
+              style={motionDelay(14)}
+            >
+              <SiteSearch size="hero" />
+            </div>
+            <div
+              className="motion-enter mt-3 flex flex-col gap-2 sm:flex-row"
               style={motionDelay(16)}
             >
               {founding ? (
@@ -53,16 +76,17 @@ export function LandingHero({
                     nativeButton={false}
                     render={<Link href="/templates" />}
                   >
-                    Browse bots
+                    Browse the board
                   </Button>
                 </>
               ) : (
                 <>
                   <Button
+                    variant="outline"
                     nativeButton={false}
                     render={<Link href="/templates" />}
                   >
-                    Browse bots
+                    Open the board
                   </Button>
                   <Button
                     variant="outline"
@@ -84,12 +108,6 @@ export function LandingHero({
               <GrokBot />
             </div>
           </div>
-        </div>
-        <div
-          className="motion-enter mt-5 border-y border-border py-3 sm:mt-6 sm:py-3.5"
-          style={motionDelay(18)}
-        >
-          <BotListPaste compact />
         </div>
         {children}
       </div>
@@ -113,7 +131,7 @@ export function LandingBoard({
   const empty = count === 0 && vacancies.length === 0;
 
   return (
-    <div className="mt-5 sm:mt-6">
+    <div className="mt-10 sm:mt-12">
       <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
         <p className="inline-flex min-w-0 items-baseline gap-x-2 overflow-hidden font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
           <span className="inline-flex items-center gap-2 text-foreground">
@@ -133,7 +151,14 @@ export function LandingBoard({
               </span>
               <span className="truncate">seats open</span>
             </>
-          ) : null}
+          ) : (
+            <>
+              <span className="text-border" aria-hidden="true">
+                ·
+              </span>
+              <span className="truncate">Hot</span>
+            </>
+          )}
         </p>
         <Button
           size="sm"
@@ -143,14 +168,11 @@ export function LandingBoard({
           render={<Link href="/templates" aria-label="Open the board" />}
         >
           <span className="sm:hidden">Board</span>
-          <span className="hidden sm:inline">Open the board</span>
+          <span className="hidden sm:inline">Full board</span>
           <span aria-hidden="true">→</span>
         </Button>
       </div>
-      <div
-        className="motion-board overflow-hidden rounded-lg border border-border bg-card"
-        style={motionDelay(18)}
-      >
+      <div className="board-panel motion-board" style={motionDelay(18)}>
         {featured.length > 0 ? (
           <div className="border-b border-border">
             <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
@@ -171,7 +193,7 @@ export function LandingBoard({
               01
             </span>
             <div className="min-w-0">
-              <p className="text-xl leading-tight font-normal tracking-tight sm:text-2xl">
+              <p className="font-heading text-xl leading-tight sm:text-2xl">
                 Board just opened.
               </p>
               <p className="mt-2 max-w-md text-sm leading-6 text-body">
@@ -204,12 +226,12 @@ export function LandingBoard({
 
 export function LandingBoardSkeleton() {
   return (
-    <div className="mt-5 sm:mt-6">
+    <div className="mt-10 sm:mt-12">
       <div className="mb-3 flex h-8 items-center justify-between sm:mb-4">
         <div className="h-3 w-36 animate-pulse bg-canvas-soft" />
         <div className="h-8 w-28 animate-pulse rounded-full bg-canvas-soft" />
       </div>
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="board-panel">
         {Array.from({ length: 6 }).map((_, index) => (
           <BotRankRowSkeleton key={index} surface="roster" />
         ))}

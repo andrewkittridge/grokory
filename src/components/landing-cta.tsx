@@ -10,11 +10,11 @@ export function LandingCta({ founding = false }: { founding?: boolean }) {
             <span className="live-dot" aria-hidden="true" />
             {founding ? "Just opened" : "Share"}
           </p>
-          <h2 className="display-section mt-3">Share a Grok Bot.</h2>
+          <h2 className="display-section mt-3">List yours.</h2>
           <p className="mt-2 text-sm leading-6 text-body">
             {founding
-              ? "The board is new. Paste a public share link and it lists immediately. No account."
-              : "Paste a public share link. It shows up on the board. No account."}
+              ? "The board is new. Paste a public share link and it ranks immediately. No account."
+              : "Paste a public share link. It shows up on the ranked board. No account."}
           </p>
         </div>
         <Button

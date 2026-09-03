@@ -47,7 +47,7 @@ export default async function CatalogPage({
         >
           {founding
             ? "Just opened. Listed bots march; empty seats wait for the next share link. Whistle a name or @handle to hop a match."
-            : "Every public Grok Bot in a moving parade. Whistle a name or @handle to hop a match. Hover a lane to pause. Open a bot to add a copy on x.ai."}{" "}
+            : "The same public Grok Bots as the ranked board, as a moving parade of live silhouettes. Whistle a name or @handle to hop a match."}{" "}
           <Link
             href="/templates"
             className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"

@@ -1,8 +1,8 @@
 import { isBoostedActive, partitionBoosted } from "./boost";
 import { isFeaturedActive, partitionFeatured } from "./featured";
 import { openVacancy, type BoardVacancy } from "./founding";
-import type { ListedTemplate, TemplateFilters } from "./types";
-import { authorSlug } from "./bot-url";
+import type { BotMark, ListedTemplate, TemplateFilters } from "./types";
+import { authorIdentity, isPlaceholderAuthor } from "./bot-url";
 import { sortTemplates } from "./rank";
 
 export const CATALOG_LANE_FLOOR = 4;
@@ -114,22 +114,28 @@ export type AuthorIndexRow = {
   name: string;
   handles: string[];
   count: number;
+  mark?: BotMark;
 };
 
 export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
   const bySlug = new Map<
     string,
-    { name: string; handles: Set<string>; count: number }
+    { name: string; handles: Set<string>; count: number; mark?: BotMark }
   >();
   for (const template of templates) {
-    const slug = authorSlug(template.authorName);
+    const identity = authorIdentity(template);
+    const slug = identity.slug;
     const row = bySlug.get(slug) ?? {
-      name: template.authorName,
+      name: identity.name,
       handles: new Set<string>(),
       count: 0,
     };
     row.count += 1;
+    if (!isPlaceholderAuthor(template.authorName)) {
+      row.name = template.authorName.trim();
+    }
     if (template.xHandle) row.handles.add(template.xHandle);
+    if (!row.mark && template.mark) row.mark = template.mark;
     bySlug.set(slug, row);
   }
   return [...bySlug.entries()]
@@ -138,6 +144,7 @@ export function authorIndex(templates: ListedTemplate[]): AuthorIndexRow[] {
       name: row.name,
       handles: [...row.handles],
       count: row.count,
+      mark: row.mark,
     }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }

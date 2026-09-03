@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import { Separator } from "@/components/ui/separator";
 
 export function LandingSectionHeading({
   kicker,
@@ -13,7 +12,7 @@ export function LandingSectionHeading({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-6">
+    <div className="mb-8">
       {kicker ? (
         <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
           {kicker}
@@ -32,7 +31,6 @@ export function LandingSectionHeading({
           {action ? <div className="shrink-0">{action}</div> : null}
         </div>
       </div>
-      <Separator className="mt-5" />
     </div>
   );
 }

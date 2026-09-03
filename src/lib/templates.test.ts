@@ -227,3 +227,55 @@ test("relatedTemplates prefers overlapping skills then other hot bots", () => {
   );
   assert.equal(authorIndex([current, bot({ authorName: "Andrew" })]).length, 1);
 });
+
+test("authorIndex splits placeholder authors by X handle", () => {
+  const rows = authorIndex([
+    bot({
+      id: "a",
+      slug: "a",
+      authorName: "Unknown",
+      xHandle: "poteto",
+    }),
+    bot({
+      id: "b",
+      slug: "b",
+      authorName: "Unknown",
+      xHandle: "mattyp",
+    }),
+    bot({
+      id: "c",
+      slug: "c",
+      authorName: "Andrew",
+      xHandle: "andrew",
+    }),
+    bot({ id: "d", slug: "d", authorName: "Andrew" }),
+  ]);
+  assert.equal(rows.length, 3);
+  const poteto = rows.find((row) => row.slug === "poteto");
+  assert.equal(poteto?.name, "@poteto");
+  assert.equal(poteto?.count, 1);
+  const andrew = rows.find((row) => row.slug === "andrew");
+  assert.equal(andrew?.name, "Andrew");
+  assert.equal(andrew?.count, 2);
+});
+
+test("authorIndex merges placeholder and named listings that share an X handle", () => {
+  const rows = authorIndex([
+    bot({
+      id: "a",
+      slug: "a",
+      authorName: "Unknown",
+      xHandle: "mattyp",
+    }),
+    bot({
+      id: "b",
+      slug: "b",
+      authorName: "Matt Palmer",
+      xHandle: "mattyp",
+    }),
+  ]);
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.slug, "mattyp");
+  assert.equal(rows[0]?.name, "Matt Palmer");
+  assert.equal(rows[0]?.count, 2);
+});

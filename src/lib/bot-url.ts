@@ -154,6 +154,42 @@ export function authorSlug(name: string) {
   );
 }
 
+export function isPlaceholderAuthor(name?: string) {
+  const n = name?.trim().toLowerCase() ?? "";
+  return !n || n === "unknown" || n === "anonymous";
+}
+
+export function authorIdentity(template: {
+  authorName: string;
+  xHandle?: string;
+}) {
+  const handle = template.xHandle?.trim();
+  const realName = isPlaceholderAuthor(template.authorName)
+    ? undefined
+    : template.authorName.trim();
+  if (handle) {
+    return {
+      name: realName ?? xHandleLabel(handle),
+      slug: authorSlug(handle),
+    };
+  }
+  if (realName) {
+    return { name: realName, slug: authorSlug(realName) };
+  }
+  return { name: "Unknown", slug: "unknown" };
+}
+
+export function preferredAuthorName(
+  templates: Array<{ authorName: string; xHandle?: string }>
+) {
+  const named = templates.find(
+    (template) => !isPlaceholderAuthor(template.authorName)
+  );
+  if (named) return named.authorName.trim();
+  if (templates[0]) return authorIdentity(templates[0]).name;
+  return "Unknown";
+}
+
 export function formatCheckedAt(iso?: string) {
   if (!iso) return "Not checked yet";
   const then = Date.parse(iso);

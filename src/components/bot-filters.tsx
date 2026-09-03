@@ -52,11 +52,11 @@ export function BotFilters({
             id="q"
             name="q"
             defaultValue={q}
-            placeholder="Search names, authors…"
-            className="h-10 font-mono"
+            placeholder="Search names, authors, @handles…"
+            className="h-11 font-mono"
           />
         </ScanField>
-        <Button type="submit" variant="outline" className="h-10 sm:w-auto">
+        <Button type="submit" variant="outline" className="h-11 sm:w-auto">
           Search
         </Button>
       </form>

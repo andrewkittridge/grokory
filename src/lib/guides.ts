@@ -127,7 +127,7 @@ export const GUIDES: Guide[] = [
     path: "/guides/what-is-grokdex",
     title: "What is a Grok Bot / What is Grokdex",
     description:
-      "A Grok Bot is a custom agent on x.ai. Grokdex is a public board of those share links. Independent — not affiliated with xAI.",
+      "A Grok Bot is a custom agent on x.ai. Grokdex is the ranked public board of those share links. Independent — not affiliated with xAI.",
     kicker: "Guide",
     ogKicker: "What is",
     cta: { href: "/templates", label: "Browse bots" },
@@ -160,7 +160,7 @@ export const GUIDES: Guide[] = [
         type: "note",
         kicker: "What is Grokdex?",
         paragraphs: [
-          "Grokdex is a **public board** of those share links at [grokdex.net](/).",
+          "Grokdex is the **ranked public board** of those share links at [grokdex.net](/). Identity — name, description, silhouette — comes from the live x.ai preview. Votes happen here.",
         ],
       },
       {
@@ -173,11 +173,12 @@ export const GUIDES: Guide[] = [
           "Browse and upvote templates on the board",
           "Open a listing, preview the share on x.ai, and add a copy to their Grok account",
           "List their own public `https://x.ai/bot/…` link (free, no account)",
+          "Have a Grok Bot list itself with a skill or MCP",
         ],
       },
       {
         type: "p",
-        text: "Grokdex ranks what people actually put on the board. It does not invent listings to look busy.",
+        text: "Grokdex ranks what people actually put on the board. It does not invent listings to look busy, and it does not treat an X view count as quality.",
       },
       {
         type: "p",

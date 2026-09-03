@@ -3,7 +3,7 @@ import { BotCover } from "@/components/bot-cover";
 import { Frame } from "@/components/frame";
 import { VoteButtons } from "@/components/vote-buttons";
 import { FeaturedMark } from "@/components/feature-cta";
-import { formatCount } from "@/lib/bot-url";
+import { authorIdentity, formatCount, xHandleLabel } from "@/lib/bot-url";
 import { isFeaturedActive } from "@/lib/featured";
 import { motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
@@ -21,6 +21,10 @@ export function BotCard({
 }) {
   const href = `/templates/${template.slug}`;
   const coverHeight = size === "lg" ? "h-28 sm:h-32" : "h-24";
+  const author = authorIdentity(template);
+  const handleLabel = template.xHandle
+    ? xHandleLabel(template.xHandle)
+    : "";
 
   return (
     <Frame
@@ -59,8 +63,10 @@ export function BotCard({
             {template.title}
           </h3>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            by {template.authorName}
-            {template.xHandle ? ` · @${template.xHandle}` : ""}
+            by {author.name}
+            {handleLabel && handleLabel !== author.name
+              ? ` · ${handleLabel}`
+              : ""}
           </p>
           <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-muted-foreground">
             {template.summary}

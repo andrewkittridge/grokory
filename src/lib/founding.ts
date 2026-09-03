@@ -1,6 +1,6 @@
 /** Until this many listings exist, the UI treats the board as just opened. */
 export const FOUNDING_LISTING_FLOOR = 8;
-export const HOME_BOARD_SLOTS = 6;
+export const HOME_BOARD_SLOTS = 8;
 /** Empty-board fallback only — live rows use a single seats-open invite. */
 export const OPEN_SEAT_MAX = 2;
 export const LIST_SKILL_PATH =

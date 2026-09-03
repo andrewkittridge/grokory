@@ -201,7 +201,7 @@ function VacantRankRow({
         "rank-row rank-row-open relative items-center overflow-hidden hover:bg-canvas-soft",
         roster
           ? "flex gap-x-3 px-3 py-4 sm:px-5 sm:py-5"
-          : "grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 px-2 py-3.5 sm:px-3 sm:py-4",
+          : "flex gap-x-3 px-2 py-3.5 sm:px-3 sm:py-4",
         live && "is-live"
       )}
     >
@@ -231,6 +231,7 @@ function VacantRankRow({
           {String(rank).padStart(2, "0")}
         </span>
       )}
+      <span className="bot-thumb-empty relative z-10" aria-hidden="true" />
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span className="rank-open-label block truncate text-[15px] leading-tight">
           {label}

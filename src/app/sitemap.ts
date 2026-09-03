@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
-import { authorSlug } from "@/lib/bot-url";
 import { GUIDES } from "@/lib/guides";
 import { SITE_URL } from "@/lib/site";
+import { authorIndex } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 
 export const dynamic = "force-dynamic";
@@ -80,9 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  const authors = [
-    ...new Set(templates.map((template) => authorSlug(template.authorName))),
-  ];
+  const authors = authorIndex(templates).map((row) => row.slug);
 
   return [
     ...staticRoutes,

@@ -24,7 +24,7 @@ export const dynamic = "force-dynamic";
 export const metadata = pageMetadata({
   title: "The board",
   description:
-    "A public board of Grok Bot share links. List yours, upvote the useful ones, then add a copy on x.ai.",
+    "The ranked public board of Grok Bot share links. Live from x.ai. Upvote the useful ones, then add a copy to your Grok account.",
   path: "/templates",
 });
 
@@ -70,18 +70,26 @@ export default async function TemplatesPage({
     : [];
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+    <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <JsonLd data={itemListJson([...featured, ...templates], "/templates")} />
-      <LockTitle delay={0}>The board</LockTitle>
+      <p
+        className="motion-enter font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase"
+        style={motionDelay(0)}
+      >
+        Public · Live · Ranked
+      </p>
+      <LockTitle delay={1} className="mt-3">
+        The board
+      </LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
-        style={motionDelay(1)}
+        style={motionDelay(2)}
       >
         {founding
           ? "Just opened. Every listing is a public Grok Bot share URL. Add a copy, or list one of yours."
-          : "Every listing is a public Grok Bot share URL. Upvote the ones worth adding, then open the share link on x.ai."}
+          : "Every listing is a live public Grok Bot share URL. Upvote the ones worth adding, then open the share on x.ai."}
       </p>
-      <div className="motion-enter mt-8" style={motionDelay(2)}>
+      <div className="motion-enter mt-8" style={motionDelay(3)}>
         <BotFilters
           q={q}
           tag={tag}
@@ -92,14 +100,15 @@ export default async function TemplatesPage({
       </div>
       <BoardStrip sort={sort} count={filtered.length} founding={founding} />
       {empty ? (
-        <div className="mt-6">
+        <div className="mt-4">
           {emptyBoard && vacancies.length > 0 ? (
-            <BotRankList
-              templates={[]}
-              vacancies={vacancies}
-              scramble
-              className="mt-0 border-y border-border"
-            />
+            <div className="board-panel">
+              <BotRankList
+                templates={[]}
+                vacancies={vacancies}
+                scramble
+              />
+            </div>
           ) : emptyBoard ? (
             <EmptyState
               title="Board just opened"
@@ -117,18 +126,18 @@ export default async function TemplatesPage({
           )}
         </div>
       ) : (
-        <>
+        <div className="board-panel mt-4">
           {featured.length > 0 ? (
-            <div className="mt-0 border-b border-border">
-              <p className="px-2 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-0">
+            <div className="border-b border-border">
+              <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Featured
               </p>
               <BotRankList templates={featured} showVote scramble />
             </div>
           ) : null}
           {boosted.length > 0 ? (
-            <div className="mt-0 border-b border-border">
-              <p className="px-2 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-0">
+            <div className="border-b border-border">
+              <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Boosted
               </p>
               <BotRankList templates={boosted} showVote scramble />
@@ -141,10 +150,9 @@ export default async function TemplatesPage({
               scramble
               leader
               vacancies={vacancies}
-              className="mt-0 border-b border-border"
             />
           ) : null}
-        </>
+        </div>
       )}
     </main>
   );
