@@ -190,7 +190,7 @@ export function LandingBoard({
           <span aria-hidden="true">→</span>
         </Button>
       </div>
-      <div className="board-panel motion-board" style={motionDelay(18)}>
+      <div className="motion-board border-y border-border" style={motionDelay(18)}>
         {featured.length > 0 ? (
           <div className="border-b border-border">
             <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
@@ -249,7 +249,7 @@ export function LandingBoardSkeleton() {
         <div className="h-3 w-36 animate-pulse bg-canvas-soft" />
         <div className="h-8 w-28 animate-pulse rounded-full bg-canvas-soft" />
       </div>
-      <div className="board-panel">
+      <div className="border-y border-border">
         {Array.from({ length: 6 }).map((_, index) => (
           <BotRankRowSkeleton key={index} surface="roster" />
         ))}

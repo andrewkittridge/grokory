@@ -102,7 +102,7 @@ export default async function TemplatesPage({
       {empty ? (
         <div className="mt-4">
           {emptyBoard && vacancies.length > 0 ? (
-            <div className="board-panel">
+            <div className="border-y border-border">
               <BotRankList
                 templates={[]}
                 vacancies={vacancies}
@@ -126,7 +126,7 @@ export default async function TemplatesPage({
           )}
         </div>
       ) : (
-        <div className="board-panel mt-4">
+        <div className="mt-4 border-y border-border">
           {featured.length > 0 ? (
             <div className="border-b border-border">
               <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">

@@ -1,4 +1,3 @@
-import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { TipForm } from "@/components/tip-form";
 import { isStripeConfigured } from "@/lib/stripe";
@@ -39,22 +38,20 @@ export default async function SupportPage({
         tax-deductible, and it does not feature a bot or change rank.
       </p>
       <div className="motion-enter mt-10" style={motionDelay(3)}>
-        <Frame staticFrame matClassName="p-5 sm:p-8">
-          {tipped ? (
-            <p className="text-sm leading-6 text-body">
-              Tip received. Thank you.
-            </p>
-          ) : null}
-          {enabled ? (
-            <div className={tipped ? "mt-6" : undefined}>
-              <TipForm />
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">
-              Tips are not wired on this host yet.
-            </p>
-          )}
-        </Frame>
+        {tipped ? (
+          <p className="text-sm leading-6 text-body">
+            Tip received. Thank you.
+          </p>
+        ) : null}
+        {enabled ? (
+          <div className={tipped ? "mt-6" : undefined}>
+            <TipForm />
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            Tips are not wired on this host yet.
+          </p>
+        )}
       </div>
     </main>
   );

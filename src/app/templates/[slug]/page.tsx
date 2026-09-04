@@ -252,7 +252,7 @@ export default async function TemplateDetailPage({
       {related.length > 0 ? (
         <section className="mt-16">
           <h2 className="display-section">Related</h2>
-          <div className="board-panel mt-5">
+          <div className="mt-5 border-y border-border">
             <BotRankList templates={related} showVote scramble />
           </div>
         </section>

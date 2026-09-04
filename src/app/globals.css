@@ -668,16 +668,6 @@ body {
   color: var(--muted-foreground);
 }
 
-.board-panel {
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--foreground) 12%, var(--border));
-  border-radius: 1.05rem;
-  background: color-mix(in srgb, var(--card) 94%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--foreground) 4%, transparent),
-    0 28px 70px -32px rgb(0 0 0 / 0.72);
-}
-
 .bot-thumb {
   position: relative;
   display: block;
@@ -1550,17 +1540,8 @@ body {
   }
 }
 
-.catalog-chips {
-  position: sticky;
-  top: 3.5rem;
-  z-index: 30;
-  border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--background) 88%, transparent);
-  backdrop-filter: blur(10px);
-}
-
 .catalog-lane {
-  scroll-margin-top: 8.25rem;
+  scroll-margin-top: 1rem;
 }
 
 .catalog-lane-mask {

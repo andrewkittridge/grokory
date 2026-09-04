@@ -129,7 +129,7 @@ export default async function AuthorPage({
         templates={templates}
         showVote
         scramble
-        className="board-panel mt-8"
+        className="mt-8 border-y border-border"
       />
     </main>
   );

@@ -139,26 +139,24 @@ export function CatalogParade({
       data-hidden={hidden ? "true" : "false"}
       data-query={searching ? "true" : "false"}
     >
-      <div className="catalog-chips">
-        <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2.5 sm:px-6">
-          <CatalogSearch
-            q={q}
-            hits={hits}
-            searching={searching}
-            onQuery={setQ}
-            onWhistle={() => setHopNonce((value) => value + 1)}
-          />
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="shrink-0"
-            aria-pressed={paused}
-            onClick={() => setPaused((value) => !value)}
-          >
-            {paused ? "Play motion" : "Pause motion"}
-          </Button>
-        </div>
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 pb-3 sm:px-6">
+        <CatalogSearch
+          q={q}
+          hits={hits}
+          searching={searching}
+          onQuery={setQ}
+          onWhistle={() => setHopNonce((value) => value + 1)}
+        />
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="shrink-0"
+          aria-pressed={paused}
+          onClick={() => setPaused((value) => !value)}
+        >
+          {paused ? "Play" : "Pause"}
+        </Button>
       </div>
       {lanes.map((lane, index) => (
         <CatalogLane
