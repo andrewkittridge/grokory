@@ -40,10 +40,19 @@ export default async function CatalogPage({
     <main>
       <JsonLd data={itemListJson(templates, "/catalog")} />
       <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4 sm:px-6 sm:pt-14">
-        <LockTitle delay={0}>Catalog</LockTitle>
+        <p className="cmd motion-enter" style={motionDelay(0)}>
+          {founding ? "seats open" : "live"}
+          <span className="mx-2 text-border" aria-hidden="true">
+            ·
+          </span>
+          parade
+        </p>
+        <LockTitle delay={1} className="mt-3">
+          Catalog
+        </LockTitle>
         <p
           className="motion-enter mt-4 max-w-xl text-sm leading-6 text-body"
-          style={motionDelay(1)}
+          style={motionDelay(2)}
         >
           {founding
             ? "Listed bots march. Empty seats wait. Whistle a name or @handle to hop."
@@ -54,7 +63,6 @@ export default async function CatalogPage({
           >
             Ranked board
           </Link>
-          <span aria-hidden="true"> →</span>
         </p>
       </div>
       <CatalogParade lanes={lanes} initialQuery={q} />

@@ -26,35 +26,36 @@ export default async function UploadPage({
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-12 sm:px-6 sm:py-16">
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        {founding ? "Just opened · no account" : "No account required"}
+      <p className="cmd motion-enter" style={motionDelay(0)}>
+        {founding ? "just opened · no account" : "no account"}
       </p>
       <LockTitle delay={1} className="mt-4">
-        Share a bot.
+        Paste a public link.
       </LockTitle>
       <p
         className="motion-enter mt-5 max-w-xl text-body leading-7"
         style={motionDelay(2)}
       >
-        {founding
-          ? "The board just opened. Paste a public share link — "
-          : "Paste a public share link — "}
-        <span className="font-mono text-sm text-foreground">
-          https://x.ai/bot/…
-        </span>
-        . We pull the name, description, and silhouette from x.ai. It lists
-        immediately. Free.
+        {founding ? "The board just opened. " : null}
+        Drop a share URL. We pull the name, description, and silhouette from
+        x.ai. It lists immediately. Free.
       </p>
-      <div className="motion-enter mt-10" style={motionDelay(3)}>
+      <p
+        className="motion-enter mt-3 font-mono text-sm text-foreground"
+        style={motionDelay(3)}
+      >
+        https://x.ai/bot/…
+      </p>
+      <div className="motion-enter mt-10" style={motionDelay(4)}>
         <UploadForm
           siteKey={turnstileSiteKey()}
           defaultShareUrl={share || undefined}
         />
       </div>
-      <div className="motion-enter mt-10 border-t border-border pt-6" style={motionDelay(4)}>
+      <div
+        className="motion-enter mt-10 border-t border-border pt-6"
+        style={motionDelay(5)}
+      >
         <BotListPaste compact />
       </div>
     </main>

@@ -9,7 +9,7 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-instrument), ui-serif, Georgia, serif;
+  --font-heading: var(--font-display), ui-sans-serif, system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,42 +54,42 @@
 
 :root {
   color-scheme: dark;
-  --background: #12100e;
-  --foreground: #f8f2e9;
-  --card: #1c1915;
-  --card-foreground: #f8f2e9;
-  --popover: #1c1915;
-  --popover-foreground: #f8f2e9;
-  --primary: #f8f2e9;
-  --primary-foreground: #12100e;
-  --secondary: #251f1a;
-  --secondary-foreground: #ebe3d6;
-  --muted: #251f1a;
-  --muted-foreground: #a3988c;
-  --accent: #251f1a;
-  --accent-foreground: #f8f2e9;
+  --background: #06060a;
+  --foreground: #f3eee6;
+  --card: #0c0c10;
+  --card-foreground: #f3eee6;
+  --popover: #0c0c10;
+  --popover-foreground: #f3eee6;
+  --primary: #f3eee6;
+  --primary-foreground: #06060a;
+  --secondary: #0c0c10;
+  --secondary-foreground: #cfc8be;
+  --muted: #0c0c10;
+  --muted-foreground: #8b8680;
+  --accent: #0c0c10;
+  --accent-foreground: #f3eee6;
   --destructive: #f87171;
-  --border: #403830;
-  --input: #403830;
-  --ring: #f8f2e9;
+  --border: #22222a;
+  --input: #22222a;
+  --ring: #f3eee6;
   --chart-1: #ff7a17;
-  --chart-2: #a3988c;
-  --chart-3: #403830;
-  --chart-4: #ebe3d6;
-  --chart-5: #f8f2e9;
-  --radius: 0.65rem;
-  --sidebar: #1c1915;
-  --sidebar-foreground: #f8f2e9;
-  --sidebar-primary: #f8f2e9;
-  --sidebar-primary-foreground: #12100e;
-  --sidebar-accent: #251f1a;
-  --sidebar-accent-foreground: #f8f2e9;
-  --sidebar-border: #403830;
-  --sidebar-ring: #f8f2e9;
+  --chart-2: #8b8680;
+  --chart-3: #22222a;
+  --chart-4: #cfc8be;
+  --chart-5: #f3eee6;
+  --radius: 0px;
+  --sidebar: #0c0c10;
+  --sidebar-foreground: #f3eee6;
+  --sidebar-primary: #f3eee6;
+  --sidebar-primary-foreground: #06060a;
+  --sidebar-accent: #0c0c10;
+  --sidebar-accent-foreground: #f3eee6;
+  --sidebar-border: #22222a;
+  --sidebar-ring: #f3eee6;
   --sunset: #ff7a17;
-  --canvas-soft: #251f1a;
-  --body: #ebe3d6;
-  --pill-border: rgb(248 242 233 / 0.3);
+  --canvas-soft: #0c0c10;
+  --body: #cfc8be;
+  --pill-border: rgb(243 238 230 / 0.22);
   --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-acquire: 0.85s var(--motion-ease);
   --motion-lock: 0.55s var(--motion-ease);
@@ -103,6 +103,7 @@
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
   }
   body {
     @apply bg-background font-normal text-foreground;
@@ -123,32 +124,32 @@ body {
 @layer utilities {
   .display-hero {
     font-family: var(--font-heading);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-weight: 400;
+    font-size: clamp(2.6rem, 7vw, 4.75rem);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    font-weight: 500;
   }
 
   .display-page {
     font-family: var(--font-heading);
-    font-size: clamp(2.15rem, 5vw, 3.25rem);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
-    font-weight: 400;
+    font-size: clamp(2rem, 4.6vw, 3.1rem);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+    font-weight: 500;
   }
 
   .display-section {
     font-family: var(--font-heading);
-    font-size: clamp(1.7rem, 3.2vw, 2.15rem);
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    font-weight: 400;
+    font-size: clamp(1.45rem, 2.8vw, 1.9rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    font-weight: 500;
   }
 
   .promise-serif {
     font-family: var(--font-heading);
-    font-style: italic;
-    font-weight: 400;
+    font-style: normal;
+    font-weight: 500;
   }
 }
 
@@ -379,11 +380,25 @@ body {
 
 .hero-wordmark {
   font-family: var(--font-heading);
-  font-size: clamp(2.6rem, 8vw, 4.6rem);
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  font-weight: 400;
+  font-size: clamp(2.85rem, 9vw, 5.4rem);
+  line-height: 0.84;
+  letter-spacing: -0.06em;
+  font-weight: 500;
   white-space: nowrap;
+}
+
+.cmd {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  color: var(--muted-foreground);
+}
+
+.command-panel {
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 1.25rem;
 }
 
 .bot-thumb {
@@ -688,11 +703,7 @@ body {
 }
 
 .rank-row-first {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--sunset) 9%, transparent),
-    transparent 42%
-  );
+  box-shadow: inset 2px 0 0 var(--sunset);
 }
 
 .turnstile-quiet {
@@ -804,40 +815,34 @@ body {
 
 .site-field-glint {
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      ellipse 70% 42% at 8% -8%,
-      color-mix(in srgb, var(--sunset) 18%, transparent),
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 40% 28% at 92% 12%,
-      color-mix(in srgb, var(--sunset) 7%, transparent),
-      transparent 70%
-    );
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--sunset) 72%, transparent),
+    color-mix(in srgb, var(--sunset) 18%, transparent) 24%,
+    transparent 58%
+  );
 }
 
 .site-field-veil {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(
-      ellipse 90% 70% at 50% 8%,
-      transparent 0%,
-      var(--background) 78%
-    ),
-    linear-gradient(to bottom, transparent 68%, var(--background) 100%);
+  background: radial-gradient(
+    ellipse 70% 28% at 0% -8%,
+    color-mix(in srgb, var(--sunset) 9%, transparent),
+    transparent 58%
+  );
 }
 
 .site-field[data-density="pad"] .site-field-veil {
-  background:
-    radial-gradient(
-      ellipse 80% 52% at 50% -6%,
-      transparent 12%,
-      var(--background) 76%
-    ),
-    linear-gradient(to bottom, transparent 72%, var(--background) 100%);
+  background: radial-gradient(
+    ellipse 78% 34% at 0% -10%,
+    color-mix(in srgb, var(--sunset) 12%, transparent),
+    transparent 60%
+  );
 }
 
 .site-field[data-density="whisper"] {
@@ -866,9 +871,9 @@ body {
 
 .nav-pip {
   position: absolute;
-  right: 0.75rem;
-  bottom: -1px;
-  left: 0.75rem;
+  right: 0;
+  bottom: 0;
+  left: 0;
   height: 1px;
   background: var(--sunset);
   transform-origin: center;

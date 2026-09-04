@@ -1,3 +1,5 @@
+import { JOBS } from "./visual";
+
 /** Until this many listings exist, the UI treats the board as just opened. */
 export const FOUNDING_LISTING_FLOOR = 8;
 export const HOME_BOARD_SLOTS = 8;
@@ -31,7 +33,7 @@ export function isSeatsOpenInvite(slot: BoardVacancy) {
 }
 
 export function shareVacancy(): BoardVacancy {
-  return { label: "Share a bot", href: "/upload" };
+  return { label: JOBS.share, href: "/upload" };
 }
 
 export function openVacancy(): BoardVacancy {

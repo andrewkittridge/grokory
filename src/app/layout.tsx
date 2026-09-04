@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
 import { GoogleTag } from "@/components/google-tag";
 import { JsonLd } from "@/components/json-ld";
@@ -19,6 +19,7 @@ import {
   safeTagId,
   twitterMeta,
 } from "@/lib/site";
+import { visualStyle } from "@/lib/visual";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,11 +35,9 @@ const geistMono = Geist_Mono({
   preload: false,
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -76,7 +75,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} dark h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
+      style={visualStyle}
     >
       <head>
         <link rel="api-catalog" href="/.well-known/api-catalog" />

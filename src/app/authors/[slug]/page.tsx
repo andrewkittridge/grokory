@@ -67,10 +67,7 @@ export default async function AuthorPage({
           sameAsHandle ? xHandleUrl(sameAsHandle) : undefined
         )}
       />
-      <p
-        className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
+      <p className="cmd motion-enter" style={motionDelay(0)}>
         <Link
           href="/authors"
           className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"

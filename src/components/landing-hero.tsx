@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
 import type { BoardVacancy } from "@/lib/founding";
 import type { ListedTemplate } from "@/lib/types";
+import { JOBS } from "@/lib/visual";
 
 export function LandingHero({
   founding = false,
@@ -26,26 +27,26 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <div className="mt-1">
+        <p className="cmd motion-enter" style={motionDelay(0)}>
+          {founding ? "just opened" : "live"}
+          <span className="mx-2 text-border" aria-hidden="true">
+            ·
+          </span>
+          ranked public grok bots
+        </p>
+        <div className="mt-3">
           <HeroWordmark as={heading ? "h1" : "p"} />
         </div>
         <p
-          className="promise-serif motion-enter mt-4 max-w-2xl text-[1.65rem] leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[2.15rem]"
-          style={motionDelay(8)}
+          className="motion-enter mt-4 max-w-xl text-[1.05rem] leading-7 text-body sm:mt-5 sm:text-[1.15rem]"
+          style={motionDelay(1)}
         >
-          The ranked board of public Grok Bots.
-        </p>
-        <p
-          className="motion-enter mt-3 max-w-xl text-sm leading-6 text-body sm:text-[15px]"
-          style={motionDelay(10)}
-        >
-          Identity from x.ai. Votes on this board. Add copies the template
-          onto your Grok account.
+          Identity from x.ai. Add copies the template onto your Grok account.
         </p>
         {lead}
         <div
           className="motion-enter mt-7 flex flex-row flex-wrap gap-2"
-          style={motionDelay(14)}
+          style={motionDelay(2)}
         >
           {founding ? (
             <>
@@ -54,7 +55,7 @@ export function LandingHero({
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >
-                Share a bot
+                {JOBS.share}
               </Button>
               <Button
                 variant="outline"
@@ -80,7 +81,7 @@ export function LandingHero({
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >
-                Share a bot
+                {JOBS.share}
               </Button>
             </>
           )}
@@ -100,7 +101,7 @@ export function LandingCast({
   if (cast.length === 0) return null;
 
   return (
-    <div className="live-cast motion-enter" style={motionDelay(17)}>
+    <div className="live-cast motion-enter" style={motionDelay(3)}>
       {cast.map((template) => (
         <Link
           key={template.slug}
@@ -114,7 +115,6 @@ export function LandingCast({
       ))}
       <Link href="/catalog" className="live-cast-more">
         Parade
-        <span aria-hidden="true">→</span>
       </Link>
     </div>
   );
@@ -138,7 +138,7 @@ export function LandingBoard({
   return (
     <div className="mt-10 sm:mt-12">
       <div className="mb-3 flex items-center justify-between gap-3 sm:mb-4">
-        <p className="inline-flex min-w-0 items-baseline gap-x-2 overflow-hidden font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+        <p className="inline-flex min-w-0 items-baseline gap-x-2 overflow-hidden font-mono text-[11px] tracking-[0.14em] text-muted-foreground lowercase">
           <span className="inline-flex items-center gap-2 text-foreground">
             {founding ? (
               `${count} listed`
@@ -161,7 +161,7 @@ export function LandingBoard({
               <span className="text-border" aria-hidden="true">
                 ·
               </span>
-              <span className="truncate">Hot</span>
+              <span className="truncate">hot</span>
             </>
           )}
         </p>
@@ -172,22 +172,19 @@ export function LandingBoard({
           className="shrink-0"
           render={<Link href="/templates" aria-label="Open the board" />}
         >
-          <span className="sm:hidden">Board</span>
+          <span className="sm:hidden">{JOBS.board}</span>
           <span className="hidden sm:inline">Full board</span>
-          <span aria-hidden="true">→</span>
         </Button>
       </div>
-      <div className="motion-board border-y border-border" style={motionDelay(18)}>
+      <div className="motion-board border-y border-border" style={motionDelay(3)}>
         {featured.length > 0 ? (
           <div className="border-b border-border">
-            <p className="px-3 pt-4 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
-              Featured
-            </p>
+            <p className="cmd px-3 pt-4 sm:px-5">featured</p>
             <BotRankList
               templates={featured}
               showVote
               surface="roster"
-              delay={18}
+              delay={3}
             />
           </div>
         ) : null}
@@ -208,7 +205,7 @@ export function LandingBoard({
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >
-                Share a bot
+                {JOBS.share}
               </Button>
             </div>
           </div>
@@ -219,7 +216,7 @@ export function LandingBoard({
             leader
             surface="roster"
             vacancies={vacancies}
-            delay={18}
+            delay={3}
           />
         )}
       </div>

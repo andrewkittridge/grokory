@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
+import { SITE_NAME } from "@/lib/site";
+import { INDEPENDENCE, JOBS } from "@/lib/visual";
 
 const LINKS = [
-  { href: "/templates", label: "Board" },
+  { href: "/templates", label: JOBS.board },
   { href: "/catalog", label: "Catalog" },
   { href: "/authors", label: "Authors" },
-  { href: "/upload", label: "Share a bot" },
+  { href: "/upload", label: JOBS.share },
   { href: "/guides", label: "Guides" },
   { href: "/guides/how-to-list", label: "How to list" },
   { href: "/faq", label: "FAQ" },
@@ -22,11 +24,10 @@ export function SiteFooter() {
       <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
         <Link href="/" className="inline-flex items-center gap-2.5 text-foreground">
           <BrandMark className="size-5" />
-          <span className="font-heading text-lg tracking-tight">Grokdex</span>
+          <span className="font-heading text-lg tracking-tight">{SITE_NAME}</span>
         </Link>
         <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
-          The ranked public board of Grok Bot share links. Independent. Not
-          affiliated with xAI or SpaceXAI.
+          The ranked public board of Grok Bot share links. {INDEPENDENCE}
         </p>
         <nav className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
           {LINKS.map((link) =>

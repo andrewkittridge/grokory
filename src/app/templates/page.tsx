@@ -17,6 +17,7 @@ import { filterTemplates } from "@/lib/templates";
 import { pageMetadata } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
@@ -72,16 +73,25 @@ export default async function TemplatesPage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <JsonLd data={itemListJson([...featured, ...templates], "/templates")} />
-      <LockTitle delay={0}>The board</LockTitle>
+      <p className="cmd motion-enter" style={motionDelay(0)}>
+        {founding ? "just opened" : "live"}
+        <span className="mx-2 text-border" aria-hidden="true">
+          ·
+        </span>
+        ranked
+      </p>
+      <LockTitle delay={1} className="mt-3">
+        The board
+      </LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
-        style={motionDelay(1)}
+        style={motionDelay(2)}
       >
         {founding
           ? "Just opened. Every listing is a public Grok Bot share URL. Add a copy, or list one of yours."
           : "Every listing is a live public Grok Bot share URL. Upvote the ones worth adding, then open the share on x.ai."}
       </p>
-      <div className="motion-enter mt-8" style={motionDelay(2)}>
+      <div className="motion-enter mt-8" style={motionDelay(3)}>
         <BotFilters
           q={q}
           tag={tag}
@@ -105,14 +115,14 @@ export default async function TemplatesPage({
               title="Board just opened"
               body="Got a Grok Bot share link? Paste it and it shows up here for everyone else."
               actionHref="/upload"
-              actionLabel="Share a bot"
+              actionLabel={JOBS.share}
             />
           ) : (
             <EmptyState
               title="Nothing matches"
               body="Clear search, or be the one who lists this kind of bot."
               actionHref="/upload"
-              actionLabel="Share a bot"
+              actionLabel={JOBS.share}
             />
           )}
         </div>
@@ -120,17 +130,13 @@ export default async function TemplatesPage({
         <div className="mt-4 border-y border-border">
           {featured.length > 0 ? (
             <div className="border-b border-border">
-              <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
-                Featured
-              </p>
+              <p className="cmd px-3 py-3 sm:px-5">featured</p>
               <BotRankList templates={featured} showVote />
             </div>
           ) : null}
           {boosted.length > 0 ? (
             <div className="border-b border-border">
-              <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
-                Boosted
-              </p>
+              <p className="cmd px-3 py-3 sm:px-5">boosted</p>
               <BotRankList templates={boosted} showVote />
             </div>
           ) : null}

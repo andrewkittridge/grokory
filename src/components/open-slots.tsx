@@ -12,6 +12,7 @@ import {
 } from "@/lib/founding";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
 import { cn, motionDelay } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 
 function isOpenSlot(target: EventTarget | null) {
   if (!(target instanceof Node)) return false;
@@ -177,7 +178,7 @@ function AgentInvite({ surface }: { surface: "board" | "roster" }) {
 
 function VacantRankRow({
   rank,
-  label = "Share a bot",
+  label = JOBS.share,
   hint,
   href = "/upload",
   live = false,

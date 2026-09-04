@@ -3,6 +3,7 @@ import { GrokBot } from "@/components/grok-bot";
 import { LockTitle } from "@/components/lock-title";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 
 export function LockLost({
   title,
@@ -19,11 +20,8 @@ export function LockLost({
       >
         <GrokBot className="is-ghost" />
       </div>
-      <p
-        className="motion-enter mt-6 font-mono text-sm tracking-[0.18em] text-muted-foreground"
-        style={motionDelay(1)}
-      >
-        Not found
+      <p className="cmd motion-enter mt-6" style={motionDelay(1)}>
+        not found
       </p>
       <LockTitle delay={2} className="mt-4">
         {title}
@@ -46,7 +44,7 @@ export function LockLost({
           nativeButton={false}
           render={<Link href="/upload" />}
         >
-          Share a bot
+          {JOBS.share}
         </Button>
       </div>
     </main>

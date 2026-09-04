@@ -4,6 +4,7 @@ import { ShareListing } from "@/components/share-listing";
 import { Button } from "@/components/ui/button";
 import { addHandleHref } from "@/lib/bot-url";
 import { FEATURED_PLANS } from "@/lib/pricing";
+import { JOBS } from "@/lib/visual";
 
 export function ListedBanner({
   title,
@@ -45,7 +46,7 @@ export function ListedBanner({
 
   return (
     <div className="border-y border-border py-5 sm:py-6">
-      <p className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+      <p className="cmd inline-flex items-center gap-2">
         <span className="live-dot" aria-hidden="true" />
         {kicker}
       </p>
@@ -77,7 +78,7 @@ export function ListedBanner({
           nativeButton={false}
           render={<Link href="/upload" />}
         >
-          Share a bot
+          {JOBS.share}
         </Button>
         {!founding && featureHref ? (
           <Button

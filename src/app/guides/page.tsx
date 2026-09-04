@@ -6,6 +6,7 @@ import { GUIDES } from "@/lib/guides";
 import { breadcrumbListJson, guideListJson } from "@/lib/json-ld";
 import { pageMetadata } from "@/lib/site";
 import { motionDelay } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 
 export const metadata = pageMetadata({
   title: "Guides",
@@ -28,10 +29,15 @@ export default function GuidesPage() {
           { name: "Guides", path: "/guides" },
         ])}
       />
-      <LockTitle delay={0}>Guides</LockTitle>
+      <p className="cmd motion-enter" style={motionDelay(0)}>
+        how
+      </p>
+      <LockTitle delay={1} className="mt-3">
+        Guides
+      </LockTitle>
       <p
         className="motion-enter mt-5 text-sm leading-7 text-body"
-        style={motionDelay(1)}
+        style={motionDelay(2)}
       >
         How to list a public share link, add a copy on x.ai, and keep a listing
         accurate. Grokdex is independent. It is not affiliated with xAI.
@@ -61,7 +67,7 @@ export default function GuidesPage() {
           nativeButton={false}
           render={<Link href="/upload" />}
         >
-          Share a bot
+          {JOBS.share}
         </Button>
       </div>
     </main>

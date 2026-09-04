@@ -117,10 +117,7 @@ export default async function TemplateDetailPage({
           />
         </div>
       ) : null}
-      <p
-        className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
+      <p className="cmd motion-enter" style={motionDelay(0)}>
         <Link
           href="/templates"
           className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
@@ -195,7 +192,10 @@ export default async function TemplateDetailPage({
           </div>
         </article>
         <aside className="space-y-4 lg:sticky lg:top-16 lg:self-start">
-          <div className="motion-enter" style={motionDelay(2)}>
+          <div
+            className="command-panel motion-enter"
+            style={motionDelay(2)}
+          >
             <AddProcedure
               template={template}
               listingUrl={listingHref}

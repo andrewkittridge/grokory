@@ -19,6 +19,7 @@ import {
 } from "@/lib/founding";
 import { cn, motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
+import { JOBS } from "@/lib/visual";
 
 export function BotRankRow({
   rank,
@@ -187,7 +188,7 @@ export function BotRankList({
   surface?: "board" | "roster";
 }) {
   const open =
-    vacancies ?? (vacant ? [{ label: "Share a bot", href: "/upload" }] : []);
+    vacancies ?? (vacant ? [{ label: JOBS.share, href: "/upload" }] : []);
 
   return (
     <ol className={cn("rank-list", className)}>

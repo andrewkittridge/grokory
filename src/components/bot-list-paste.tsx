@@ -18,9 +18,7 @@ export function BotListPaste({
         className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-5"
       >
         <div className="min-w-0">
-          <p className="font-mono text-[11px] tracking-[0.22em] text-muted-foreground uppercase">
-            Have your bot list it
-          </p>
+          <p className="cmd">have your bot list it</p>
           <p className="mt-0.5 text-sm leading-5 text-body">
             Paste into your Grok Bot, then say list me on Grokdex.
           </p>
@@ -44,14 +42,12 @@ export function BotListPaste({
   return (
     <div className="space-y-4">
       <div>
-        <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-          Have your bot list it
-        </p>
+        <p className="cmd">have your bot list it</p>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           Paste this skill into your Grok Bot. Then tell it: list me on Grokdex.
         </p>
       </div>
-      <pre className="max-h-40 overflow-auto rounded-lg border border-border/80 bg-transparent p-3 font-mono text-[11px] leading-5 whitespace-pre-wrap text-muted-foreground">
+      <pre className="max-h-40 overflow-auto rounded-none border border-border/80 bg-transparent p-3 font-mono text-[11px] leading-5 whitespace-pre-wrap text-muted-foreground">
         {skill}
       </pre>
       <CopyText text={skill} label="Copy skill" />

@@ -8,6 +8,7 @@ import { pageMetadata } from "@/lib/site";
 import { authorIndex } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 
 export const dynamic = "force-dynamic";
 
@@ -22,10 +23,15 @@ export default async function AuthorsPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <LockTitle delay={0}>Authors</LockTitle>
+      <p className="cmd motion-enter" style={motionDelay(0)}>
+        makers
+      </p>
+      <LockTitle delay={1} className="mt-3">
+        Authors
+      </LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-sm leading-7 text-body"
-        style={motionDelay(1)}
+        style={motionDelay(2)}
       >
         <CountTick
           value={authors.length}
@@ -40,7 +46,7 @@ export default async function AuthorsPage() {
             title="Nobody listed yet"
             body="Paste a public share link and you show up here with the bot."
             actionHref="/upload"
-            actionLabel="Share a bot"
+            actionLabel={JOBS.share}
           />
         </div>
       ) : (

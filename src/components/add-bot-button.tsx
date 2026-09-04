@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { recordAdd } from "@/lib/actions";
 import { trackConversion } from "@/lib/analytics";
 import { grokbotTemplateUrl } from "@/lib/bot-url";
+import { JOBS } from "@/lib/visual";
 
 export function AddBotButton({
   slug,
@@ -35,7 +36,7 @@ export function AddBotButton({
         />
       }
     >
-      Add to Grok Bot
+      {JOBS.add}
     </Button>
   );
 }

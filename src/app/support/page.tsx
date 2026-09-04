@@ -21,11 +21,8 @@ export default async function SupportPage({
 
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14 sm:px-6 sm:py-16">
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        Optional
+      <p className="cmd motion-enter" style={motionDelay(0)}>
+        optional
       </p>
       <LockTitle delay={1} className="mt-4">
         Support Grokdex.

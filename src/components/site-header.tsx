@@ -8,23 +8,20 @@ import { BrandMark } from "@/components/brand-mark";
 import { SiteSearch } from "@/components/site-search";
 import { Button } from "@/components/ui/button";
 import { useHydrated } from "@/lib/motion";
+import { SITE_NAME } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { JOBS } from "@/lib/visual";
 
 const NAV = [
   {
     href: "/templates",
-    label: "Board",
+    label: JOBS.board,
     match: (path: string) => path.startsWith("/templates"),
   },
   {
     href: "/catalog",
     label: "Catalog",
     match: (path: string) => path === "/catalog",
-  },
-  {
-    href: "/authors",
-    label: "Authors",
-    match: (path: string) => path.startsWith("/authors"),
   },
 ] as const;
 
@@ -61,7 +58,7 @@ export function SiteHeader() {
               !catalog && "max-sm:sr-only"
             )}
           >
-            Grokdex
+            {SITE_NAME}
           </span>
         </Link>
         {catalog ? (
@@ -69,7 +66,7 @@ export function SiteHeader() {
         ) : (
           <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
         )}
-        <nav className="ml-auto hidden items-center gap-1 lg:flex">
+        <nav className="ml-auto hidden h-14 items-stretch gap-5 lg:flex">
           {NAV.map((item) => (
             <HeaderLink
               key={item.href}
@@ -79,13 +76,16 @@ export function SiteHeader() {
               {item.label}
             </HeaderLink>
           ))}
-          <HeaderLink
-            href="/upload"
-            active={pathname === "/upload"}
-            primary={pathname !== "/"}
-          >
-            Share a bot
-          </HeaderLink>
+          <span className="flex items-center">
+            <Button
+              size="sm"
+              variant={pathname === "/" ? "outline" : "default"}
+              nativeButton={false}
+              render={<Link href="/upload" />}
+            >
+              {JOBS.share}
+            </Button>
+          </span>
         </nav>
         <details className="group relative ml-auto lg:hidden">
           <summary className="flex cursor-pointer list-none items-center rounded-none border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
@@ -110,7 +110,7 @@ export function SiteHeader() {
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >
-                Share a bot
+                {JOBS.share}
               </Button>
             </nav>
           </div>
@@ -137,28 +137,26 @@ function HeaderSearch({ className }: { className?: string }) {
 function HeaderLink({
   href,
   active,
-  primary,
   children,
 }: {
   href: string;
   active: boolean;
-  primary?: boolean;
   children: string;
 }) {
   return (
-    <Button
-      variant={primary ? "default" : "ghost"}
-      size="sm"
-      nativeButton={false}
-      className="relative"
-      render={<Link href={href} />}
+    <Link
+      href={href}
+      className={cn(
+        "relative flex items-center font-mono text-[11px] tracking-[0.12em] lowercase text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground",
+        active && "text-foreground"
+      )}
     >
       {children}
-      {active && !primary ? (
+      {active ? (
         <ViewTransition name="nav-pip">
           <span className="nav-pip" aria-hidden="true" />
         </ViewTransition>
       ) : null}
-    </Button>
+    </Link>
   );
 }
