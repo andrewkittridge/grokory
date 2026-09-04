@@ -48,7 +48,7 @@ export function SiteSearch({
           }
           className={cn(
             "font-mono",
-            header && "h-8 bg-background/70 text-sm",
+            header && "h-9 bg-background/70 text-sm md:h-8",
             hero && "h-11 text-sm sm:text-[15px]",
             size === "menu" && "h-9"
           )}

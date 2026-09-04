@@ -1,9 +1,9 @@
 "use client";
 
-import { ViewTransition } from "react";
+import { Suspense, ViewTransition } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteSearch } from "@/components/site-search";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,9 @@ export function SiteHeader() {
             Grokdex
           </span>
         </Link>
-        <SiteSearch className="mx-2 hidden min-w-0 flex-1 md:flex" />
+        <Suspense fallback={<SiteSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />}>
+          <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
+        </Suspense>
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
             <HeaderLink
@@ -81,7 +83,6 @@ export function SiteHeader() {
             Menu
           </summary>
           <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover p-2">
-            <SiteSearch size="menu" className="mb-2" />
             <nav className="flex flex-col">
               {NAV.map((item) => (
                 <Button
@@ -108,6 +109,11 @@ export function SiteHeader() {
       </div>
     </header>
   );
+}
+
+function HeaderSearch({ className }: { className?: string }) {
+  const params = useSearchParams();
+  return <SiteSearch defaultValue={params.get("q") ?? ""} className={className} />;
 }
 
 function HeaderLink({

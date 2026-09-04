@@ -3,9 +3,6 @@
 import { ViewTransition } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ScanField } from "@/components/scan-field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 function hrefFor(params: {
@@ -38,28 +35,10 @@ export function BotFilters({
   sort: string;
   sortTabs?: boolean;
 }) {
+  if (!sortTabs && !tag && !skill) return null;
+
   return (
-    <div className={sortTabs ? "space-y-5" : "space-y-0"}>
-      <form action="/templates" className="flex flex-col gap-2 sm:flex-row">
-        {tag ? <input type="hidden" name="tag" value={tag} /> : null}
-        {skill ? <input type="hidden" name="skill" value={skill} /> : null}
-        <input type="hidden" name="sort" value={sort} />
-        <label className="sr-only" htmlFor="q">
-          Search bots
-        </label>
-        <ScanField>
-          <Input
-            id="q"
-            name="q"
-            defaultValue={q}
-            placeholder="Search names, authors, @handles…"
-            className="h-11 font-mono"
-          />
-        </ScanField>
-        <Button type="submit" variant="outline" className="h-11 sm:w-auto">
-          Search
-        </Button>
-      </form>
+    <div className="space-y-5">
       {sortTabs ? (
         <div className="flex gap-0 border-b border-border/80">
           {[

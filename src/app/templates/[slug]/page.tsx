@@ -136,65 +136,63 @@ export default async function TemplateDetailPage({
       <div className="mt-6 grid gap-8 lg:mt-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
         <article>
           <div className="motion-enter" style={motionDelay(1)}>
-            <Frame staticFrame>
-              <BotIdentityStage
-                mark={template.mark}
-                title={template.title}
-                ogImage={template.ogImage}
-              />
-              <div className="px-5 py-6 sm:px-8 sm:py-8">
-                <div className="flex flex-wrap gap-1.5">
-                  {featured ? <FeaturedMark /> : null}
-                  {justFeatured && !featured ? (
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      Featured pending
-                    </span>
-                  ) : null}
-                  {boosted ? <BoostedMark /> : null}
-                  {justBoosted && !boosted ? (
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      Boost pending
-                    </span>
-                  ) : null}
-                  {template.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="ghost"
-                      render={
-                        <Link href={`/templates?tag=${encodeURIComponent(tag)}`} />
-                      }
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <LockTitle className="mt-5">{template.title}</LockTitle>
-                <AuthorByline
-                  name={authorName}
-                  xHandle={template.xHandle}
-                  shareUrl={template.botUrl}
-                  className="mt-2 text-muted-foreground"
-                />
-                <p className="mt-5 max-w-2xl text-base leading-7 text-body">
-                  {template.description}
-                </p>
-                {template.note ? (
-                  <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
-                    {template.note}
-                  </blockquote>
+            <BotIdentityStage
+              mark={template.mark}
+              title={template.title}
+              ogImage={template.ogImage}
+            />
+            <div className="pt-6 sm:pt-8">
+              <div className="flex flex-wrap gap-1.5">
+                {featured ? <FeaturedMark /> : null}
+                {justFeatured && !featured ? (
+                  <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                    Featured pending
+                  </span>
                 ) : null}
-                <WhatTravels
-                  skills={template.skills}
-                  routines={template.routines}
-                />
-                <p className="mt-6 text-xs leading-5 text-muted-foreground">
-                  This bot was created by a third-party user, not by SpaceXAI.
-                  Adding it creates a copy on your Grok Bot account. It does
-                  not share the author’s computer, logins, or conversation
-                  history.
-                </p>
+                {boosted ? <BoostedMark /> : null}
+                {justBoosted && !boosted ? (
+                  <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                    Boost pending
+                  </span>
+                ) : null}
+                {template.tags.map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="ghost"
+                    render={
+                      <Link href={`/templates?tag=${encodeURIComponent(tag)}`} />
+                    }
+                  >
+                    {tag}
+                  </Badge>
+                ))}
               </div>
-            </Frame>
+              <LockTitle className="mt-5">{template.title}</LockTitle>
+              <AuthorByline
+                name={authorName}
+                xHandle={template.xHandle}
+                shareUrl={template.botUrl}
+                className="mt-2 text-muted-foreground"
+              />
+              <p className="mt-5 max-w-2xl text-base leading-7 text-body">
+                {template.description}
+              </p>
+              {template.note ? (
+                <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
+                  {template.note}
+                </blockquote>
+              ) : null}
+              <WhatTravels
+                skills={template.skills}
+                routines={template.routines}
+              />
+              <p className="mt-6 text-xs leading-5 text-muted-foreground">
+                This bot was created by a third-party user, not by SpaceXAI.
+                Adding it creates a copy on your Grok Bot account. It does
+                not share the author’s computer, logins, or conversation
+                history.
+              </p>
+            </div>
           </div>
         </article>
         <aside className="space-y-4 lg:sticky lg:top-16 lg:self-start">

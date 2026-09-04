@@ -1,5 +1,4 @@
 import { BotListPaste } from "@/components/bot-list-paste";
-import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { UploadForm } from "@/components/upload-form";
 import { isFoundingBoard } from "@/lib/founding";
@@ -67,12 +66,10 @@ export default async function UploadPage({
             same link to refresh it from x.ai or change the tags or note.
           </p>
           <div className="motion-enter mt-10" style={motionDelay(3)}>
-            <Frame staticFrame matClassName="p-5 sm:p-8">
-              <UploadForm
-                siteKey={turnstileSiteKey()}
-                defaultShareUrl={share || undefined}
-              />
-            </Frame>
+            <UploadForm
+              siteKey={turnstileSiteKey()}
+              defaultShareUrl={share || undefined}
+            />
           </div>
           <div
             id="agent"

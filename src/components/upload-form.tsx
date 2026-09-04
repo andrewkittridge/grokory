@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Frame } from "@/components/frame";
 import { BotIdentityStage } from "@/components/bot-identity";
 import { ScanField } from "@/components/scan-field";
 import { TurnstileField } from "@/components/turnstile-field";
@@ -150,41 +149,39 @@ export function UploadForm({
 
       {preview ? (
         <div className="motion-board">
-          <Frame staticFrame>
-            <BotIdentityStage
-              mark={preview.mark}
-              title={preview.title}
-              ogImage={preview.ogImage}
-              className="bot-stage-preview"
-            />
-            <div className="px-4 py-3">
-              <p className="font-heading text-xl tracking-tight">
-                {preview.title}
+          <BotIdentityStage
+            mark={preview.mark}
+            title={preview.title}
+            ogImage={preview.ogImage}
+            className="bot-stage-preview"
+          />
+          <div className="pt-3">
+            <p className="font-heading text-xl tracking-tight">
+              {preview.title}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              by {preview.authorName}
+            </p>
+            {!updating ? (
+              <button
+                type="button"
+                className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+                onClick={() =>
+                  setEditFor((id) =>
+                    id === preview.botId ? null : preview.botId
+                  )
+                }
+              >
+                {editFor === preview.botId
+                  ? "Hide details"
+                  : "Edit name and description"}
+              </button>
+            ) : (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Name and description refresh from x.ai.
               </p>
-              <p className="text-sm text-muted-foreground">
-                by {preview.authorName}
-              </p>
-              {!updating ? (
-                <button
-                  type="button"
-                  className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-                  onClick={() =>
-                    setEditFor((id) =>
-                      id === preview.botId ? null : preview.botId
-                    )
-                  }
-                >
-                  {editFor === preview.botId
-                    ? "Hide details"
-                    : "Edit name and description"}
-                </button>
-              ) : (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Name and description refresh from x.ai.
-                </p>
-              )}
-            </div>
-          </Frame>
+            )}
+          </div>
         </div>
       ) : null}
 
