@@ -279,12 +279,12 @@ export function BotRankRowSkeleton({
   return (
     <div
       className={cn(
-        "grid grid-cols-[2.25rem_2.65rem_minmax(0,1fr)_4rem] items-center gap-x-3",
+        "grid grid-cols-[2.25rem_3.15rem_minmax(0,1fr)_4rem] items-center gap-x-3",
         roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
       <div className="h-3 w-5 animate-pulse bg-canvas-soft" />
-      <div className="size-10 animate-pulse rounded-full bg-canvas-soft" />
+      <div className="size-[3.15rem] animate-pulse rounded-full bg-canvas-soft" />
       <div className="space-y-2">
         <div className="h-3.5 w-2/5 max-w-56 animate-pulse bg-canvas-soft" />
         <div className="h-2.5 w-1/4 max-w-32 animate-pulse bg-canvas-soft" />

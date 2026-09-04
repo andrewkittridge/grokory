@@ -5,6 +5,7 @@ import { LandingCta } from "@/components/landing-cta";
 import {
   LandingBoard,
   LandingBoardSkeleton,
+  LandingCast,
   LandingHero,
 } from "@/components/landing-hero";
 import { LandingHow } from "@/components/landing-how";
@@ -68,6 +69,7 @@ async function Home() {
         <LandingHero founding={founding}>
           <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
           <JsonLd data={faqJson()} />
+          <LandingCast templates={[...featured, ...ranked]} />
           <LandingBoard
             ranked={ranked}
             featured={featured}

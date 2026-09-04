@@ -59,8 +59,8 @@ export function CatalogBot({
       data-catalog-hit={searching ? (hit ? "true" : "false") : undefined}
       aria-hidden={clone || undefined}
       className={cn(
-        "catalog-bot group/bot relative flex w-[7.25rem] shrink-0 flex-col items-center px-1 py-2 sm:w-[8.25rem]",
-        featured && "w-[8.5rem] sm:w-[9.5rem]",
+        "catalog-bot group/bot relative flex w-[8.25rem] shrink-0 flex-col items-center px-1 py-2 sm:w-[9.25rem]",
+        featured && "w-[9.5rem] sm:w-[10.5rem]",
         searching && hit && "is-hit",
         searching && !hit && "is-miss"
       )}
@@ -78,15 +78,15 @@ export function CatalogBot({
         aria-label={inert ? undefined : label}
         className="flex w-full flex-col items-center focus-visible:ring-1 focus-visible:ring-foreground"
       >
-        <span className="relative flex min-h-[6.5rem] w-full items-end justify-center sm:min-h-[7.25rem]">
+        <span className="relative flex min-h-[7.5rem] w-full items-end justify-center sm:min-h-[8.5rem]">
           {featured ? <span className="grok-bot-rim" aria-hidden="true" /> : null}
           <span
             ref={botRef}
             className={cn(
               "grok-bot catalog-bot-figure relative block",
               featured
-                ? "w-[5.9rem] sm:w-[6.6rem]"
-                : "w-[4.8rem] sm:w-[5.5rem]",
+                ? "w-[6.6rem] sm:w-[7.4rem]"
+                : "w-[5.6rem] sm:w-[6.4rem]",
               token.kind === "open" && "is-ghost",
               token.kind === "listed" && token.template.mark && "is-identity"
             )}
@@ -115,7 +115,7 @@ export function CatalogBot({
               Open seat
             </span>
           ) : null}
-          <span className="w-full truncate text-[13px] leading-tight tracking-tight">
+          <span className="catalog-bot-name w-full truncate text-[13px] leading-tight tracking-tight">
             {heading}
           </span>
         </span>

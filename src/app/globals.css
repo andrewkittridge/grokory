@@ -54,42 +54,42 @@
 
 :root {
   color-scheme: dark;
-  --background: #0c0b09;
-  --foreground: #f6f1ea;
-  --card: #141210;
-  --card-foreground: #f6f1ea;
-  --popover: #141210;
-  --popover-foreground: #f6f1ea;
-  --primary: #f6f1ea;
-  --primary-foreground: #0c0b09;
-  --secondary: #1c1916;
-  --secondary-foreground: #e4ddd4;
-  --muted: #1c1916;
-  --muted-foreground: #8a847c;
-  --accent: #1c1916;
-  --accent-foreground: #f6f1ea;
+  --background: #12100e;
+  --foreground: #f8f2e9;
+  --card: #1c1915;
+  --card-foreground: #f8f2e9;
+  --popover: #1c1915;
+  --popover-foreground: #f8f2e9;
+  --primary: #f8f2e9;
+  --primary-foreground: #12100e;
+  --secondary: #251f1a;
+  --secondary-foreground: #ebe3d6;
+  --muted: #251f1a;
+  --muted-foreground: #a3988c;
+  --accent: #251f1a;
+  --accent-foreground: #f8f2e9;
   --destructive: #f87171;
-  --border: #2a2622;
-  --input: #2a2622;
-  --ring: #f6f1ea;
+  --border: #403830;
+  --input: #403830;
+  --ring: #f8f2e9;
   --chart-1: #ff7a17;
-  --chart-2: #8a847c;
-  --chart-3: #2a2622;
-  --chart-4: #e4ddd4;
-  --chart-5: #f6f1ea;
+  --chart-2: #a3988c;
+  --chart-3: #403830;
+  --chart-4: #ebe3d6;
+  --chart-5: #f8f2e9;
   --radius: 0.65rem;
-  --sidebar: #141210;
-  --sidebar-foreground: #f6f1ea;
-  --sidebar-primary: #f6f1ea;
-  --sidebar-primary-foreground: #0c0b09;
-  --sidebar-accent: #1c1916;
-  --sidebar-accent-foreground: #f6f1ea;
-  --sidebar-border: #2a2622;
-  --sidebar-ring: #f6f1ea;
+  --sidebar: #1c1915;
+  --sidebar-foreground: #f8f2e9;
+  --sidebar-primary: #f8f2e9;
+  --sidebar-primary-foreground: #12100e;
+  --sidebar-accent: #251f1a;
+  --sidebar-accent-foreground: #f8f2e9;
+  --sidebar-border: #403830;
+  --sidebar-ring: #f8f2e9;
   --sunset: #ff7a17;
-  --canvas-soft: #1c1916;
-  --body: #e4ddd4;
-  --pill-border: rgb(246 241 234 / 0.22);
+  --canvas-soft: #251f1a;
+  --body: #ebe3d6;
+  --pill-border: rgb(248 242 233 / 0.3);
   --motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-acquire: 0.85s var(--motion-ease);
   --motion-lock: 0.55s var(--motion-ease);
@@ -659,9 +659,9 @@ body {
 }
 
 .hero-wordmark {
-  font-size: clamp(2.15rem, 7vw, 3.35rem);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
+  font-size: clamp(2.35rem, 7.5vw, 3.7rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -679,41 +679,56 @@ body {
 
 .board-panel {
   overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--foreground) 12%, var(--border));
+  border-radius: 1.05rem;
+  background: color-mix(in srgb, var(--card) 94%, transparent);
   box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--foreground) 3%, transparent),
-    0 24px 60px -36px rgb(0 0 0 / 0.65);
+    0 0 0 1px color-mix(in srgb, var(--foreground) 4%, transparent),
+    0 28px 70px -32px rgb(0 0 0 / 0.72);
 }
 
 .bot-thumb {
   position: relative;
   display: block;
-  width: 2.65rem;
-  height: 2.65rem;
+  width: 3.15rem;
+  height: 3.15rem;
   flex-shrink: 0;
   overflow: visible;
 }
 
 .bot-thumb-lg {
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 4.15rem;
+  height: 4.15rem;
 }
 
-.bot-thumb .grok-bot-ground,
+.bot-thumb .grok-bot-ground {
+  display: none;
+}
+
 .bot-thumb .grok-bot-rim {
   display: none;
+}
+
+.live-cast .bot-thumb .grok-bot-rim {
+  display: block;
+  inset: 20% 12% 26%;
+  background: color-mix(in srgb, var(--foreground) 16%, transparent);
+  opacity: 1;
+  filter: blur(16px);
 }
 
 .bot-thumb .grok-bot-motion {
   animation: none;
 }
 
+.live-cast .bot-thumb .grok-bot-motion {
+  animation: bot-bob 4.2s ease-in-out infinite;
+}
+
 .bot-thumb-empty {
   display: grid;
-  width: 2.65rem;
-  height: 2.65rem;
+  width: 3.15rem;
+  height: 3.15rem;
   flex-shrink: 0;
   place-items: center;
 }
@@ -727,14 +742,79 @@ body {
   transform: rotate(45deg);
 }
 
+.live-cast {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.15rem;
+  margin-top: 2rem;
+  overflow-x: auto;
+  padding-bottom: 0.15rem;
+  scrollbar-width: none;
+}
+
+.live-cast::-webkit-scrollbar {
+  display: none;
+}
+
+.live-cast-item {
+  display: flex;
+  min-width: 4.85rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.35rem 0.15rem;
+  color: var(--foreground);
+}
+
+.live-cast-item:hover,
+.live-cast-item:focus-visible {
+  color: var(--foreground);
+}
+
+.live-cast-name {
+  max-width: 4.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  letter-spacing: -0.02em;
+}
+
+.live-cast-more {
+  display: flex;
+  min-width: 4.5rem;
+  min-height: 4.15rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.live-cast-more:hover,
+.live-cast-more:focus-visible {
+  color: var(--foreground);
+}
+
 .bot-stage {
   position: relative;
   display: flex;
-  min-height: 15.5rem;
+  min-height: 18.5rem;
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
-  background: var(--background);
+  background:
+    radial-gradient(
+      ellipse 58% 70% at 50% 78%,
+      color-mix(in srgb, var(--sunset) 10%, transparent),
+      transparent 70%
+    ),
+    var(--background);
 }
 
 .bot-stage-wash {
@@ -749,8 +829,8 @@ body {
 
 .bot-stage-figure {
   z-index: 1;
-  width: min(13.5rem, 62%);
-  margin-bottom: 0.35rem;
+  width: min(15.5rem, 68%);
+  margin-bottom: 0.2rem;
   cursor: pointer;
 }
 
@@ -1020,14 +1100,22 @@ body {
 
 .rank-row-roster .rank-spark {
   right: 4.75rem;
-  left: 6.4rem;
+  left: 7.1rem;
 }
 
 @media (min-width: 640px) {
   .rank-row-roster .rank-spark {
     right: 5.25rem;
-    left: 7.1rem;
+    left: 7.9rem;
   }
+}
+
+.rank-row-first {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--sunset) 9%, transparent),
+    transparent 42%
+  );
 }
 
 .rank-row-leader::before,
@@ -1300,7 +1388,7 @@ body {
       transparent 1px
     );
   background-size: 48px 48px;
-  opacity: 0.4;
+  opacity: 0.18;
   animation: field-grid-drift 64s linear infinite;
 }
 
@@ -1517,6 +1605,10 @@ body {
   transition: opacity 200ms ease;
 }
 
+.catalog-bot-name {
+  color: var(--foreground);
+}
+
 .catalog-bot-handle {
   max-width: 100%;
 }
@@ -1578,6 +1670,7 @@ body {
   .grok-bot-lid-l,
   .grok-bot-winking .grok-bot-lid-l,
   .grok-bot-motion,
+  .live-cast .bot-thumb .grok-bot-motion,
   .grok-bot-hopping .grok-bot-motion,
   .grok-bot-hopping .grok-bot-ground,
   .grok-bot-hopping .grok-bot-comet,

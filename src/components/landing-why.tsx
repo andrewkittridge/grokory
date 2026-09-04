@@ -34,7 +34,13 @@ export function LandingWhy() {
             className="motion-enter bg-card px-5 py-6 sm:px-6 sm:py-7"
             style={motionDelay(index)}
           >
-            <p className="font-mono text-[11px] tracking-[0.2em] text-sunset uppercase">
+            <p
+              className={
+                index === 0
+                  ? "font-mono text-[11px] tracking-[0.2em] text-sunset uppercase"
+                  : "font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase"
+              }
+            >
               {point.kicker}
             </p>
             <h3 className="mt-3 font-heading text-xl tracking-tight text-foreground sm:text-[1.35rem]">

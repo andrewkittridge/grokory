@@ -29,6 +29,7 @@ export function BotIdentityThumb({
       )}
       aria-hidden="true"
     >
+      <span className="grok-bot-rim" aria-hidden="true" />
       {mark ? <GrokBotIdentityMark mark={mark} /> : <GrokBotMark />}
     </span>
   );

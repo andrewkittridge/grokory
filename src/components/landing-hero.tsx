@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { BotIdentityThumb } from "@/components/bot-identity";
 import {
   BotRankList,
   BotRankRowSkeleton,
 } from "@/components/bot-rank-row";
 import { GrokBot } from "@/components/grok-bot";
 import { HeroWordmark } from "@/components/hero-wordmark";
-import { SiteSearch } from "@/components/site-search";
 import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
@@ -25,7 +25,7 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_7rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_9rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_11rem] lg:gap-10">
+        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_8rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_11rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-10">
           <div className="min-w-0">
             <p
               className="motion-enter flex flex-wrap items-center gap-x-3 gap-y-1"
@@ -40,11 +40,11 @@ export function LandingHero({
                 Bots can list themselves
               </span>
             </p>
-            <div className="mt-4 max-sm:flex max-sm:min-h-[4.75rem] max-sm:items-center max-sm:pr-[5.25rem]">
+            <div className="mt-4 max-sm:flex max-sm:min-h-[5.25rem] max-sm:items-center max-sm:pr-[5.75rem]">
               <HeroWordmark as={heading ? "h1" : "p"} />
             </div>
             <p
-              className="promise-serif motion-enter mt-4 max-w-2xl text-2xl leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[1.85rem]"
+              className="promise-serif motion-enter mt-4 max-w-2xl text-[1.65rem] leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[2.05rem]"
               style={motionDelay(8)}
             >
               The ranked board of public Grok Bots.
@@ -57,14 +57,8 @@ export function LandingHero({
               onto your Grok account.
             </p>
             <div
-              className="motion-enter mt-6"
+              className="motion-enter mt-7 flex flex-col gap-2 sm:flex-row"
               style={motionDelay(14)}
-            >
-              <SiteSearch size="hero" />
-            </div>
-            <div
-              className="motion-enter mt-3 flex flex-col gap-2 sm:flex-row"
-              style={motionDelay(16)}
             >
               {founding ? (
                 <>
@@ -81,11 +75,7 @@ export function LandingHero({
                 </>
               ) : (
                 <>
-                  <Button
-                    variant="outline"
-                    nativeButton={false}
-                    render={<Link href="/templates" />}
-                  >
+                  <Button nativeButton={false} render={<Link href="/templates" />}>
                     Open the board
                   </Button>
                   <Button
@@ -100,7 +90,7 @@ export function LandingHero({
             </div>
           </div>
           <div
-            className="motion-enter absolute top-0 right-0 w-[4.75rem] sm:relative sm:top-auto sm:right-auto sm:mt-2 sm:w-full md:mt-0"
+            className="motion-enter absolute top-0 right-0 w-[5.25rem] sm:relative sm:top-auto sm:right-auto sm:mt-2 sm:w-full md:mt-0"
             style={motionDelay(2)}
           >
             <div className="relative">
@@ -112,6 +102,35 @@ export function LandingHero({
         {children}
       </div>
     </section>
+  );
+}
+
+export function LandingCast({
+  templates,
+}: {
+  templates: ListedTemplate[];
+}) {
+  const cast = templates.slice(0, 10);
+  if (cast.length === 0) return null;
+
+  return (
+    <div className="live-cast motion-enter" style={motionDelay(17)}>
+      {cast.map((template) => (
+        <Link
+          key={template.slug}
+          href={`/templates/${template.slug}`}
+          className="live-cast-item"
+          aria-label={template.title}
+        >
+          <BotIdentityThumb mark={template.mark} size="lg" />
+          <span className="live-cast-name">{template.title}</span>
+        </Link>
+      ))}
+      <Link href="/catalog" className="live-cast-more">
+        Parade
+        <span aria-hidden="true">→</span>
+      </Link>
+    </div>
   );
 }
 
