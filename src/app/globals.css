@@ -1343,30 +1343,8 @@ body {
   display: inline;
 }
 
-.bot-cover {
-  background: var(--background);
-  outline: 1px solid var(--border);
-  outline-offset: -1px;
-}
-
-.bot-frame {
-  background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: none;
-  outline: 1px solid var(--border);
-  outline-offset: -1px;
-  overflow: hidden;
-}
-
-.bot-frame-mat {
-  background: transparent;
-  color: var(--card-foreground);
-  min-height: 100%;
-}
-
-.bot-frame-static,
-.bot-frame-static:hover {
-  background-color: var(--card);
+.grok-bot.is-ghost {
+  opacity: 0.42;
 }
 
 .site-field {

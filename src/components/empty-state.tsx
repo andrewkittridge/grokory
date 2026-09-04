@@ -16,9 +16,9 @@ export function EmptyState({
   return (
     <div className="relative px-6 py-16 text-center">
       <div className="mx-auto w-[5.5rem]">
-        <GrokBot />
+        <GrokBot className="is-ghost" />
       </div>
-      <h3 className="display-section mt-6">{title}</h3>
+      <h3 className="mt-6 font-heading text-2xl tracking-tight">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-body">
         {body}
       </p>

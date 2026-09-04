@@ -112,7 +112,7 @@ function GuideBlockView({ block }: { block: GuideBlock }) {
       );
     case "note":
       return (
-        <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
+        <div className="border-t border-border pt-5">
           <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
             {block.kicker}
           </p>

@@ -17,7 +17,7 @@ export function LockLost({
         className="motion-enter relative mx-auto w-[7.5rem]"
         style={motionDelay(0)}
       >
-        <GrokBot />
+        <GrokBot className="is-ghost" />
       </div>
       <p
         className="motion-enter mt-6 font-mono text-sm tracking-[0.18em] text-muted-foreground"
