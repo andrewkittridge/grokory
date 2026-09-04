@@ -8,20 +8,22 @@ export function LegalDoc({
   updated,
   children,
 }: {
-  kicker: string;
+  kicker?: string;
   title: string;
   updated: string;
   children: ReactNode;
 }) {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14 sm:px-6 sm:py-16">
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        {kicker}
-      </p>
-      <LockTitle delay={1} className="mt-4">
+      {kicker ? (
+        <p
+          className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
+          style={motionDelay(0)}
+        >
+          {kicker}
+        </p>
+      ) : null}
+      <LockTitle delay={kicker ? 1 : 0} className={kicker ? "mt-4" : undefined}>
         {title}
       </LockTitle>
       <p

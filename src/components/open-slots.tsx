@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { BotIdentityThumb } from "@/components/bot-identity";
 import {
   LIST_AGENT_HREF,
   LIST_SKILL_PATH,
@@ -212,7 +213,7 @@ function VacantRankRow({
       >
         {String(rank).padStart(2, "0")}
       </span>
-      <span className="bot-thumb-empty relative z-10" aria-hidden="true" />
+      <BotIdentityThumb className="is-ghost relative z-10" />
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span className="rank-open-label block truncate text-[15px] leading-tight">
           {label}

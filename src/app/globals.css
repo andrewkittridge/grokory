@@ -495,23 +495,6 @@ body {
   animation: bot-bob 4.2s ease-in-out infinite;
 }
 
-.bot-thumb-empty {
-  display: grid;
-  width: 3.15rem;
-  height: 3.15rem;
-  flex-shrink: 0;
-  place-items: center;
-}
-
-.bot-thumb-empty::before {
-  content: "";
-  width: 0.5rem;
-  height: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--foreground) 22%, transparent);
-  background: transparent;
-  transform: rotate(45deg);
-}
-
 .live-cast {
   display: flex;
   align-items: flex-end;

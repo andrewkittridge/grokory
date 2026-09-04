@@ -91,29 +91,27 @@ export function WhatTravels({
 
   return (
     <div className="mt-8 border-t border-border pt-6">
-      <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        What gets copied
-      </p>
+      <p className="text-xs text-muted-foreground">What gets copied</p>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
         A template copies identity, description, skills, and routines onto your
         Grok account. It does not share the author’s computer, logins, or
         chats.
       </p>
       {skills.length > 0 ? (
-        <LabeledList
+        <CopiedList
           label="Skills"
           items={skills}
           hrefFor={(item) => `/templates?skill=${encodeURIComponent(item)}`}
         />
       ) : null}
       {routines.length > 0 ? (
-        <LabeledList label="Routines" items={routines} />
+        <CopiedList label="Routines" items={routines} />
       ) : null}
     </div>
   );
 }
 
-function LabeledList({
+function CopiedList({
   label,
   items,
   hrefFor,
@@ -124,23 +122,19 @@ function LabeledList({
 }) {
   return (
     <div className="mt-4">
-      <p className="font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
-        {label}
-      </p>
-      <ul className="mt-2 flex flex-wrap gap-1.5">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <ul className="mt-1.5 space-y-1 text-sm leading-6 text-body">
         {items.map((item) => (
           <li key={item}>
             {hrefFor ? (
               <Link
                 href={hrefFor(item)}
-                className="inline-flex rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground"
+                className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
               >
                 {item}
               </Link>
             ) : (
-              <span className="inline-flex rounded-full border border-pill-border px-2.5 py-1 font-mono text-[11px] text-foreground">
-                {item}
-              </span>
+              item
             )}
           </li>
         ))}

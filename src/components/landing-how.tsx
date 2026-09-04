@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { BotListPaste } from "@/components/bot-list-paste";
 import { LandingSectionHeading } from "@/components/landing-section-heading";
-import { Button } from "@/components/ui/button";
 import { cn, motionDelay } from "@/lib/utils";
 
 const STEPS = [
@@ -32,19 +31,8 @@ export function LandingHow() {
   return (
     <section className="mt-16 sm:mt-20">
       <LandingSectionHeading
-        kicker="How it works"
         title="Three moves."
         description="Browse like a board. Add like x.ai. List like an agent."
-        action={
-          <Button
-            variant="outline"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/guides" />}
-          >
-            Guides
-          </Button>
-        }
       />
       <ol className="border-y border-border">
         {STEPS.map((step, index) => (

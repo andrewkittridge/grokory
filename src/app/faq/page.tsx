@@ -15,7 +15,7 @@ export const metadata = pageMetadata({
 
 export default function FaqPage() {
   return (
-    <LegalDoc kicker="FAQ" title="FAQ" updated="1 September 2026">
+    <LegalDoc title="FAQ" updated="1 September 2026">
       <JsonLd data={faqJson()} />
       {FAQS.map((item) => (
         <section key={item.q}>

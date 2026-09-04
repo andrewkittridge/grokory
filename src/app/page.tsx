@@ -17,7 +17,6 @@ import {
 } from "@/lib/founding";
 import { sortTemplates } from "@/lib/rank";
 import { listTemplates } from "@/lib/templates-store";
-import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
@@ -59,8 +58,6 @@ async function Home() {
     ranked.length + featured.length,
     HOME_BOARD_SLOTS
   );
-  const taglineDelay = templates.length === 0 ? 6 : 7 + ranked.length;
-
   return (
     <>
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
@@ -79,16 +76,6 @@ async function Home() {
           />
         </LandingHero>
         <LandingHow />
-        <p
-          className="motion-enter mt-12 border-t border-border pt-5 text-sm leading-7 text-body"
-          style={motionDelay(taglineDelay)}
-        >
-          Public share links
-          <span aria-hidden="true"> · </span>
-          Ranked by votes
-          <span aria-hidden="true"> · </span>
-          Add copies the template
-        </p>
       </div>
     </>
   );

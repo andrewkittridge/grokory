@@ -72,24 +72,16 @@ export default async function TemplatesPage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <JsonLd data={itemListJson([...featured, ...templates], "/templates")} />
-      <p
-        className="motion-enter font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        Public · Live · Ranked
-      </p>
-      <LockTitle delay={1} className="mt-3">
-        The board
-      </LockTitle>
+      <LockTitle delay={0}>The board</LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
-        style={motionDelay(2)}
+        style={motionDelay(1)}
       >
         {founding
           ? "Just opened. Every listing is a public Grok Bot share URL. Add a copy, or list one of yours."
           : "Every listing is a live public Grok Bot share URL. Upvote the ones worth adding, then open the share on x.ai."}
       </p>
-      <div className="motion-enter mt-8" style={motionDelay(3)}>
+      <div className="motion-enter mt-8" style={motionDelay(2)}>
         <BotFilters
           q={q}
           tag={tag}

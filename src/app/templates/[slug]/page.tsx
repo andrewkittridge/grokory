@@ -16,7 +16,6 @@ import { ListedBanner } from "@/components/listed-banner";
 import { ListedConversion } from "@/components/listed-conversion";
 import { AuthorByline, WhatTravels } from "@/components/listing-trust";
 import { VoteButtons } from "@/components/vote-buttons";
-import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { isFoundingBoard } from "@/lib/founding";
@@ -141,38 +140,26 @@ export default async function TemplateDetailPage({
               ogImage={template.ogImage}
             />
             <div className="pt-6 sm:pt-8">
-              <div className="flex flex-wrap gap-1.5">
-                {featured ? <FeaturedMark /> : null}
-                {justFeatured && !featured ? (
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                    Featured pending
-                  </span>
-                ) : null}
-                {boosted ? <BoostedMark /> : null}
-                {justBoosted && !boosted ? (
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                    Boost pending
-                  </span>
-                ) : null}
-                {template.tags.map((tag) => (
-                  <Badge
-                    key={tag}
-                    variant="ghost"
-                    render={
-                      <Link href={`/templates?tag=${encodeURIComponent(tag)}`} />
-                    }
-                  >
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-              <LockTitle className="mt-5">{template.title}</LockTitle>
+              <LockTitle>{template.title}</LockTitle>
               <AuthorByline
                 name={authorName}
                 xHandle={template.xHandle}
                 shareUrl={template.botUrl}
                 className="mt-2 text-muted-foreground"
               />
+              {featured ||
+              boosted ||
+              justFeatured ||
+              justBoosted ? (
+                <p className="mt-2 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
+                  {featured ? <FeaturedMark /> : null}
+                  {justFeatured && !featured ? (
+                    <span>Featured pending</span>
+                  ) : null}
+                  {boosted ? <BoostedMark /> : null}
+                  {justBoosted && !boosted ? <span>Boost pending</span> : null}
+                </p>
+              ) : null}
               <p className="mt-5 max-w-2xl text-base leading-7 text-body">
                 {template.description}
               </p>
@@ -180,6 +167,19 @@ export default async function TemplateDetailPage({
                 <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
                   {template.note}
                 </blockquote>
+              ) : null}
+              {template.tags.length > 0 ? (
+                <p className="mt-5 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
+                  {template.tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      href={`/templates?tag=${encodeURIComponent(tag)}`}
+                      className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </p>
               ) : null}
               <WhatTravels
                 skills={template.skills}
@@ -208,17 +208,12 @@ export default async function TemplateDetailPage({
             />
           </div>
           <div className="motion-enter border-t border-border pt-5" style={motionDelay(3)}>
-            <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-              Rank
-            </p>
-            <div className="mt-3">
-              <VoteButtons
-                templateId={template.id}
-                score={template.score}
-                userVote={template.userVote}
-                layout="row"
-              />
-            </div>
+            <VoteButtons
+              templateId={template.id}
+              score={template.score}
+              userVote={template.userVote}
+              layout="row"
+            />
             <p className="mt-2 text-xs text-muted-foreground">
               <span className="font-mono tabular-nums text-foreground">
                 {template.score === 1 ? "1 point" : `${template.score} points`}

@@ -22,18 +22,10 @@ export default async function AuthorsPage() {
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        Authors
-      </p>
-      <LockTitle delay={1} className="mt-4">
-        Authors
-      </LockTitle>
+      <LockTitle delay={0}>Authors</LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-sm leading-7 text-body"
-        style={motionDelay(2)}
+        style={motionDelay(1)}
       >
         <CountTick
           value={authors.length}
@@ -57,7 +49,7 @@ export default async function AuthorsPage() {
             <li
               key={author.slug}
               className="author-kennel motion-enter border-b border-border py-6 first:border-t sm:py-7"
-              style={motionDelay(3 + index)}
+              style={motionDelay(2 + index)}
             >
               <div className="flex items-baseline justify-between gap-3">
                 <Link

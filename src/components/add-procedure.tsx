@@ -15,11 +15,8 @@ export function AddProcedure({
 }) {
   return (
     <div>
-      <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        Add to Grok
-      </p>
       {template.live ? (
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <AddBotButton
             slug={template.slug}
             botId={template.botId}
@@ -47,7 +44,7 @@ export function AddProcedure({
           </p>
         </div>
       ) : (
-        <p className="mt-4 rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive">
+        <p className="text-sm text-destructive">
           This share link is down on x.ai. It is hidden from the board until the
           preview comes back.
         </p>

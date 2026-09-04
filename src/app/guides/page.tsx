@@ -28,18 +28,10 @@ export default function GuidesPage() {
           { name: "Guides", path: "/guides" },
         ])}
       />
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        Guides
-      </p>
-      <LockTitle delay={1} className="mt-4">
-        Guides
-      </LockTitle>
+      <LockTitle delay={0}>Guides</LockTitle>
       <p
         className="motion-enter mt-5 text-sm leading-7 text-body"
-        style={motionDelay(2)}
+        style={motionDelay(1)}
       >
         How to list a public share link, add a copy on x.ai, and keep a listing
         accurate. Grokdex is independent. It is not affiliated with xAI.
@@ -50,7 +42,7 @@ export default function GuidesPage() {
             <Link
               href={guide.path}
               className="motion-enter block py-5 hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground sm:py-6"
-              style={motionDelay(3 + index)}
+              style={motionDelay(2 + index)}
             >
               <span className="block font-heading text-lg tracking-tight text-foreground sm:text-xl">
                 {guide.title}
@@ -67,9 +59,9 @@ export default function GuidesPage() {
           size="lg"
           className="min-h-12 w-full sm:w-auto"
           nativeButton={false}
-          render={<Link href="/guides/how-to-list" />}
+          render={<Link href="/upload" />}
         >
-          How to list
+          Share a bot
         </Button>
       </div>
     </main>
