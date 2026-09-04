@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { JsonLd } from "@/components/json-ld";
-import { LandingCta } from "@/components/landing-cta";
 import {
   LandingBoard,
   LandingBoardSkeleton,
@@ -91,7 +90,6 @@ async function Home() {
           Add copies the template
         </p>
       </div>
-      <LandingCta founding={founding} />
     </>
   );
 }

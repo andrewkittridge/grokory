@@ -54,7 +54,7 @@ export function LandingHow() {
         ))}
       </ol>
       <div
-        className="motion-enter mt-10 rounded-xl border border-border bg-card px-4 py-4 sm:px-5"
+        className="motion-enter mt-10 border-t border-border pt-6"
         style={motionDelay(4)}
       >
         <BotListPaste compact />
