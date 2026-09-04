@@ -24,7 +24,7 @@ export function CatalogLane({
   return (
     <section
       id={id}
-      className="catalog-lane motion-enter border-t border-border py-6 sm:py-8"
+      className="catalog-lane motion-enter border-t border-border py-4 sm:py-8"
       style={motionDelay(Math.min(index + 2, 12))}
     >
       <div className="mx-auto flex w-full max-w-6xl items-baseline justify-end gap-3 px-4 sm:px-6">

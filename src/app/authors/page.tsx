@@ -56,7 +56,7 @@ export default async function AuthorsPage() {
           {authors.map((author, index) => (
             <li
               key={author.slug}
-              className="author-kennel board-panel motion-enter px-5 py-5 sm:px-6 sm:py-6"
+              className="author-kennel motion-enter border-b border-border py-6 first:border-t sm:py-7"
               style={motionDelay(3 + index)}
             >
               <div className="flex items-baseline justify-between gap-3">

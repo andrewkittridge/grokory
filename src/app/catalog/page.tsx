@@ -39,7 +39,7 @@ export default async function CatalogPage({
   return (
     <main>
       <JsonLd data={itemListJson(templates, "/catalog")} />
-      <div className="mx-auto w-full max-w-6xl px-4 pt-14 pb-8 sm:px-6 sm:pt-20">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4 sm:px-6 sm:pt-14">
         <LockTitle delay={0}>Catalog</LockTitle>
         <p
           className="motion-enter mt-4 max-w-2xl leading-7 text-body"

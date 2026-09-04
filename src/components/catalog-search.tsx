@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ScanField } from "@/components/scan-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
@@ -61,7 +60,7 @@ export function CatalogSearch({
       <label className="sr-only" htmlFor="catalog-q">
         Whistle for a bot
       </label>
-      <ScanField>
+      <div className="relative min-w-0 flex-1">
         <Input
           id="catalog-q"
           name="q"
@@ -76,7 +75,7 @@ export function CatalogSearch({
           onBlur={() => setFocused(false)}
           onChange={(event) => onQuery(event.target.value)}
         />
-      </ScanField>
+      </div>
       <Button type="submit" size="sm" variant="outline" className="shrink-0">
         Whistle
       </Button>

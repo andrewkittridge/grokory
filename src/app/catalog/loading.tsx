@@ -1,7 +1,7 @@
 export default function CatalogLoading() {
   return (
     <main>
-      <div className="mx-auto w-full max-w-6xl px-4 pt-14 pb-8 sm:px-6 sm:pt-20">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4 sm:px-6 sm:pt-14">
         <div className="h-10 w-48 animate-pulse rounded-md bg-canvas-soft sm:h-12" />
         <div className="mt-4 h-4 w-full max-w-xl animate-pulse bg-canvas-soft" />
       </div>
@@ -14,7 +14,7 @@ export default function CatalogLoading() {
       </div>
       <div className="divide-y divide-border">
         {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="empty-scan relative overflow-hidden py-6">
+          <div key={index} className="relative py-6">
             <div className="mx-auto mb-4 flex w-full max-w-6xl justify-between px-4 sm:px-6">
               <div className="h-3 w-20 animate-pulse bg-canvas-soft" />
               <div className="h-3 w-24 animate-pulse bg-canvas-soft" />

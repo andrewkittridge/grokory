@@ -746,7 +746,7 @@ body {
   display: flex;
   align-items: flex-end;
   gap: 0.15rem;
-  margin-top: 2.5rem;
+  margin-top: 1.75rem;
   overflow-x: auto;
   padding-bottom: 0.15rem;
   scrollbar-width: none;

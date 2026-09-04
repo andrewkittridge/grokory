@@ -65,10 +65,12 @@ async function Home() {
   return (
     <>
       <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <LandingHero founding={founding}>
+        <LandingHero
+          founding={founding}
+          lead={<LandingCast templates={[...featured, ...ranked]} />}
+        >
           <JsonLd data={itemListJson([...featured, ...ranked], "/")} />
           <JsonLd data={faqJson()} />
-          <LandingCast templates={[...featured, ...ranked]} />
           <LandingBoard
             ranked={ranked}
             featured={featured}

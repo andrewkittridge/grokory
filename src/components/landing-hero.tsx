@@ -15,10 +15,12 @@ import type { ListedTemplate } from "@/lib/types";
 export function LandingHero({
   founding = false,
   heading = true,
+  lead,
   children,
 }: {
   founding?: boolean;
   heading?: boolean;
+  lead?: ReactNode;
   children: ReactNode;
 }) {
   return (
@@ -53,17 +55,23 @@ export function LandingHero({
           Identity from x.ai. Votes on this board. Add copies the template
           onto your Grok account.
         </p>
+        {lead}
         <div
-          className="motion-enter mt-7 flex flex-col gap-2 sm:flex-row"
+          className="motion-enter mt-7 flex flex-row flex-wrap gap-2"
           style={motionDelay(14)}
         >
           {founding ? (
             <>
-              <Button nativeButton={false} render={<Link href="/upload" />}>
+              <Button
+                className="min-w-0 flex-1 sm:flex-none"
+                nativeButton={false}
+                render={<Link href="/upload" />}
+              >
                 Share a bot
               </Button>
               <Button
                 variant="outline"
+                className="min-w-0 flex-1 sm:flex-none"
                 nativeButton={false}
                 render={<Link href="/templates" />}
               >
@@ -72,11 +80,16 @@ export function LandingHero({
             </>
           ) : (
             <>
-              <Button nativeButton={false} render={<Link href="/templates" />}>
+              <Button
+                className="min-w-0 flex-1 sm:flex-none"
+                nativeButton={false}
+                render={<Link href="/templates" />}
+              >
                 Open the board
               </Button>
               <Button
                 variant="outline"
+                className="min-w-0 flex-1 sm:flex-none"
                 nativeButton={false}
                 render={<Link href="/upload" />}
               >

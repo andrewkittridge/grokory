@@ -44,15 +44,15 @@ export default function GuidesPage() {
         How to list a public share link, add a copy on x.ai, and keep a listing
         accurate. Grokdex is independent. It is not affiliated with xAI.
       </p>
-      <ol className="mt-10 space-y-3">
+      <ul className="mt-10 divide-y divide-border border-y border-border">
         {GUIDES.map((guide, index) => (
           <li key={guide.slug}>
             <Link
               href={guide.path}
-              className="motion-enter block rounded-lg border border-border bg-card p-5 hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground sm:p-6"
+              className="motion-enter block py-5 hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground sm:py-6"
               style={motionDelay(3 + index)}
             >
-              <span className="block font-heading text-lg tracking-tight text-foreground">
+              <span className="block font-heading text-lg tracking-tight text-foreground sm:text-xl">
                 {guide.title}
               </span>
               <span className="mt-2 block text-sm leading-6 text-body">
@@ -61,7 +61,7 @@ export default function GuidesPage() {
             </Link>
           </li>
         ))}
-      </ol>
+      </ul>
       <div className="motion-enter mt-10" style={motionDelay(10)}>
         <Button
           size="lg"
