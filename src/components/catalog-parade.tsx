@@ -139,33 +139,40 @@ export function CatalogParade({
       data-hidden={hidden ? "true" : "false"}
       data-query={searching ? "true" : "false"}
     >
-      <div className="catalog-chips">
-        <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-2.5 sm:px-6">
-          <CatalogSearch
-            q={q}
-            hits={hits}
-            searching={searching}
-            onQuery={setQ}
-            onWhistle={() => setHopNonce((value) => value + 1)}
-          />
-          <Button
-            type="button"
-            size="sm"
-            variant="outline"
-            className="shrink-0"
-            aria-pressed={paused}
-            onClick={() => setPaused((value) => !value)}
-          >
-            {paused ? "Play motion" : "Pause motion"}
-          </Button>
-        </div>
+      {lanes[0] ? (
+        <CatalogLane
+          key={lanes[0].id}
+          id={lanes[0].id}
+          tokens={lanes[0].tokens}
+          index={0}
+          query={q}
+        />
+      ) : null}
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-3 sm:px-6">
+        <CatalogSearch
+          q={q}
+          hits={hits}
+          searching={searching}
+          onQuery={setQ}
+          onWhistle={() => setHopNonce((value) => value + 1)}
+        />
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
+          aria-pressed={paused}
+          onClick={() => setPaused((value) => !value)}
+        >
+          {paused ? "Play" : "Pause"}
+        </Button>
       </div>
-      {lanes.map((lane, index) => (
+      {lanes.slice(1).map((lane, index) => (
         <CatalogLane
           key={lane.id}
           id={lane.id}
           tokens={lane.tokens}
-          index={index}
+          index={index + 1}
           query={q}
         />
       ))}

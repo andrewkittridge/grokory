@@ -72,5 +72,5 @@ export function BotListPaste({
 }
 
 const compactCopyClass = cn(
-  "h-8 min-h-8 w-auto flex-1 px-3 text-[0.8rem] sm:flex-none"
+  "h-auto min-h-0 w-auto flex-none rounded-none border-0 bg-transparent p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
 );

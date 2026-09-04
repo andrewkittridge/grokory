@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { ShareListing } from "@/components/share-listing";
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,7 @@ export function ListedBanner({
       : "Share it so someone else can add it.";
 
   return (
-    <Frame staticFrame matClassName="p-5 sm:p-6">
+    <div className="border-y border-border py-5 sm:py-6">
       <p className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
         <span className="live-dot" aria-hidden="true" />
         {kicker}
@@ -92,6 +91,6 @@ export function ListedBanner({
           </Button>
         ) : null}
       </div>
-    </Frame>
+    </div>
   );
 }

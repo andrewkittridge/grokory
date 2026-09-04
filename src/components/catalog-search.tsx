@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ScanField } from "@/components/scan-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
@@ -61,7 +60,7 @@ export function CatalogSearch({
       <label className="sr-only" htmlFor="catalog-q">
         Whistle for a bot
       </label>
-      <ScanField>
+      <div className="relative min-w-0 flex-1">
         <Input
           id="catalog-q"
           name="q"
@@ -71,13 +70,18 @@ export function CatalogSearch({
           spellCheck={false}
           enterKeyHint="search"
           placeholder={HINTS[hydrated ? hintIndex : 0]}
-          className="h-8 font-mono text-sm"
+          className="h-8 rounded-none font-mono text-sm"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={(event) => onQuery(event.target.value)}
         />
-      </ScanField>
-      <Button type="submit" size="sm" variant="outline" className="shrink-0">
+      </div>
+      <Button
+        type="submit"
+        size="sm"
+        variant="ghost"
+        className="h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
+      >
         Whistle
       </Button>
       {q ? (
@@ -85,7 +89,7 @@ export function CatalogSearch({
           type="button"
           size="sm"
           variant="ghost"
-          className="hidden shrink-0 sm:inline-flex"
+          className="hidden h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline sm:inline-flex"
           onClick={() => onQuery("")}
         >
           Clear

@@ -29,6 +29,7 @@ export function BotIdentityThumb({
       )}
       aria-hidden="true"
     >
+      <span className="grok-bot-rim" aria-hidden="true" />
       {mark ? <GrokBotIdentityMark mark={mark} /> : <GrokBotMark />}
     </span>
   );
@@ -38,16 +39,18 @@ export function BotIdentityStage({
   mark,
   title,
   ogImage,
+  className,
 }: {
   mark?: BotMark;
   title: string;
   ogImage?: string;
+  className?: string;
 }) {
   const reduced = usePrefersReducedMotion();
   const botRef = useRef<HTMLSpanElement>(null);
 
   return (
-    <div className="bot-stage">
+    <div className={cn("bot-stage", className)}>
       {ogImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={ogImage} alt="" className="bot-stage-wash" />

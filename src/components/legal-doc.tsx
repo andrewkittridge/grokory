@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { LockTitle } from "@/components/lock-title";
 import { motionDelay } from "@/lib/utils";
 
 export function LegalDoc({
@@ -7,32 +8,31 @@ export function LegalDoc({
   updated,
   children,
 }: {
-  kicker: string;
+  kicker?: string;
   title: string;
   updated: string;
   children: ReactNode;
 }) {
   return (
     <main className="mx-auto w-full max-w-2xl px-4 py-14 sm:px-6 sm:py-16">
-      <p
-        className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        {kicker}
-      </p>
-      <h1
-        className="display-page motion-enter mt-4"
-        style={motionDelay(1)}
-      >
+      {kicker ? (
+        <p
+          className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
+          style={motionDelay(0)}
+        >
+          {kicker}
+        </p>
+      ) : null}
+      <LockTitle delay={kicker ? 1 : 0} className={kicker ? "mt-4" : undefined}>
         {title}
-      </h1>
+      </LockTitle>
       <p
         className="motion-enter mt-3 text-sm text-muted-foreground"
         style={motionDelay(2)}
       >
         Last updated {updated}
       </p>
-      <div className="mt-8 space-y-6 text-sm leading-7 text-body [&_a]:text-foreground [&_a]:underline-offset-4 [&_a]:hover:underline [&_h2]:mt-10 [&_h2]:text-lg [&_h2]:font-normal [&_h2]:tracking-tight [&_h2]:text-foreground [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">
+      <div className="mt-8 space-y-6 text-sm leading-7 text-body [&_a]:text-foreground [&_a]:underline-offset-4 [&_a]:hover:underline [&_h2]:mt-10 [&_h2]:font-heading [&_h2]:text-xl [&_h2]:font-normal [&_h2]:tracking-tight [&_h2]:text-foreground [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5">
         {children}
       </div>
     </main>

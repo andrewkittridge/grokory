@@ -72,24 +72,16 @@ export default async function TemplatesPage({
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
       <JsonLd data={itemListJson([...featured, ...templates], "/templates")} />
-      <p
-        className="motion-enter font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase"
-        style={motionDelay(0)}
-      >
-        Public · Live · Ranked
-      </p>
-      <LockTitle delay={1} className="mt-3">
-        The board
-      </LockTitle>
+      <LockTitle delay={0}>The board</LockTitle>
       <p
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
-        style={motionDelay(2)}
+        style={motionDelay(1)}
       >
         {founding
           ? "Just opened. Every listing is a public Grok Bot share URL. Add a copy, or list one of yours."
           : "Every listing is a live public Grok Bot share URL. Upvote the ones worth adding, then open the share on x.ai."}
       </p>
-      <div className="motion-enter mt-8" style={motionDelay(3)}>
+      <div className="motion-enter mt-8" style={motionDelay(2)}>
         <BotFilters
           q={q}
           tag={tag}
@@ -102,11 +94,10 @@ export default async function TemplatesPage({
       {empty ? (
         <div className="mt-4">
           {emptyBoard && vacancies.length > 0 ? (
-            <div className="board-panel">
+            <div className="border-y border-border">
               <BotRankList
                 templates={[]}
                 vacancies={vacancies}
-                scramble
               />
             </div>
           ) : emptyBoard ? (
@@ -126,13 +117,13 @@ export default async function TemplatesPage({
           )}
         </div>
       ) : (
-        <div className="board-panel mt-4">
+        <div className="mt-4 border-y border-border">
           {featured.length > 0 ? (
             <div className="border-b border-border">
               <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Featured
               </p>
-              <BotRankList templates={featured} showVote scramble />
+              <BotRankList templates={featured} showVote />
             </div>
           ) : null}
           {boosted.length > 0 ? (
@@ -140,14 +131,13 @@ export default async function TemplatesPage({
               <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Boosted
               </p>
-              <BotRankList templates={boosted} showVote scramble />
+              <BotRankList templates={boosted} showVote />
             </div>
           ) : null}
           {templates.length > 0 || vacancies.length > 0 ? (
             <BotRankList
               templates={templates}
               showVote
-              scramble
               leader
               vacancies={vacancies}
             />

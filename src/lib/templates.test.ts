@@ -279,3 +279,25 @@ test("authorIndex merges placeholder and named listings that share an X handle",
   assert.equal(rows[0]?.name, "Matt Palmer");
   assert.equal(rows[0]?.count, 2);
 });
+
+test("authorIndex keeps each author's bots hot-first for the kennel", () => {
+  const rows = authorIndex([
+    bot({
+      id: "low",
+      slug: "low",
+      score: 1,
+      mark: { coatLight: "#111111", coatDark: "#EEEEEE", shape: "blob" },
+    }),
+    bot({
+      id: "high",
+      slug: "high",
+      score: 9,
+      mark: { coatLight: "#FFAF38", coatDark: "#FF9800", shape: "teardrop" },
+    }),
+  ]);
+  assert.deepEqual(
+    rows[0]?.templates.map((template) => template.id),
+    ["high", "low"]
+  );
+  assert.equal(rows[0]?.templates[0]?.mark?.shape, "teardrop");
+});

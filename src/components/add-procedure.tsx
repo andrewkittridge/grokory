@@ -1,6 +1,4 @@
 import { AddBotButton } from "@/components/add-bot-button";
-import { CopyLinkButton } from "@/components/copy-link-button";
-import { Frame } from "@/components/frame";
 import { ListingTrust } from "@/components/listing-trust";
 import { Button } from "@/components/ui/button";
 import type { ListedTemplate } from "@/lib/types";
@@ -16,12 +14,9 @@ export function AddProcedure({
   refresh?: ReactNode;
 }) {
   return (
-    <Frame staticFrame matClassName="p-5">
-      <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        Add to Grok
-      </p>
+    <div>
       {template.live ? (
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <AddBotButton
             slug={template.slug}
             botId={template.botId}
@@ -49,25 +44,16 @@ export function AddProcedure({
           </p>
         </div>
       ) : (
-        <p className="mt-4 rounded-lg border border-destructive/40 bg-transparent px-3 py-2 text-sm text-destructive">
+        <p className="text-sm text-destructive">
           This share link is down on x.ai. It is hidden from the board until the
           preview comes back.
         </p>
       )}
-      <div className="mt-5 flex flex-col gap-2 border-t border-border pt-4">
-        <CopyLinkButton url={template.botUrl} label="Copy share link" />
-        <CopyLinkButton url={listingUrl} label="Copy listing link" />
-      </div>
-      <div className="mt-5 border-t border-border pt-4">
-        <ListingTrust
-          template={template}
-          listingUrl={listingUrl}
-          refresh={refresh}
-        />
-        <p className="mt-3 text-xs text-muted-foreground">
-          Listed by {template.submittedBy}
-        </p>
-      </div>
-    </Frame>
+      <ListingTrust
+        template={template}
+        listingUrl={listingUrl}
+        refresh={refresh}
+      />
+    </div>
   );
 }

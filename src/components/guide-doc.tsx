@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LockTitle } from "@/components/lock-title";
 import { Button } from "@/components/ui/button";
 import type { Guide, GuideBlock } from "@/lib/guides";
-import { motionDelay } from "@/lib/utils";
+import { cn, motionDelay } from "@/lib/utils";
 
 const TOKEN =
   /(\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*)/g;
@@ -80,22 +80,27 @@ function GuideBlockView({ block }: { block: GuideBlock }) {
       );
     case "h2":
       return (
-        <h2 className="pt-4 text-lg font-normal tracking-tight text-foreground">
+        <h2 className="pt-4 font-heading text-xl font-normal tracking-tight text-foreground">
           {block.text}
         </h2>
       );
     case "ol":
       return (
-        <ol className="space-y-3">
+        <ol className="border-y border-border">
           {block.items.map((item, index) => (
             <li
               key={index}
-              className="flex gap-4 rounded-lg border border-border bg-card p-4 sm:p-5"
+              className="flex items-start gap-3 border-b border-border py-4 last:border-b-0"
             >
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-sunset font-mono text-sm tabular-nums text-sunset">
-                {index + 1}
+              <span
+                className={cn(
+                  "w-8 shrink-0 pt-0.5 font-mono text-xs tabular-nums tracking-wide",
+                  index === 0 ? "text-sunset" : "text-muted-foreground"
+                )}
+              >
+                {String(index + 1).padStart(2, "0")}
               </span>
-              <p className="min-w-0 pt-1">
+              <p className="min-w-0 flex-1">
                 <GuideText text={item} />
               </p>
             </li>
@@ -114,7 +119,7 @@ function GuideBlockView({ block }: { block: GuideBlock }) {
       );
     case "note":
       return (
-        <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
+        <div className="border-t border-border pt-5">
           <p className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase">
             {block.kicker}
           </p>

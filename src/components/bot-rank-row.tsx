@@ -1,11 +1,9 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
-import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
 import { OpenSlots } from "@/components/open-slots";
-import { ShareListing } from "@/components/share-listing";
 import {
   addHandleHref,
   formatAdds,
@@ -19,7 +17,6 @@ import {
   isSeatsOpenInvite,
   type BoardVacancy,
 } from "@/lib/founding";
-import { absUrl } from "@/lib/site";
 import { cn, motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
@@ -28,26 +25,18 @@ export function BotRankRow({
   template,
   showVote = false,
   size = "default",
-  scramble = false,
-  scoreMax,
   surface = "board",
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
-  scramble?: boolean;
-  scoreMax?: number;
   surface?: "board" | "roster";
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
   const leader = size === "leader";
   const roster = surface === "roster";
-  const spark =
-    scoreMax && scoreMax > 0
-      ? Math.max(0, Math.min(1, template.score / scoreMax))
-      : 0;
   const rowPad = leader
     ? roster
       ? "px-3 py-5 sm:px-5 sm:py-6"
@@ -59,51 +48,32 @@ export function BotRankRow({
   return (
     <div
       className={cn(
-        "rank-row relative flex flex-wrap items-start gap-x-3 gap-y-2 hover:bg-canvas-soft",
+        "rank-row relative flex items-start gap-x-3 hover:bg-canvas-soft",
         leader && "rank-row-leader",
         rank === 1 && "rank-row-first",
         roster && "rank-row-roster",
         rowPad
       )}
     >
-      {spark > 0 && rank === 1 ? (
-        <span
-          className="rank-spark"
-          style={{ "--spark": spark } as CSSProperties}
-          aria-hidden="true"
-        />
-      ) : null}
       <Link
         href={`/templates/${template.slug}`}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={template.title}
       />
-      {scramble ? (
-        <RankTick
-          rank={rank}
-          className={cn(
-            "relative z-10 shrink-0",
-            roster && "w-8",
-            leader ? "pt-1" : "pt-1",
-            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
-          )}
-        />
-      ) : (
-        <span
-          className={cn(
-            "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
-            roster && "w-8",
-            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
-          )}
-        >
-          {String(rank).padStart(2, "0")}
-        </span>
-      )}
       <span className="relative z-10 pointer-events-none">
         <BotIdentityThumb
           mark={template.mark}
           size={leader ? "lg" : "md"}
         />
+      </span>
+      <span
+        className={cn(
+          "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
+          roster && "w-8",
+          rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
+        )}
+      >
+        {String(rank).padStart(2, "0")}
       </span>
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span
@@ -113,7 +83,7 @@ export function BotRankRow({
               ? roster
                 ? "font-heading text-xl leading-tight tracking-tight sm:text-2xl"
                 : "font-heading text-lg leading-tight tracking-tight sm:text-xl"
-              : "text-[15px] leading-tight tracking-tight"
+              : "font-heading text-[1.05rem] leading-tight tracking-tight"
           )}
         >
           <span className={leader ? "line-clamp-2" : "truncate"}>
@@ -175,32 +145,23 @@ export function BotRankRow({
       </span>
       <span
         className={cn(
-          "relative z-10 flex w-full items-center gap-1.5 pl-11 sm:w-auto sm:pl-0 sm:self-center",
-          leader && "sm:self-start sm:pt-1"
+          "relative z-10 ml-auto flex shrink-0 items-center self-center",
+          leader && "self-start pt-1"
         )}
       >
-        <ShareListing
-          title={template.title}
-          listingUrl={absUrl(`/templates/${template.slug}`)}
-          xHandle={template.xHandle}
-          summary={template.summary}
-          compact="row"
-        />
-        <span className="ml-auto flex shrink-0 items-center">
-          {showVote ? (
-            <VoteButtons
-              templateId={template.id}
-              score={template.score}
-              userVote={template.userVote}
-              layout="row"
-              size="mat"
-            />
-          ) : (
-            <span className="font-mono text-xs tabular-nums text-muted-foreground">
-              {points}
-            </span>
-          )}
-        </span>
+        {showVote ? (
+          <VoteButtons
+            templateId={template.id}
+            score={template.score}
+            userVote={template.userVote}
+            layout="row"
+            size="mat"
+          />
+        ) : (
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+            {points}
+          </span>
+        )}
       </span>
     </div>
   );
@@ -209,7 +170,6 @@ export function BotRankRow({
 export function BotRankList({
   templates,
   showVote = false,
-  scramble = false,
   leader = false,
   vacant = false,
   vacancies,
@@ -219,7 +179,6 @@ export function BotRankList({
 }: {
   templates: ListedTemplate[];
   showVote?: boolean;
-  scramble?: boolean;
   leader?: boolean;
   vacant?: boolean;
   vacancies?: BoardVacancy[];
@@ -227,7 +186,6 @@ export function BotRankList({
   className?: string;
   surface?: "board" | "roster";
 }) {
-  const scoreMax = Math.max(1, ...templates.map((template) => template.score));
   const open =
     vacancies ?? (vacant ? [{ label: "Share a bot", href: "/upload" }] : []);
 
@@ -249,8 +207,6 @@ export function BotRankList({
             template={template}
             showVote={showVote}
             size={leader && index === 0 ? "leader" : "default"}
-            scramble={scramble}
-            scoreMax={scoreMax}
             surface={surface}
           />
         </li>
@@ -258,7 +214,6 @@ export function BotRankList({
       <OpenSlots
         slots={open}
         startRank={templates.length + 1}
-        scramble={false}
         delay={delay + templates.length}
         surface={surface}
         inviteAgent={
@@ -279,17 +234,18 @@ export function BotRankRowSkeleton({
   return (
     <div
       className={cn(
-        "grid grid-cols-[2.25rem_2.65rem_minmax(0,1fr)_4rem] items-center gap-x-3",
+        "rank-row relative flex items-center gap-x-3",
         roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
-      <div className="h-3 w-5 animate-pulse bg-canvas-soft" />
-      <div className="size-10 animate-pulse rounded-full bg-canvas-soft" />
-      <div className="space-y-2">
-        <div className="h-3.5 w-2/5 max-w-56 animate-pulse bg-canvas-soft" />
-        <div className="h-2.5 w-1/4 max-w-32 animate-pulse bg-canvas-soft" />
-      </div>
-      <div className="h-3 w-8 justify-self-end animate-pulse bg-canvas-soft" />
+      <BotIdentityThumb className="is-ghost" />
+      <span className="w-8 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+        ··
+      </span>
+      <span className="min-w-0 flex-1 overflow-hidden">
+        <span className="block h-3 w-28 border-b border-border" />
+        <span className="mt-2 block h-2 w-16 border-b border-border/70" />
+      </span>
     </div>
   );
 }

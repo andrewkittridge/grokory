@@ -22,14 +22,13 @@ export function LockTitle({
         display === "hero" && "display-hero",
         display === "page" && "display-page",
         display === "section" && "display-section",
-        "motion-lock",
+        "motion-enter",
         className
       )}
       style={motionDelay(delay)}
       {...rest}
     >
       {children}
-      <span className="motion-lock-scan" aria-hidden="true" />
     </Comp>
   );
 }

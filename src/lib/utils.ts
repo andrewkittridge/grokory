@@ -7,5 +7,5 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function motionDelay(d: number): CSSProperties {
-  return { "--d": Math.min(d, 20) } as CSSProperties
+  return { "--d": String(Math.min(d, 20)) } as CSSProperties
 }

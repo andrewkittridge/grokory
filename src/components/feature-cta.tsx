@@ -1,5 +1,5 @@
+import type { ReactNode } from "react";
 import { CheckoutButton } from "@/components/checkout-button";
-import { Frame } from "@/components/frame";
 import { cn } from "@/lib/utils";
 import { canBuyBoost, isBoostedActive } from "@/lib/boost";
 import {
@@ -57,20 +57,12 @@ export function FeatureCta({
   const cancelPath = `/templates/${template.slug}`;
 
   return (
-    <Frame staticFrame matClassName="p-5">
-      <p
-        id="feature"
-        className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase"
-      >
-        Featured
-      </p>
-      <p className="mt-2 text-lg tracking-[-0.02em]">
-        {until ? `Featured through ${until}.` : "Pin this bot on the board."}
-      </p>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        Labeled pin on home and the board. Organic rank stays as it is. Paid
-        placement, not an endorsement.
-      </p>
+    <PaidLane
+      id="feature"
+      kicker="Featured"
+      title={until ? `Featured through ${until}.` : "Pin this bot on the board."}
+      body="Labeled pin on home and the board. Organic rank stays as it is. Paid placement, not an endorsement."
+    >
       {gate.ok ? (
         <div className="mt-4 grid gap-2">
           {FEATURED_PLANS.map((plan) => (
@@ -92,7 +84,7 @@ export function FeatureCta({
       ) : (
         <p className="mt-4 text-sm text-muted-foreground">{gate.reason}</p>
       )}
-    </Frame>
+    </PaidLane>
   );
 }
 
@@ -115,17 +107,11 @@ export function BoostCta({
   const cancelPath = `/templates/${template.slug}`;
 
   return (
-    <Frame staticFrame matClassName="p-5">
-      <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-        Boost
-      </p>
-      <p className="mt-2 text-lg tracking-[-0.02em]">
-        {until ? `Boosted through ${until}.` : "Boost this bot on the board."}
-      </p>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">
-        Labeled strip on the board. Not a homepage pin. Organic rank stays as
-        it is. Paid placement, not an endorsement.
-      </p>
+    <PaidLane
+      kicker="Boost"
+      title={until ? `Boosted through ${until}.` : "Boost this bot on the board."}
+      body="Labeled strip on the board. Not a homepage pin. Organic rank stays as it is. Paid placement, not an endorsement."
+    >
       {gate.ok ? (
         <div className="mt-4 grid gap-2">
           {BOOST_PLANS.map((plan) => (
@@ -147,6 +133,34 @@ export function BoostCta({
       ) : (
         <p className="mt-4 text-sm text-muted-foreground">{gate.reason}</p>
       )}
-    </Frame>
+    </PaidLane>
+  );
+}
+
+function PaidLane({
+  id,
+  kicker,
+  title,
+  body,
+  children,
+}: {
+  id?: string;
+  kicker: string;
+  title: string;
+  body: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="border-t border-border pt-5">
+      <p
+        id={id}
+        className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase"
+      >
+        {kicker}
+      </p>
+      <p className="mt-2 text-lg tracking-[-0.02em]">{title}</p>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{body}</p>
+      {children}
+    </div>
   );
 }

@@ -39,15 +39,15 @@ export default async function CatalogPage({
   return (
     <main>
       <JsonLd data={itemListJson(templates, "/catalog")} />
-      <div className="mx-auto w-full max-w-6xl px-4 pt-14 pb-8 sm:px-6 sm:pt-20">
+      <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4 sm:px-6 sm:pt-14">
         <LockTitle delay={0}>Catalog</LockTitle>
         <p
-          className="motion-enter mt-4 max-w-2xl leading-7 text-body"
+          className="motion-enter mt-4 max-w-xl text-sm leading-6 text-body"
           style={motionDelay(1)}
         >
           {founding
-            ? "Just opened. Listed bots march; empty seats wait for the next share link. Whistle a name or @handle to hop a match."
-            : "The same public Grok Bots as the ranked board, as a moving parade of live silhouettes. Whistle a name or @handle to hop a match."}{" "}
+            ? "Listed bots march. Empty seats wait. Whistle a name or @handle to hop."
+            : "The ranked board, marching. Whistle a name or @handle to hop a match."}{" "}
           <Link
             href="/templates"
             className="text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"

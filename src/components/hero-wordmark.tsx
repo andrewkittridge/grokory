@@ -17,7 +17,7 @@ export function HeroWordmark({
         <span
           key={`${letter}-${index}`}
           className="hero-letter"
-          style={{ "--i": index } as CSSProperties}
+          style={{ "--i": String(index) } as CSSProperties}
           aria-hidden="true"
         >
           {letter}

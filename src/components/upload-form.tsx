@@ -8,11 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Frame } from "@/components/frame";
-import { BotCover } from "@/components/bot-cover";
-import { ScanField } from "@/components/scan-field";
+import { BotIdentityStage } from "@/components/bot-identity";
 import { TurnstileField } from "@/components/turnstile-field";
-import { cn } from "@/lib/utils";
 
 const initial: { error?: string; slug?: string } = {};
 
@@ -46,8 +43,11 @@ export function UploadForm({
     lookupPending || !lookupMatches ? null : lookupState.error ?? null;
   const existing = lookupMatches ? lookupState.existing : undefined;
   const updating = Boolean(existing);
+  const canNameByHand = Boolean(lookupError && lookupState.soft);
   const showIdentityFields =
-    !updating && (!preview || editFor === preview.botId);
+    !updating &&
+    (canNameByHand || Boolean(preview && editFor === preview.botId));
+  const extrasOpen = Boolean(preview || updating || canNameByHand);
   const lookupReady = !parsedShare || (!lookupPending && lookupMatches);
 
   useEffect(() => {
@@ -82,31 +82,27 @@ export function UploadForm({
         setTurnstileReset((value) => value + 1);
         return action(formData);
       }}
+      onSubmit={(event) => {
+        if (!extrasOpen) event.preventDefault();
+      }}
       noValidate
       className="space-y-5"
     >
       <div className="space-y-2">
-        <Label
-          htmlFor="shareUrl"
-          className={cn(parsedShare && "field-lock")}
-        >
-          Grok Bot share link
-        </Label>
+        <Label htmlFor="shareUrl">Grok Bot share link</Label>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <ScanField active={lookupPending} failed={!!lookupError}>
-            <Input
-              id="shareUrl"
-              name="shareUrl"
-              value={shareUrl}
-              onChange={(event) => setShareUrl(event.target.value)}
-              onBlur={() => {
-                if (parseShareUrl(shareUrl)) runLookup(shareUrl);
-              }}
-              placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
-              className="h-10 font-mono"
-              autoComplete="off"
-            />
-          </ScanField>
+          <Input
+            id="shareUrl"
+            name="shareUrl"
+            value={shareUrl}
+            onChange={(event) => setShareUrl(event.target.value)}
+            onBlur={() => {
+              if (parseShareUrl(shareUrl)) runLookup(shareUrl);
+            }}
+            placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
+            className="h-10 min-w-0 flex-1 rounded-none font-mono"
+            autoComplete="off"
+          />
           <Button
             type="button"
             variant="outline"
@@ -126,7 +122,7 @@ export function UploadForm({
       {existing ? (
         <>
           <input type="hidden" name="updateFields" value="1" />
-          <p className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm leading-6 text-body">
+          <p className="border-y border-border py-3 text-sm leading-6 text-body">
             {existing.title} is already on the board. Publishing refreshes the
             name from x.ai and any tags or note you set.{" "}
             <a className="underline" href={`/templates/${existing.slug}`}>
@@ -150,112 +146,115 @@ export function UploadForm({
 
       {preview ? (
         <div className="motion-board">
-          <Frame staticFrame>
-            <BotCover
-              botId={preview.botId}
-              title={preview.title}
-              ogImage={preview.ogImage}
-              className="h-28"
-              acquire
-            />
-            <div className="px-4 py-3">
-              <p className="text-lg font-normal tracking-tight">
-                {preview.title}
+          <BotIdentityStage
+            mark={preview.mark}
+            title={preview.title}
+            ogImage={preview.ogImage}
+            className="bot-stage-preview"
+          />
+          <div className="pt-3">
+            <p className="font-heading text-xl tracking-tight">
+              {preview.title}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              by {preview.authorName}
+            </p>
+            {!updating ? (
+              <button
+                type="button"
+                className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+                onClick={() =>
+                  setEditFor((id) =>
+                    id === preview.botId ? null : preview.botId
+                  )
+                }
+              >
+                {editFor === preview.botId
+                  ? "Hide details"
+                  : "Edit name and description"}
+              </button>
+            ) : (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Name and description refresh from x.ai.
               </p>
-              <p className="text-sm text-muted-foreground">
-                by {preview.authorName}
-              </p>
-              {!updating ? (
-                <button
-                  type="button"
-                  className="mt-2 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
-                  onClick={() =>
-                    setEditFor((id) =>
-                      id === preview.botId ? null : preview.botId
-                    )
-                  }
-                >
-                  {editFor === preview.botId
-                    ? "Hide details"
-                    : "Edit name and description"}
-                </button>
-              ) : (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Name and description refresh from x.ai.
-                </p>
-              )}
-            </div>
-          </Frame>
+            )}
+          </div>
         </div>
       ) : null}
 
-      {updating ? null : (
+      {updating ? null : preview || canNameByHand ? (
         <IdentityFields
           key={preview?.botId ?? "none"}
           preview={preview}
           open={showIdentityFields}
         />
-      )}
+      ) : null}
 
-      <div className="space-y-2">
-        <Label htmlFor="xHandle">X handle (optional)</Label>
-        <Input
-          key={`${existing?.slug ?? "new"}-handle`}
-          id="xHandle"
-          name="xHandle"
-          placeholder="@handle"
-          defaultValue={existing?.xHandle ? `@${existing.xHandle}` : ""}
-          readOnly={Boolean(existing?.xHandle)}
-          className="h-10"
-          autoComplete="off"
-        />
-        <p className="text-xs text-muted-foreground">
-          {existing?.xHandle
-            ? "This listing already has an X handle. The first one sticks."
-            : updating
-              ? "Shown on the listing. Not a login, and we do not verify you own that account. The first handle sticks."
-              : "Shown on the listing. Not a login, and we do not verify you own that account. Already listed? Paste the same share link and add a handle — the first one sticks."}
-        </p>
-      </div>
+      {extrasOpen ? (
+        <>
+          <div className="space-y-2">
+            <Label htmlFor="xHandle">X handle (optional)</Label>
+            <Input
+              key={`${existing?.slug ?? "new"}-handle`}
+              id="xHandle"
+              name="xHandle"
+              placeholder="@handle"
+              defaultValue={existing?.xHandle ? `@${existing.xHandle}` : ""}
+              readOnly={Boolean(existing?.xHandle)}
+              className="h-10"
+              autoComplete="off"
+            />
+            <p className="text-xs text-muted-foreground">
+              {existing?.xHandle
+                ? "This listing already has an X handle. The first one sticks."
+                : updating
+                  ? "Shown on the listing. Not a login, and we do not verify you own that account. The first handle sticks."
+                  : "Shown on the listing. Not a login, and we do not verify you own that account. Already listed? Paste the same share link and add a handle. The first one sticks."}
+            </p>
+          </div>
 
-      <details className="rounded-lg border border-border" open={updating}>
-        <summary className="cursor-pointer px-3 py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
-          Tags, note, your name
-        </summary>
-        <div className="space-y-4 border-t border-border px-3 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="tags">Tags</Label>
-            <Input
-              key={`${existing?.slug ?? "new"}-tags`}
-              id="tags"
-              name="tags"
-              defaultValue={existing?.tags.join(", ") ?? ""}
-              placeholder="chief-of-staff, routing"
-              className="h-10"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="note">Why people should add it (optional)</Label>
-            <Textarea
-              key={`${existing?.slug ?? "new"}-note`}
-              id="note"
-              name="note"
-              rows={3}
-              defaultValue={existing?.note ?? ""}
-              placeholder="Best as the top of a solo-founder roster. Let it spawn specialists instead of doing the work itself."
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="submittedBy">Your name on this listing (optional)</Label>
-            <Input
-              id="submittedBy"
-              name="submittedBy"
-              placeholder="Anonymous"
-              className="h-10"
-            />
-          </div>
-        </div>
-      </details>
+          <details className="border-y border-border" open={updating}>
+            <summary className="cursor-pointer py-2 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground">
+              Tags, note, your name
+            </summary>
+            <div className="space-y-4 border-t border-border py-4">
+              <div className="space-y-2">
+                <Label htmlFor="tags">Tags</Label>
+                <Input
+                  key={`${existing?.slug ?? "new"}-tags`}
+                  id="tags"
+                  name="tags"
+                  defaultValue={existing?.tags.join(", ") ?? ""}
+                  placeholder="chief-of-staff, routing"
+                  className="h-10"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="note">Why people should add it (optional)</Label>
+                <Textarea
+                  key={`${existing?.slug ?? "new"}-note`}
+                  id="note"
+                  name="note"
+                  rows={3}
+                  defaultValue={existing?.note ?? ""}
+                  placeholder="Best as the top of a solo-founder roster. Let it spawn specialists instead of doing the work itself."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="submittedBy">
+                  Your name on this listing (optional)
+                </Label>
+                <Input
+                  id="submittedBy"
+                  name="submittedBy"
+                  placeholder="Anonymous"
+                  className="h-10"
+                />
+              </div>
+            </div>
+          </details>
+        </>
+      ) : null}
 
       {state.error ? (
         <p
@@ -274,26 +273,28 @@ export function UploadForm({
         </p>
       ) : null}
 
-      <div className="flex flex-col items-stretch gap-2 sm:items-start">
-        <Button
-          type="submit"
-          disabled={pending || !lookupReady}
-          className="btn-ignite h-10 w-full sm:w-auto"
-        >
-          {pending
-            ? updating
-              ? "Updating…"
-              : "Publishing…"
-            : !lookupReady
-              ? "Looking up…"
-              : updating
-                ? "Update listing"
-                : "Publish to Grokdex"}
-        </Button>
-        {siteKey ? (
-          <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
-        ) : null}
-      </div>
+      {extrasOpen ? (
+        <div className="flex flex-col items-stretch gap-2 sm:items-start">
+          <Button
+            type="submit"
+            disabled={pending || !lookupReady}
+            className="btn-ignite h-10 w-full sm:w-auto"
+          >
+            {pending
+              ? updating
+                ? "Updating…"
+                : "Publishing…"
+              : !lookupReady
+                ? "Looking up…"
+                : updating
+                  ? "Update listing"
+                  : "Publish to Grokdex"}
+          </Button>
+          {siteKey ? (
+            <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
+          ) : null}
+        </div>
+      ) : null}
     </form>
   );
 }
@@ -323,9 +324,7 @@ function IdentityFields({
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="title" className={cn(title && "field-lock")}>
-            Bot name
-          </Label>
+          <Label htmlFor="title">Bot name</Label>
           <Input
             id="title"
             name="title"
@@ -336,12 +335,7 @@ function IdentityFields({
           />
         </div>
         <div className="space-y-2">
-          <Label
-            htmlFor="authorName"
-            className={cn(authorName && "field-lock")}
-          >
-            Made by
-          </Label>
+          <Label htmlFor="authorName">Made by</Label>
           <Input
             id="authorName"
             name="authorName"
@@ -354,12 +348,7 @@ function IdentityFields({
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="description"
-          className={cn(description && "field-lock")}
-        >
-          What it does
-        </Label>
+        <Label htmlFor="description">What it does</Label>
         <Textarea
           id="description"
           name="description"

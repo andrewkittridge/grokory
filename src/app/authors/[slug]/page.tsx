@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BotIdentityThumb } from "@/components/bot-identity";
 import { BotRankList } from "@/components/bot-rank-row";
 import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
@@ -111,11 +112,23 @@ export default async function AuthorPage({
           </>
         ) : null}
       </p>
+      <div className="live-cast motion-enter" style={motionDelay(3)}>
+        {templates.slice(0, 10).map((template) => (
+          <Link
+            key={template.slug}
+            href={`/templates/${template.slug}`}
+            className="live-cast-item"
+            aria-label={template.title}
+          >
+            <BotIdentityThumb mark={template.mark} size="lg" />
+            <span className="live-cast-name">{template.title}</span>
+          </Link>
+        ))}
+      </div>
       <BotRankList
         templates={templates}
         showVote
-        scramble
-        className="board-panel mt-10"
+        className="mt-8 border-y border-border"
       />
     </main>
   );

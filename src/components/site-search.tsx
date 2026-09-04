@@ -1,4 +1,3 @@
-import { ScanField } from "@/components/scan-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -34,7 +33,7 @@ export function SiteSearch({
       <label className="sr-only" htmlFor={inputId}>
         Search Grok Bots
       </label>
-      <ScanField>
+      <div className="relative min-w-0 flex-1">
         <Input
           id={inputId}
           name="q"
@@ -48,12 +47,12 @@ export function SiteSearch({
           }
           className={cn(
             "font-mono",
-            header && "h-8 bg-background/70 text-sm",
+            header && "h-9 rounded-none border-border bg-transparent text-sm md:h-8",
             hero && "h-11 text-sm sm:text-[15px]",
             size === "menu" && "h-9"
           )}
         />
-      </ScanField>
+      </div>
       {header ? (
         <Button type="submit" size="sm" variant="ghost" className="sr-only">
           Search

@@ -10,14 +10,12 @@ import {
   FeatureCta,
   FeaturedMark,
 } from "@/components/feature-cta";
-import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { JsonLd } from "@/components/json-ld";
 import { ListedBanner } from "@/components/listed-banner";
 import { ListedConversion } from "@/components/listed-conversion";
 import { AuthorByline, WhatTravels } from "@/components/listing-trust";
 import { VoteButtons } from "@/components/vote-buttons";
-import { Badge } from "@/components/ui/badge";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { isFoundingBoard } from "@/lib/founding";
@@ -133,19 +131,71 @@ export default async function TemplateDetailPage({
         {template.title}
       </p>
 
-      <div className="motion-enter mt-8 lg:sr-only" style={motionDelay(1)}>
-        <LockTitle>{template.title}</LockTitle>
-        <AuthorByline
-          name={authorName}
-          xHandle={template.xHandle}
-          shareUrl={template.botUrl}
-          className="mt-2 text-muted-foreground lg:hidden"
-        />
-      </div>
-
       <div className="mt-6 grid gap-8 lg:mt-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
-        <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-16 lg:self-start">
+        <article>
           <div className="motion-enter" style={motionDelay(1)}>
+            <BotIdentityStage
+              mark={template.mark}
+              title={template.title}
+              ogImage={template.ogImage}
+            />
+            <div className="pt-6 sm:pt-8">
+              <LockTitle>{template.title}</LockTitle>
+              <AuthorByline
+                name={authorName}
+                xHandle={template.xHandle}
+                shareUrl={template.botUrl}
+                className="mt-2 text-muted-foreground"
+              />
+              {featured ||
+              boosted ||
+              justFeatured ||
+              justBoosted ? (
+                <p className="mt-2 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
+                  {featured ? <FeaturedMark /> : null}
+                  {justFeatured && !featured ? (
+                    <span>Featured pending</span>
+                  ) : null}
+                  {boosted ? <BoostedMark /> : null}
+                  {justBoosted && !boosted ? <span>Boost pending</span> : null}
+                </p>
+              ) : null}
+              <p className="mt-5 max-w-2xl text-base leading-7 text-body">
+                {template.description}
+              </p>
+              {template.note ? (
+                <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
+                  {template.note}
+                </blockquote>
+              ) : null}
+              {template.tags.length > 0 ? (
+                <p className="mt-5 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
+                  {template.tags.map((tag) => (
+                    <Link
+                      key={tag}
+                      href={`/templates?tag=${encodeURIComponent(tag)}`}
+                      className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                    >
+                      {tag}
+                    </Link>
+                  ))}
+                </p>
+              ) : null}
+              <WhatTravels
+                skills={template.skills}
+                routines={template.routines}
+              />
+              <p className="mt-6 text-xs leading-5 text-muted-foreground">
+                This bot was created by a third-party user, not by SpaceXAI.
+                Adding it creates a copy on your Grok Bot account. It does
+                not share the author’s computer, logins, or conversation
+                history.
+              </p>
+            </div>
+          </div>
+        </article>
+        <aside className="space-y-4 lg:sticky lg:top-16 lg:self-start">
+          <div className="motion-enter" style={motionDelay(2)}>
             <AddProcedure
               template={template}
               listingUrl={listingHref}
@@ -157,38 +207,31 @@ export default async function TemplateDetailPage({
               }
             />
           </div>
-          <div className="motion-enter" style={motionDelay(2)}>
-            <Frame staticFrame matClassName="p-5">
-              <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-                Rank
-              </p>
-              <div className="mt-3">
-                <VoteButtons
-                  templateId={template.id}
-                  score={template.score}
-                  userVote={template.userVote}
-                  layout="row"
-                />
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                <span className="font-mono tabular-nums text-foreground">
-                  {template.score === 1 ? "1 point" : `${template.score} points`}
-                </span>
-                {" · "}
-                {formatCount(template.adds)} adds
-                {" · "}
-                {template.live ? "Live on x.ai" : "Share link down"}
-              </p>
-            </Frame>
+          <div className="motion-enter border-t border-border pt-5" style={motionDelay(3)}>
+            <VoteButtons
+              templateId={template.id}
+              score={template.score}
+              userVote={template.userVote}
+              layout="row"
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              <span className="font-mono tabular-nums text-foreground">
+                {template.score === 1 ? "1 point" : `${template.score} points`}
+              </span>
+              {" · "}
+              {formatCount(template.adds)} adds
+              {" · "}
+              {template.live ? "Live on x.ai" : "Share link down"}
+            </p>
           </div>
-          <div className="motion-enter" style={motionDelay(3)}>
+          <div className="motion-enter" style={motionDelay(4)}>
             <FeatureCta
               template={template}
               listings={listings}
               enabled={payments}
             />
           </div>
-          <div className="motion-enter" style={motionDelay(4)}>
+          <div className="motion-enter" style={motionDelay(5)}>
             <BoostCta
               template={template}
               listings={listings}
@@ -196,83 +239,13 @@ export default async function TemplateDetailPage({
             />
           </div>
         </aside>
-
-        <article className="order-2 lg:order-1">
-          <div className="motion-enter" style={motionDelay(3)}>
-            <Frame staticFrame>
-              <BotIdentityStage
-                mark={template.mark}
-                title={template.title}
-                ogImage={template.ogImage}
-              />
-              <div className="px-5 py-6 sm:px-8 sm:py-8">
-                <div className="flex flex-wrap gap-1.5">
-                  {featured ? <FeaturedMark /> : null}
-                  {justFeatured && !featured ? (
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      Featured pending
-                    </span>
-                  ) : null}
-                  {boosted ? <BoostedMark /> : null}
-                  {justBoosted && !boosted ? (
-                    <span className="font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      Boost pending
-                    </span>
-                  ) : null}
-                  {template.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="ghost"
-                      render={
-                        <Link href={`/templates?tag=${encodeURIComponent(tag)}`} />
-                      }
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-                <LockTitle
-                  as="p"
-                  aria-hidden="true"
-                  className="mt-5 hidden lg:block"
-                >
-                  {template.title}
-                </LockTitle>
-                <AuthorByline
-                  name={authorName}
-                  xHandle={template.xHandle}
-                  shareUrl={template.botUrl}
-                  className="mt-2 hidden text-muted-foreground lg:block"
-                />
-                <p className="mt-5 max-w-2xl text-base leading-7 text-body">
-                  {template.description}
-                </p>
-                {template.note ? (
-                  <blockquote className="mt-6 border-l border-sunset/40 pl-4 text-sm leading-6 text-muted-foreground">
-                    {template.note}
-                  </blockquote>
-                ) : null}
-                <WhatTravels
-                  skills={template.skills}
-                  routines={template.routines}
-                />
-                <p className="mt-6 text-xs leading-5 text-muted-foreground">
-                  This bot was created by a third-party user, not by SpaceXAI.
-                  Adding it creates a copy on your Grok Bot account. It does
-                  not share the author’s computer, logins, or conversation
-                  history.
-                </p>
-              </div>
-            </Frame>
-          </div>
-        </article>
       </div>
 
       {related.length > 0 ? (
         <section className="mt-16">
           <h2 className="display-section">Related</h2>
-          <div className="board-panel mt-5">
-            <BotRankList templates={related} showVote scramble />
+          <div className="mt-5 border-y border-border">
+            <BotRankList templates={related} showVote />
           </div>
         </section>
       ) : null}

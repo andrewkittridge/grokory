@@ -96,11 +96,6 @@ function VoteSubmit({
       )}
     >
       <span className="vote-icon inline-flex">{children}</span>
-      <span className="vote-burst" aria-hidden="true">
-        <span className="vote-diamond vote-diamond-a" />
-        <span className="vote-diamond vote-diamond-b" />
-        <span className="vote-diamond vote-diamond-c" />
-      </span>
     </button>
   );
 }

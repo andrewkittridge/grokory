@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteSearch } from "@/components/site-search";
 import { Button } from "@/components/ui/button";
+import { useHydrated } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -29,6 +30,7 @@ const NAV = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const catalog = pathname === "/catalog";
   const [dense, setDense] = useState(false);
 
   useEffect(() => {
@@ -43,21 +45,30 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "site-header sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm",
+        "site-header sticky top-0 z-40 border-b border-border bg-background",
         dense && "header-dense"
       )}
     >
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <Link
           href="/"
           className="group/mark flex min-w-0 shrink-0 items-center gap-2.5"
         >
-          <BrandMark className="site-brand-mark size-[1.15rem] text-foreground" />
-          <span className="text-[15px] font-normal tracking-tight">
+          <BrandMark className="site-brand-mark size-6" />
+          <span
+            className={cn(
+              "font-heading text-[1.05rem] tracking-tight",
+              !catalog && "max-sm:sr-only"
+            )}
+          >
             Grokdex
           </span>
         </Link>
-        <SiteSearch className="mx-2 hidden min-w-0 flex-1 md:flex" />
+        {catalog ? (
+          <div className="min-w-0 flex-1" />
+        ) : (
+          <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
+        )}
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
             <HeaderLink
@@ -77,11 +88,10 @@ export function SiteHeader() {
           </HeaderLink>
         </nav>
         <details className="group relative ml-auto lg:hidden">
-          <summary className="flex cursor-pointer list-none items-center rounded-full border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center rounded-none border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
             Menu
           </summary>
-          <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover p-2">
-            <SiteSearch size="menu" className="mb-2" />
+          <div className="absolute right-0 z-50 mt-2 w-64 border border-border bg-background p-2">
             <nav className="flex flex-col">
               {NAV.map((item) => (
                 <Button
@@ -107,6 +117,20 @@ export function SiteHeader() {
         </details>
       </div>
     </header>
+  );
+}
+
+function HeaderSearch({ className }: { className?: string }) {
+  const hydrated = useHydrated();
+  const q = hydrated
+    ? new URLSearchParams(window.location.search).get("q") ?? ""
+    : "";
+  return (
+    <SiteSearch
+      key={hydrated ? `q:${q}` : "ssr"}
+      defaultValue={q}
+      className={className}
+    />
   );
 }
 
