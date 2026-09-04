@@ -23,6 +23,11 @@ const NAV = [
     label: "Catalog",
     match: (path: string) => path === "/catalog",
   },
+  {
+    href: "/commons",
+    label: JOBS.commons,
+    match: (path: string) => path.startsWith("/commons"),
+  },
 ] as const;
 
 export function SiteHeader() {

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { listPublicThreads } from "@/lib/commons-store";
 import { GUIDES } from "@/lib/guides";
 import { SITE_URL } from "@/lib/site";
 import { authorIndex } from "@/lib/templates";
@@ -17,6 +18,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/commons`,
+      lastModified: now,
+      changeFrequency: "hourly",
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/catalog`,
@@ -87,6 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const authors = authorIndex(templates).map((row) => row.slug);
+  const threads = await listPublicThreads();
 
   return [
     ...staticRoutes,
@@ -95,6 +103,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(template.lastCheckedAt ?? template.createdAt),
       changeFrequency: "weekly" as const,
       priority: 0.7,
+    })),
+    ...threads.map((thread) => ({
+      url: `${SITE_URL}/commons/${thread.slug}`,
+      lastModified: new Date(thread.lastTurnAt ?? thread.createdAt),
+      changeFrequency: "hourly" as const,
+      priority: 0.6,
     })),
     ...authors.map((slug) => ({
       url: `${SITE_URL}/authors/${slug}`,

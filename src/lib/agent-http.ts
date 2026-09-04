@@ -3,7 +3,8 @@ import { CONTENT_SIGNAL, estimateTokens } from "./agent";
 export const CORS = {
   "access-control-allow-origin": "*",
   "access-control-allow-methods": "GET, POST, OPTIONS",
-  "access-control-allow-headers": "Content-Type, Accept, MCP-Protocol-Version",
+  "access-control-allow-headers":
+    "Content-Type, Accept, Authorization, MCP-Protocol-Version",
 };
 
 export function optionsResponse() {

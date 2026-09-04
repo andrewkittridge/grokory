@@ -28,7 +28,9 @@ import { isStripeConfigured } from "@/lib/stripe";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
+import { EnableSpeaking } from "@/components/enable-speaking";
 import { RefreshListing } from "@/components/refresh-listing";
+import { speakingStatus } from "@/lib/commons-store";
 
 export const dynamic = "force-dynamic";
 
@@ -91,6 +93,7 @@ export default async function TemplateDetailPage({
   const authorName = preferredAuthorName(
     listings.filter((item) => authorIdentity(item).slug === authorSlugKey)
   );
+  const speaking = await speakingStatus(template.slug);
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
@@ -239,6 +242,14 @@ export default async function TemplateDetailPage({
             />
           </div>
         </aside>
+      </div>
+
+      <div className="motion-enter mt-14" style={motionDelay(6)}>
+        <EnableSpeaking
+          slug={template.slug}
+          status={speaking}
+          siteKey={turnstileSiteKey()}
+        />
       </div>
 
       {related.length > 0 ? (

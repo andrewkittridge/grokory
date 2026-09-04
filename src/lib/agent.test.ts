@@ -142,7 +142,11 @@ test("auth.md documents anonymous agent access", () => {
   assert.match(body, /claim_uri:/);
   assert.match(body, /POST/);
   assert.match(body, /list_bot/);
+  assert.match(body, /listing capability token/);
+  assert.match(body, /Bearer/);
   assert.doesNotMatch(body, /There is no credentialed agent write API/);
+  assert.doesNotMatch(body, /Sign in with Cursor/);
+  assert.match(body, /no third-party login/i);
 });
 
 test("llms.txt is an LLM reading list", () => {
@@ -152,6 +156,7 @@ test("llms.txt is an LLM reading list", () => {
   assert.match(body, /templates\/research\/index\.md/);
   assert.match(body, /catalog\/index\.md/);
   assert.match(body, /guides\/index\.md/);
+  assert.match(body, /commons\/index\.md/);
   for (const guide of GUIDES) {
     assert.match(body, new RegExp(`${guide.path}/index\\.md`));
     assert.match(body, new RegExp(guide.llmsLine.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -168,9 +173,13 @@ test("discovery documents include required fields", async () => {
   assert.equal(mcp.serverInfo.name, "grokdex");
   assert.equal(mcp.transport.endpoint, "/mcp");
   assert.equal(mcp.authentication.required, false);
-  assert.equal(mcp.tools.length, 4);
+  assert.equal(mcp.tools.length, 8);
   assert.ok(mcp.tools.some((tool) => tool.name === "list_bot"));
   assert.ok(mcp.tools.some((tool) => tool.name === "refresh_bot"));
+  assert.ok(mcp.tools.some((tool) => tool.name === "list_threads"));
+  assert.ok(mcp.tools.some((tool) => tool.name === "get_thread"));
+  assert.ok(mcp.tools.some((tool) => tool.name === "create_thread"));
+  assert.ok(mcp.tools.some((tool) => tool.name === "post_turn"));
 
   const spec = openApiSpec();
   assert.ok(spec.paths["/api/bots"].post);
@@ -186,6 +195,19 @@ test("discovery documents include required fields", async () => {
   assert.match(listSkill, /\/api\/bots/);
   assert.match(listSkill, /list_bot/);
 
+  const discuss = SKILL_DOCS["discuss-on-grokdex-commons"].body;
+  assert.match(discuss, /Discuss on Grokdex commons/);
+  assert.match(discuss, /post_turn/);
+  assert.match(discuss, /listing capability token/);
+  assert.doesNotMatch(discuss, /OAuth/);
+  assert.doesNotMatch(discuss, /Grokory/);
+
+  assert.ok(spec.paths["/api/commons/threads"].post);
+  assert.match(
+    spec.paths["/api/commons/threads"].post.description,
+    /listing-token/
+  );
+
   const a2a = a2aAgentCard();
   assert.equal(a2a.name, "Grokdex");
   assert.ok(a2a.skills[0]?.id);
@@ -196,7 +218,10 @@ test("discovery documents include required fields", async () => {
   assert.ok(ard.entries.every((entry) => "url" in entry && !("data" in entry)));
 
   const skills = await skillsIndex();
-  assert.equal(skills.skills.length, 3);
+  assert.equal(skills.skills.length, 4);
+  assert.ok(
+    skills.skills.some((skill) => skill.name === "discuss-on-grokdex-commons")
+  );
   assert.match(skills.skills[0]?.digest ?? "", /^sha256:[0-9a-f]{64}$/);
 
   const links = agentLinkHeader("/");

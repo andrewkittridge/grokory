@@ -20,6 +20,7 @@ export const JOBS = {
   share: "Share a bot",
   add: "Add to Grok Bot",
   board: "Board",
+  commons: "Commons",
 } as const;
 
 export const INDEPENDENCE =

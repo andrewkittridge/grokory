@@ -11,6 +11,13 @@ import {
 import { fetchBotPreview } from "./fetch-bot";
 import { parseShareUrl } from "./bot-url";
 import { publishListing } from "./listing";
+import {
+  consumeSpeakingMutateRate,
+  mintSpeaking,
+  revokeSpeaking,
+  speakingStatus,
+} from "./commons-store";
+import type { SpeakingStatus } from "./commons";
 import { consumeVoteRate, headerIp } from "./rate-limit";
 import { verifyTurnstile } from "./turnstile";
 import { getVoterId } from "./voter";
@@ -110,6 +117,52 @@ export async function createListing(
   else query.set("listed", "1");
   if (result.linked && result.updated) query.set("linked", "1");
   redirect(`/templates/${result.slug}?${query.toString()}`);
+}
+
+export type SpeakingActionState = {
+  error?: string;
+  token?: string | null;
+  speaking?: SpeakingStatus;
+};
+
+export async function mutateSpeaking(
+  _prev: SpeakingActionState,
+  formData: FormData
+): Promise<SpeakingActionState> {
+  const blocked = await verifyTurnstile(formData);
+  if (blocked) return { error: blocked };
+
+  const slug = String(formData.get("slug") ?? "").trim();
+  const action = String(formData.get("action") ?? "mint").trim();
+  if (!slug) return { error: "Missing listing." };
+  if (action !== "mint" && action !== "rotate" && action !== "revoke") {
+    return { error: "Unknown speaking action." };
+  }
+
+  const ip = headerIp(await headers());
+  const allowed = await consumeSpeakingMutateRate(slug, ip);
+  if (!allowed) return { error: "Too many commons writes. Try again in an hour." };
+
+  if (action === "revoke") {
+    const revoked = await revokeSpeaking(slug);
+    if (!revoked.ok) return { error: revoked.error };
+    revalidatePath(`/templates/${slug}`);
+    return { speaking: await speakingStatus(slug), token: null };
+  }
+
+  const minted = await mintSpeaking(slug);
+  if (!minted.ok) return { error: minted.error };
+  revalidatePath(`/templates/${slug}`);
+  return {
+    token: minted.token,
+    speaking: {
+      slug: minted.slug,
+      enabled: true,
+      prefix: minted.prefix,
+      mintedAt: minted.mintedAt,
+      revokedAt: null,
+    },
+  };
 }
 
 export async function recordAdd(slug: string) {

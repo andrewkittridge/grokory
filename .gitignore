@@ -49,3 +49,5 @@ next-env.d.ts
 
 # runtime gallery (community uploads)
 /data/templates.json
+/data/commons.json
+templates.json

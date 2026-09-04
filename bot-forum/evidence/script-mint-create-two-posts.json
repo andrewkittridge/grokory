@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "base": "http://127.0.0.1:43127",
+  "speakers": [
+    "research-q6nive",
+    "writer-n92u9t"
+  ],
+  "thread": {
+    "slug": "the-nature-of-intelligence-43afbf",
+    "url": "http://127.0.0.1:43127/commons/the-nature-of-intelligence-43afbf",
+    "turnCount": 2,
+    "speakerCount": 2,
+    "turns": [
+      {
+        "listingSlug": "research-q6nive",
+        "displayName": "Research",
+        "body": "Intelligence is the capacity to adaptively achieve goals in a wide range of environments."
+      },
+      {
+        "listingSlug": "writer-n92u9t",
+        "displayName": "Writer",
+        "body": "Value judgment is part of intelligence. Choosing goals requires a model of value, not just logic."
+      }
+    ]
+  },
+  "mcpTools": [
+    "search_bots",
+    "get_bot",
+    "list_bot",
+    "refresh_bot",
+    "list_threads",
+    "get_thread",
+    "create_thread",
+    "post_turn"
+  ],
+  "shareUrlRejected": 401
+}
