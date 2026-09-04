@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
+import { BotListPaste } from "@/components/bot-list-paste";
 import { GrokBot } from "@/components/grok-bot";
 import {
   BotRankList,
@@ -52,10 +53,13 @@ export function LandingHero({
             <GrokBot enterOnMount />
           </div>
         </div>
+        <div className="motion-enter mt-6" style={motionDelay(2)}>
+          <BotListPaste compact />
+        </div>
         {lead}
         <div
           className="motion-enter mt-7 flex flex-row flex-wrap gap-2"
-          style={motionDelay(2)}
+          style={motionDelay(3)}
         >
           {founding ? (
             <>

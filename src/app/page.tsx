@@ -7,7 +7,6 @@ import {
   LandingCast,
   LandingHero,
 } from "@/components/landing-hero";
-import { LandingHow } from "@/components/landing-how";
 import { faqJson, itemListJson } from "@/lib/json-ld";
 import { partitionFeatured } from "@/lib/featured";
 import {
@@ -75,7 +74,6 @@ async function Home() {
             vacancies={vacancies}
           />
         </LandingHero>
-        <LandingHow />
       </div>
     </>
   );
