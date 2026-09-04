@@ -133,72 +133,9 @@ export default async function TemplateDetailPage({
         {template.title}
       </p>
 
-      <div className="motion-enter mt-8 lg:sr-only" style={motionDelay(1)}>
-        <LockTitle>{template.title}</LockTitle>
-        <AuthorByline
-          name={authorName}
-          xHandle={template.xHandle}
-          shareUrl={template.botUrl}
-          className="mt-2 text-muted-foreground lg:hidden"
-        />
-      </div>
-
       <div className="mt-6 grid gap-8 lg:mt-8 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)]">
-        <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-16 lg:self-start">
+        <article>
           <div className="motion-enter" style={motionDelay(1)}>
-            <AddProcedure
-              template={template}
-              listingUrl={listingHref}
-              refresh={
-                <RefreshListing
-                  shareUrl={template.botUrl}
-                  siteKey={turnstileSiteKey()}
-                />
-              }
-            />
-          </div>
-          <div className="motion-enter" style={motionDelay(2)}>
-            <Frame staticFrame matClassName="p-5">
-              <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-                Rank
-              </p>
-              <div className="mt-3">
-                <VoteButtons
-                  templateId={template.id}
-                  score={template.score}
-                  userVote={template.userVote}
-                  layout="row"
-                />
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                <span className="font-mono tabular-nums text-foreground">
-                  {template.score === 1 ? "1 point" : `${template.score} points`}
-                </span>
-                {" · "}
-                {formatCount(template.adds)} adds
-                {" · "}
-                {template.live ? "Live on x.ai" : "Share link down"}
-              </p>
-            </Frame>
-          </div>
-          <div className="motion-enter" style={motionDelay(3)}>
-            <FeatureCta
-              template={template}
-              listings={listings}
-              enabled={payments}
-            />
-          </div>
-          <div className="motion-enter" style={motionDelay(4)}>
-            <BoostCta
-              template={template}
-              listings={listings}
-              enabled={payments}
-            />
-          </div>
-        </aside>
-
-        <article className="order-2 lg:order-1">
-          <div className="motion-enter" style={motionDelay(3)}>
             <Frame staticFrame>
               <BotIdentityStage
                 mark={template.mark}
@@ -231,18 +168,12 @@ export default async function TemplateDetailPage({
                     </Badge>
                   ))}
                 </div>
-                <LockTitle
-                  as="p"
-                  aria-hidden="true"
-                  className="mt-5 hidden lg:block"
-                >
-                  {template.title}
-                </LockTitle>
+                <LockTitle className="mt-5">{template.title}</LockTitle>
                 <AuthorByline
                   name={authorName}
                   xHandle={template.xHandle}
                   shareUrl={template.botUrl}
-                  className="mt-2 hidden text-muted-foreground lg:block"
+                  className="mt-2 text-muted-foreground"
                 />
                 <p className="mt-5 max-w-2xl text-base leading-7 text-body">
                   {template.description}
@@ -266,6 +197,58 @@ export default async function TemplateDetailPage({
             </Frame>
           </div>
         </article>
+        <aside className="space-y-4 lg:sticky lg:top-16 lg:self-start">
+          <div className="motion-enter" style={motionDelay(2)}>
+            <AddProcedure
+              template={template}
+              listingUrl={listingHref}
+              refresh={
+                <RefreshListing
+                  shareUrl={template.botUrl}
+                  siteKey={turnstileSiteKey()}
+                />
+              }
+            />
+          </div>
+          <div className="motion-enter" style={motionDelay(3)}>
+            <Frame staticFrame matClassName="p-5">
+              <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+                Rank
+              </p>
+              <div className="mt-3">
+                <VoteButtons
+                  templateId={template.id}
+                  score={template.score}
+                  userVote={template.userVote}
+                  layout="row"
+                />
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                <span className="font-mono tabular-nums text-foreground">
+                  {template.score === 1 ? "1 point" : `${template.score} points`}
+                </span>
+                {" · "}
+                {formatCount(template.adds)} adds
+                {" · "}
+                {template.live ? "Live on x.ai" : "Share link down"}
+              </p>
+            </Frame>
+          </div>
+          <div className="motion-enter" style={motionDelay(4)}>
+            <FeatureCta
+              template={template}
+              listings={listings}
+              enabled={payments}
+            />
+          </div>
+          <div className="motion-enter" style={motionDelay(5)}>
+            <BoostCta
+              template={template}
+              listings={listings}
+              enabled={payments}
+            />
+          </div>
+        </aside>
       </div>
 
       {related.length > 0 ? (

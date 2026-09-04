@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
+import { EmptyState } from "@/components/empty-state";
 import { CountTick } from "@/components/telemetry";
 import { LockTitle } from "@/components/lock-title";
 import { xHandleLabel } from "@/lib/bot-url";
@@ -42,13 +43,14 @@ export default async function AuthorsPage() {
         with a public Grok Bot on the board.
       </p>
       {authors.length === 0 ? (
-        <p className="mt-10 text-sm text-muted-foreground">
-          Nobody listed yet.{" "}
-          <Link href="/upload" className="text-foreground hover:underline">
-            Share a bot
-          </Link>
-          .
-        </p>
+        <div className="mt-10">
+          <EmptyState
+            title="Nobody listed yet"
+            body="Paste a public share link and you show up here with the bot."
+            actionHref="/upload"
+            actionLabel="Share a bot"
+          />
+        </div>
       ) : (
         <ol className="board-panel mt-10 divide-y divide-border">
           {authors.map((author, index) => (

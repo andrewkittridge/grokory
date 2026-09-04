@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "@/components/brand-mark";
+import { GrokBot } from "@/components/grok-bot";
 import { LockTitle } from "@/components/lock-title";
 import { Button } from "@/components/ui/button";
 import { motionDelay } from "@/lib/utils";
@@ -14,11 +14,10 @@ export function LockLost({
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center px-4 py-24 text-center">
       <div
-        className="motion-enter relative mx-auto flex h-16 w-48 items-center justify-center overflow-hidden"
+        className="motion-enter relative mx-auto w-[7.5rem]"
         style={motionDelay(0)}
       >
-        <BrandMark motion="drift" className="size-14 text-foreground" />
-        <span className="motion-scan-lost" aria-hidden="true" />
+        <GrokBot />
       </div>
       <p
         className="motion-enter mt-6 font-mono text-sm tracking-[0.18em] text-muted-foreground"
@@ -36,7 +35,7 @@ export function LockLost({
         {body}
       </p>
       <div
-        className="motion-enter mt-8 flex justify-center gap-3"
+        className="motion-enter mt-8 flex flex-wrap justify-center gap-3"
         style={motionDelay(4)}
       >
         <Button nativeButton={false} render={<Link href="/templates" />}>

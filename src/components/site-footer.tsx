@@ -9,7 +9,7 @@ export function SiteFooter() {
           <div>
             <Link href="/" className="flex items-center gap-2.5 text-foreground">
               <BrandMark className="size-4" />
-              <span className="text-sm tracking-tight">Grokdex</span>
+              <span className="font-heading text-lg tracking-tight">Grokdex</span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
               The ranked public board of Grok Bot share links. Independent. Not

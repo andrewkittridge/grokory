@@ -19,7 +19,7 @@ export function BrandMark({
         className
       )}
     >
-      <path d="M12 2.4 21.6 12 12 21.6 2.4 12 12 2.4Z" fill="#0a0a0a" />
+      <path d="M12 2.4 21.6 12 12 21.6 2.4 12 12 2.4Z" fill="var(--background)" />
       <path d="M12 2.4 21.6 12 12 12Z" fill="white" fillOpacity="0.28" />
       <path d="M12 12 21.6 12 12 21.6Z" fill="white" fillOpacity="0.1" />
       <path d="M12 2.4 12 12 2.4 12Z" fill="white" fillOpacity="0.06" />

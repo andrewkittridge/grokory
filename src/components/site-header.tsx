@@ -53,7 +53,7 @@ export function SiteHeader() {
           className="group/mark flex min-w-0 shrink-0 items-center gap-2.5"
         >
           <BrandMark className="site-brand-mark size-[1.15rem] text-foreground" />
-          <span className="text-[15px] font-normal tracking-tight">
+          <span className="font-heading text-[1.05rem] tracking-tight">
             Grokdex
           </span>
         </Link>

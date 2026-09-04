@@ -39,7 +39,7 @@ export default function HomePage() {
       <Suspense
         fallback={
           <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-            <LandingHero founding heading={false}>
+            <LandingHero heading={false}>
               <LandingBoardSkeleton />
             </LandingHero>
           </div>

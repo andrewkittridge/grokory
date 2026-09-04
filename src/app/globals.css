@@ -659,9 +659,10 @@ body {
 }
 
 .hero-wordmark {
+  font-family: var(--font-heading);
   font-size: clamp(2.35rem, 7.5vw, 3.7rem);
   line-height: 0.9;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.04em;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -1606,6 +1607,7 @@ body {
 }
 
 .catalog-bot-name {
+  font-family: var(--font-heading);
   color: var(--foreground);
 }
 

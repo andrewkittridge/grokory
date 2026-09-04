@@ -113,7 +113,7 @@ export function BotRankRow({
               ? roster
                 ? "font-heading text-xl leading-tight tracking-tight sm:text-2xl"
                 : "font-heading text-lg leading-tight tracking-tight sm:text-xl"
-              : "text-[15px] leading-tight tracking-tight"
+              : "font-heading text-[1.05rem] leading-tight tracking-tight"
           )}
         >
           <span className={leader ? "line-clamp-2" : "truncate"}>
