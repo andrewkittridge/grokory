@@ -205,6 +205,7 @@ function VacantRankRow({
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={hint ? `${label}. ${hint}` : label}
       />
+      <BotIdentityThumb className="is-ghost relative z-10" />
       <span
         className={cn(
           "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground",
@@ -213,7 +214,6 @@ function VacantRankRow({
       >
         {String(rank).padStart(2, "0")}
       </span>
-      <BotIdentityThumb className="is-ghost relative z-10" />
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span className="rank-open-label block truncate text-[15px] leading-tight">
           {label}

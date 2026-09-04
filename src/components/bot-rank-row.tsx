@@ -60,6 +60,12 @@ export function BotRankRow({
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={template.title}
       />
+      <span className="relative z-10 pointer-events-none">
+        <BotIdentityThumb
+          mark={template.mark}
+          size={leader ? "lg" : "md"}
+        />
+      </span>
       <span
         className={cn(
           "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
@@ -68,12 +74,6 @@ export function BotRankRow({
         )}
       >
         {String(rank).padStart(2, "0")}
-      </span>
-      <span className="relative z-10 pointer-events-none">
-        <BotIdentityThumb
-          mark={template.mark}
-          size={leader ? "lg" : "md"}
-        />
       </span>
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span
@@ -238,10 +238,10 @@ export function BotRankRowSkeleton({
         roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
+      <BotIdentityThumb className="is-ghost" />
       <span className="w-8 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
         ··
       </span>
-      <BotIdentityThumb className="is-ghost" />
       <span className="min-w-0 flex-1 overflow-hidden">
         <span className="block h-3 w-28 border-b border-border" />
         <span className="mt-2 block h-2 w-16 border-b border-border/70" />
