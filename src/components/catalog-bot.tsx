@@ -105,7 +105,7 @@ export function CatalogBot({
             )}
           </span>
         </span>
-        <span className="mt-1 flex min-w-0 flex-col items-center text-center">
+        <span className="mt-1 flex w-full min-w-0 flex-col items-center text-center">
           {token.kind === "listed" && token.featured ? (
             <FeaturedMark className="mb-0.5" />
           ) : token.kind === "listed" && token.boosted ? (
@@ -115,7 +115,7 @@ export function CatalogBot({
               Open seat
             </span>
           ) : null}
-          <span className="catalog-bot-name w-full truncate text-[13px] leading-tight tracking-tight">
+          <span className="catalog-bot-name w-full text-[13px] tracking-tight">
             {heading}
           </span>
         </span>
@@ -128,7 +128,7 @@ export function CatalogBot({
             rel="noopener noreferrer"
             tabIndex={inert ? -1 : undefined}
             title={xHandleLabel(token.template.xHandle)}
-            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[11px] leading-4 text-body hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            className="catalog-bot-handle relative z-10 mt-0.5 w-full min-w-0 truncate text-center font-mono text-[11px] leading-4 text-body hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
           >
             {xHandleLabel(token.template.xHandle)}
           </a>
@@ -136,7 +136,7 @@ export function CatalogBot({
           <Link
             href={addHandleHref(token.template.botUrl)}
             tabIndex={inert ? -1 : undefined}
-            className="catalog-bot-handle relative z-10 mt-0.5 w-full truncate text-center font-mono text-[11px] leading-4 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+            className="catalog-bot-handle relative z-10 mt-0.5 w-full min-w-0 truncate text-center font-mono text-[11px] leading-4 text-muted-foreground hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
           >
             add @handle
           </Link>

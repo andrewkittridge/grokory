@@ -48,10 +48,10 @@ export function OgCard({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        background: "#0c0b09",
-        color: "#f6f1ea",
+        background: "#12100e",
+        color: "#f8f2e9",
         padding: "64px 72px",
-        border: "1px solid #2a2622",
+        border: "1px solid #403830",
       }}
     >
       <div
@@ -62,7 +62,7 @@ export function OgCard({
           fontSize: 22,
           letterSpacing: "0.22em",
           textTransform: "uppercase",
-          color: "#8a847c",
+          color: "#a3988c",
           fontFamily: "monospace",
         }}
       >
@@ -71,7 +71,7 @@ export function OgCard({
             width: 18,
             height: 18,
             transform: "rotate(45deg)",
-            border: "2px solid #f6f1ea",
+            border: "2px solid #f8f2e9",
           }}
         />
         Grokdex
@@ -122,7 +122,7 @@ export function OgCard({
               style={{
                 fontSize: 26,
                 lineHeight: 1.35,
-                color: "#e4ddd4",
+                color: "#ebe3d6",
               }}
             >
               {truncate(summary, 160)}
@@ -150,7 +150,7 @@ export function OgCard({
           display: "flex",
           justifyContent: "space-between",
           fontSize: 20,
-          color: "#8a847c",
+          color: "#a3988c",
           fontFamily: "monospace",
           letterSpacing: "0.12em",
           textTransform: "uppercase",

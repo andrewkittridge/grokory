@@ -1577,6 +1577,13 @@ body {
 .catalog-bot-name {
   font-family: var(--font-heading);
   color: var(--foreground);
+  display: -webkit-box;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.2;
+  text-wrap: balance;
 }
 
 .catalog-bot-handle {
