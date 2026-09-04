@@ -71,12 +71,6 @@ export function GrokBotMark({ className }: { className?: string }) {
                 <path className="grok-bot-lid" d={GROK_BOT_EYE_R} fill="#0a0a0a" />
               </g>
             </g>
-            <g className="grok-bot-comet">
-              <path
-                d="M100 20 105.2 25.2 100 30.4 94.8 25.2Z"
-                fill="var(--sunset)"
-              />
-            </g>
           </g>
         </svg>
       </span>

@@ -76,7 +76,12 @@ export function CatalogSearch({
           onChange={(event) => onQuery(event.target.value)}
         />
       </div>
-      <Button type="submit" size="sm" variant="ghost" className="shrink-0">
+      <Button
+        type="submit"
+        size="sm"
+        variant="ghost"
+        className="h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
+      >
         Whistle
       </Button>
       {q ? (
@@ -84,7 +89,7 @@ export function CatalogSearch({
           type="button"
           size="sm"
           variant="ghost"
-          className="hidden shrink-0 sm:inline-flex"
+          className="hidden h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline sm:inline-flex"
           onClick={() => onQuery("")}
         >
           Clear

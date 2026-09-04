@@ -68,12 +68,33 @@ export function OgCard({
       >
         <div
           style={{
-            width: 18,
-            height: 18,
-            transform: "rotate(45deg)",
-            border: "2px solid #f8f2e9",
+            width: 22,
+            height: 22,
+            borderRadius: 999,
+            background: "#c8c0b4",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 3,
           }}
-        />
+        >
+          <div
+            style={{
+              width: 3,
+              height: 7,
+              borderRadius: 999,
+              background: "#0a0a0a",
+            }}
+          />
+          <div
+            style={{
+              width: 3,
+              height: 7,
+              borderRadius: 999,
+              background: "#0a0a0a",
+            }}
+          />
+        </div>
         Grokdex
       </div>
       <div

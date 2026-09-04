@@ -21,7 +21,7 @@ export function SiteFooter() {
     <footer className="relative z-10 mt-auto border-t border-border bg-background">
       <div className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-12">
         <Link href="/" className="inline-flex items-center gap-2.5 text-foreground">
-          <BrandMark className="size-4" />
+          <BrandMark className="size-5" />
           <span className="font-heading text-lg tracking-tight">Grokdex</span>
         </Link>
         <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">

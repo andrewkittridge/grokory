@@ -185,45 +185,6 @@ body {
   }
 }
 
-@keyframes brand-breathe {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.72;
-  }
-}
-
-@keyframes brand-core {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  55% {
-    opacity: 0.62;
-  }
-}
-
-@keyframes brand-drift {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-
-@keyframes brand-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @keyframes bot-bob {
   0%,
   100% {
@@ -264,23 +225,6 @@ body {
   38%,
   58% {
     transform: scaleY(0.12);
-  }
-}
-
-@keyframes bot-comet {
-  from {
-    transform: rotate(-20deg);
-    opacity: 0;
-  }
-  14% {
-    opacity: 1;
-  }
-  82% {
-    opacity: 1;
-  }
-  to {
-    transform: rotate(340deg);
-    opacity: 0;
   }
 }
 
@@ -634,39 +578,9 @@ body {
   animation-delay: calc(var(--i, 0) * 55ms);
 }
 
-.brand-mark-inner {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: brand-breathe 3.6s ease-in-out infinite;
-  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.brand-mark-core {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: brand-core 2.4s ease-out infinite;
-}
-
-@media (hover: hover) {
-  .group\/mark:hover .brand-mark-inner,
-  .group\/mark:focus-visible .brand-mark-inner {
-    transform: rotate(45deg);
-  }
-
-  .group\/mark:hover .brand-mark-core,
-  .group\/mark:focus-visible .brand-mark-core {
-    opacity: 1;
-    animation: none;
-    filter: brightness(1.35);
-  }
-}
-
-.brand-mark-drift {
-  animation: brand-drift 3.6s ease-in-out infinite;
-}
-
-.brand-mark-spin {
-  animation: brand-spin 4.5s linear infinite;
+.brand-mark {
+  display: block;
+  overflow: visible;
 }
 
 .grok-bot {
@@ -761,13 +675,6 @@ body {
   animation: bot-wink 0.42s ease both;
 }
 
-.grok-bot-comet {
-  transform-box: view-box;
-  transform-origin: 100px 104px;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .grok-bot-hopping {
   --eye-scale: 1.1;
 }
@@ -778,10 +685,6 @@ body {
 
 .grok-bot-hopping .grok-bot-ground {
   animation: bot-shadow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.grok-bot-hopping .grok-bot-comet {
-  animation: bot-comet 0.85s var(--motion-ease) both;
 }
 
 @media (hover: hover) {
@@ -1017,11 +920,6 @@ body {
   border-color: color-mix(in srgb, var(--foreground) 16%, var(--border));
 }
 
-.header-dense .brand-mark-core {
-  opacity: 1;
-  filter: brightness(1.25);
-}
-
 .nav-pip {
   position: absolute;
   right: 0.75rem;
@@ -1141,10 +1039,6 @@ body {
   .motion-view,
   .hero-letter,
   .live-dot,
-  .brand-mark-inner,
-  .brand-mark-core,
-  .brand-mark-drift,
-  .brand-mark-spin,
   .grok-bot-lid,
   .grok-bot-lid-l,
   .grok-bot-winking .grok-bot-lid-l,
@@ -1153,7 +1047,6 @@ body {
   .author-kennel-cast .bot-thumb .grok-bot-motion,
   .grok-bot-hopping .grok-bot-motion,
   .grok-bot-hopping .grok-bot-ground,
-  .grok-bot-hopping .grok-bot-comet,
   .rank-row-leader::before,
   .rank-row-first::before,
   .btn-ignite:active,
@@ -1178,10 +1071,6 @@ body {
     box-shadow: none;
   }
 
-  .brand-mark-inner,
-  .brand-mark-core,
-  .brand-mark-drift,
-  .brand-mark-spin,
   .grok-bot-yaw,
   .grok-bot-eyes,
   .grok-bot-motion,
@@ -1190,29 +1079,18 @@ body {
     transform: none;
   }
 
-  .brand-mark-core {
-    opacity: 1;
-  }
-
-  .brand-mark-inner {
-    opacity: 0.35;
-  }
-
   .grok-bot-lid,
   .grok-bot-lid-l,
-  .grok-bot-spec,
-  .grok-bot-comet {
+  .grok-bot-spec {
     transform: none;
   }
 
-  .grok-bot-comet,
   .grok-bot-rim {
     opacity: 0;
   }
 
   .rank-row,
-  .rank-row::before,
-  .brand-mark-inner {
+  .rank-row::before {
     transition: none;
   }
 
@@ -1220,8 +1098,6 @@ body {
     display: none;
   }
 
-  .group\/mark:hover .brand-mark-inner,
-  .group\/mark:focus-visible .brand-mark-inner,
   .group\/bot:hover .grok-bot-eyes,
   .group\/bot:focus-visible .grok-bot-eyes {
     animation: none;

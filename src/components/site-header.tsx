@@ -54,7 +54,7 @@ export function SiteHeader() {
           href="/"
           className="group/mark flex min-w-0 shrink-0 items-center gap-2.5"
         >
-          <BrandMark className="site-brand-mark size-[1.15rem] text-foreground" />
+          <BrandMark className="site-brand-mark size-6" />
           <span
             className={cn(
               "font-heading text-[1.05rem] tracking-tight",
@@ -88,7 +88,7 @@ export function SiteHeader() {
           </HeaderLink>
         </nav>
         <details className="group relative ml-auto lg:hidden">
-          <summary className="flex cursor-pointer list-none items-center rounded-full border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center rounded-none border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
             Menu
           </summary>
           <div className="absolute right-0 z-50 mt-2 w-64 border border-border bg-background p-2">

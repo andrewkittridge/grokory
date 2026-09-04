@@ -160,7 +160,7 @@ export function CatalogParade({
           type="button"
           size="sm"
           variant="ghost"
-          className="shrink-0"
+          className="h-auto min-h-0 w-auto shrink-0 rounded-none border-0 p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline"
           aria-pressed={paused}
           onClick={() => setPaused((value) => !value)}
         >
