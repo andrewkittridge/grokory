@@ -29,6 +29,7 @@ const NAV = [
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const catalog = pathname === "/catalog";
   const [dense, setDense] = useState(false);
 
   useEffect(() => {
@@ -57,9 +58,15 @@ export function SiteHeader() {
             Grokdex
           </span>
         </Link>
-        <Suspense fallback={<SiteSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />}>
-          <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
-        </Suspense>
+        {catalog ? (
+          <div className="min-w-0 flex-1" />
+        ) : (
+          <Suspense
+            fallback={<SiteSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />}
+          >
+            <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
+          </Suspense>
+        )}
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
             <HeaderLink
