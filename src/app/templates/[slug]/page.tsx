@@ -10,7 +10,6 @@ import {
   FeatureCta,
   FeaturedMark,
 } from "@/components/feature-cta";
-import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { JsonLd } from "@/components/json-ld";
 import { ListedBanner } from "@/components/listed-banner";
@@ -208,29 +207,27 @@ export default async function TemplateDetailPage({
               }
             />
           </div>
-          <div className="motion-enter" style={motionDelay(3)}>
-            <Frame staticFrame matClassName="p-5">
-              <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
-                Rank
-              </p>
-              <div className="mt-3">
-                <VoteButtons
-                  templateId={template.id}
-                  score={template.score}
-                  userVote={template.userVote}
-                  layout="row"
-                />
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                <span className="font-mono tabular-nums text-foreground">
-                  {template.score === 1 ? "1 point" : `${template.score} points`}
-                </span>
-                {" · "}
-                {formatCount(template.adds)} adds
-                {" · "}
-                {template.live ? "Live on x.ai" : "Share link down"}
-              </p>
-            </Frame>
+          <div className="motion-enter border-t border-border pt-5" style={motionDelay(3)}>
+            <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
+              Rank
+            </p>
+            <div className="mt-3">
+              <VoteButtons
+                templateId={template.id}
+                score={template.score}
+                userVote={template.userVote}
+                layout="row"
+              />
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              <span className="font-mono tabular-nums text-foreground">
+                {template.score === 1 ? "1 point" : `${template.score} points`}
+              </span>
+              {" · "}
+              {formatCount(template.adds)} adds
+              {" · "}
+              {template.live ? "Live on x.ai" : "Share link down"}
+            </p>
           </div>
           <div className="motion-enter" style={motionDelay(4)}>
             <FeatureCta

@@ -1,6 +1,5 @@
 import { AddBotButton } from "@/components/add-bot-button";
 import { CopyLinkButton } from "@/components/copy-link-button";
-import { Frame } from "@/components/frame";
 import { ListingTrust } from "@/components/listing-trust";
 import { Button } from "@/components/ui/button";
 import type { ListedTemplate } from "@/lib/types";
@@ -16,7 +15,7 @@ export function AddProcedure({
   refresh?: ReactNode;
 }) {
   return (
-    <Frame staticFrame matClassName="p-5">
+    <div>
       <p className="font-mono text-xs tracking-[0.18em] text-muted-foreground uppercase">
         Add to Grok
       </p>
@@ -68,6 +67,6 @@ export function AddProcedure({
           Listed by {template.submittedBy}
         </p>
       </div>
-    </Frame>
+    </div>
   );
 }
