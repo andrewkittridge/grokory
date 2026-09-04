@@ -25,24 +25,18 @@ export function BotRankRow({
   template,
   showVote = false,
   size = "default",
-  scoreMax,
   surface = "board",
 }: {
   rank: number;
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
-  scoreMax?: number;
   surface?: "board" | "roster";
 }) {
   const points =
     template.score === 1 ? "1 pt" : `${template.score} pts`;
   const leader = size === "leader";
   const roster = surface === "roster";
-  const spark =
-    scoreMax && scoreMax > 0
-      ? Math.max(0, Math.min(1, template.score / scoreMax))
-      : 0;
   const rowPad = leader
     ? roster
       ? "px-3 py-5 sm:px-5 sm:py-6"
@@ -61,13 +55,6 @@ export function BotRankRow({
         rowPad
       )}
     >
-      {spark > 0 && rank === 1 ? (
-        <span
-          className="rank-spark"
-          style={{ "--spark": String(spark) } as CSSProperties}
-          aria-hidden="true"
-        />
-      ) : null}
       <Link
         href={`/templates/${template.slug}`}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
@@ -199,7 +186,6 @@ export function BotRankList({
   className?: string;
   surface?: "board" | "roster";
 }) {
-  const scoreMax = Math.max(1, ...templates.map((template) => template.score));
   const open =
     vacancies ?? (vacant ? [{ label: "Share a bot", href: "/upload" }] : []);
 
@@ -221,7 +207,6 @@ export function BotRankList({
             template={template}
             showVote={showVote}
             size={leader && index === 0 ? "leader" : "default"}
-            scoreMax={scoreMax}
             surface={surface}
           />
         </li>
@@ -249,17 +234,18 @@ export function BotRankRowSkeleton({
   return (
     <div
       className={cn(
-        "grid grid-cols-[2.25rem_3.15rem_minmax(0,1fr)_4rem] items-center gap-x-3",
+        "rank-row relative flex items-center gap-x-3",
         roster ? "px-3 py-5 sm:px-5" : "px-2 py-4"
       )}
     >
-      <div className="h-3 w-5 animate-pulse bg-canvas-soft" />
-      <div className="size-[3.15rem] animate-pulse rounded-full bg-canvas-soft" />
-      <div className="space-y-2">
-        <div className="h-3.5 w-2/5 max-w-56 animate-pulse bg-canvas-soft" />
-        <div className="h-2.5 w-1/4 max-w-32 animate-pulse bg-canvas-soft" />
-      </div>
-      <div className="h-3 w-8 justify-self-end animate-pulse bg-canvas-soft" />
+      <span className="w-8 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
+        ··
+      </span>
+      <BotIdentityThumb className="is-ghost" />
+      <span className="min-w-0 flex-1 overflow-hidden">
+        <span className="block h-3 w-28 border-b border-border" />
+        <span className="mt-2 block h-2 w-16 border-b border-border/70" />
+      </span>
     </div>
   );
 }

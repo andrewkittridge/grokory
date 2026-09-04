@@ -26,20 +26,7 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <p
-          className="motion-enter flex flex-wrap items-center gap-x-3 gap-y-1"
-          style={motionDelay(0)}
-        >
-          <span className="trust-chip">
-            <span className="live-dot" aria-hidden="true" />
-            Live from x.ai
-          </span>
-          <span className="trust-chip">Ranked by votes</span>
-          <span className="trust-chip max-sm:hidden">
-            Bots can list themselves
-          </span>
-        </p>
-        <div className="mt-5">
+        <div className="mt-1">
           <HeroWordmark as={heading ? "h1" : "p"} />
         </div>
         <p
@@ -242,16 +229,10 @@ export function LandingBoard({
 
 export function LandingBoardSkeleton() {
   return (
-    <div className="mt-10 sm:mt-12">
-      <div className="mb-3 flex h-8 items-center justify-between sm:mb-4">
-        <div className="h-3 w-36 animate-pulse bg-canvas-soft" />
-        <div className="h-8 w-28 animate-pulse rounded-full bg-canvas-soft" />
-      </div>
-      <div className="border-y border-border">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <BotRankRowSkeleton key={index} surface="roster" />
-        ))}
-      </div>
+    <div className="mt-10 border-y border-border sm:mt-12">
+      {Array.from({ length: 6 }).map((_, index) => (
+        <BotRankRowSkeleton key={index} surface="roster" />
+      ))}
     </div>
   );
 }
