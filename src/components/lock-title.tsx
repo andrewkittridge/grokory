@@ -29,7 +29,6 @@ export function LockTitle({
       {...rest}
     >
       {children}
-      <span className="motion-lock-scan" aria-hidden="true" />
     </Comp>
   );
 }

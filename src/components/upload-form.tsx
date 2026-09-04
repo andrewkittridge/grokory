@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Frame } from "@/components/frame";
-import { BotCover } from "@/components/bot-cover";
+import { BotIdentityStage } from "@/components/bot-identity";
 import { ScanField } from "@/components/scan-field";
 import { TurnstileField } from "@/components/turnstile-field";
 import { cn } from "@/lib/utils";
@@ -151,15 +151,14 @@ export function UploadForm({
       {preview ? (
         <div className="motion-board">
           <Frame staticFrame>
-            <BotCover
-              botId={preview.botId}
+            <BotIdentityStage
+              mark={preview.mark}
               title={preview.title}
               ogImage={preview.ogImage}
-              className="h-28"
-              acquire
+              className="bot-stage-preview"
             />
             <div className="px-4 py-3">
-              <p className="text-lg font-normal tracking-tight">
+              <p className="font-heading text-xl tracking-tight">
                 {preview.title}
               </p>
               <p className="text-sm text-muted-foreground">

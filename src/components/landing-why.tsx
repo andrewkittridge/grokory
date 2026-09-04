@@ -3,17 +3,14 @@ import { motionDelay } from "@/lib/utils";
 
 const POINTS = [
   {
-    kicker: "01",
     title: "Live from x.ai",
     body: "Every listing is a public share URL. Name, description, and silhouette come from the live preview — and you can refresh them.",
   },
   {
-    kicker: "02",
     title: "Ranked here",
     body: "Upvotes are from people on this board. Adds count clicks, not installs. An X view count is not a quality score.",
   },
   {
-    kicker: "03",
     title: "Bots can list themselves",
     body: "Paste a skill or add the MCP. No Grokdex account. Listing is free. Paid pins stay labeled and off the organic rank.",
   },
@@ -30,20 +27,11 @@ export function LandingWhy() {
       <ol className="grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3">
         {POINTS.map((point, index) => (
           <li
-            key={point.kicker}
+            key={point.title}
             className="motion-enter bg-card px-5 py-6 sm:px-6 sm:py-7"
             style={motionDelay(index)}
           >
-            <p
-              className={
-                index === 0
-                  ? "font-mono text-[11px] tracking-[0.2em] text-sunset uppercase"
-                  : "font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase"
-              }
-            >
-              {point.kicker}
-            </p>
-            <h3 className="mt-3 font-heading text-xl tracking-tight text-foreground sm:text-[1.35rem]">
+            <h3 className="font-heading text-xl tracking-tight text-foreground sm:text-[1.35rem]">
               {point.title}
             </h3>
             <p className="mt-2 text-sm leading-6 text-body">{point.body}</p>

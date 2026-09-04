@@ -634,7 +634,6 @@ body {
 .motion-lock,
 .motion-acquire {
   position: relative;
-  overflow: hidden;
   animation: motion-lock-in var(--motion-acquire) both;
   animation-delay: calc(var(--d, 0) * var(--motion-stagger));
 }
@@ -835,26 +834,18 @@ body {
   cursor: pointer;
 }
 
+.bot-stage-preview {
+  min-height: 11rem;
+}
+
+.bot-stage-preview .bot-stage-figure {
+  width: min(9.5rem, 58%);
+}
+
 .hero-letter {
   position: relative;
   display: inline-block;
-  overflow: hidden;
   animation: motion-lock-in 0.5s var(--motion-ease) both;
-  animation-delay: calc(var(--i, 0) * 55ms);
-}
-
-.hero-letter::after {
-  content: "";
-  position: absolute;
-  top: 0.08em;
-  bottom: 0.08em;
-  left: 0;
-  width: 2px;
-  background: var(--sunset);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--sunset) 70%, transparent);
-  pointer-events: none;
-  opacity: 0;
-  animation: motion-lock-scan 0.5s var(--motion-ease) both;
   animation-delay: calc(var(--i, 0) * 55ms);
 }
 
