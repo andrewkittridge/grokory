@@ -780,6 +780,37 @@ body {
   letter-spacing: -0.02em;
 }
 
+.author-kennel-cast {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.1rem;
+  margin-top: 0.9rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.author-kennel-cast::-webkit-scrollbar {
+  display: none;
+}
+
+.author-kennel-bot {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--foreground);
+}
+
+.author-kennel-cast .bot-thumb .grok-bot-rim {
+  display: block;
+  inset: 20% 12% 26%;
+  background: color-mix(in srgb, var(--foreground) 16%, transparent);
+  opacity: 1;
+  filter: blur(16px);
+}
+
+.author-kennel-cast .bot-thumb .grok-bot-motion {
+  animation: bot-bob 4.2s ease-in-out infinite;
+}
+
 .live-cast-more {
   display: flex;
   min-width: 4.5rem;
@@ -1664,6 +1695,7 @@ body {
   .grok-bot-winking .grok-bot-lid-l,
   .grok-bot-motion,
   .live-cast .bot-thumb .grok-bot-motion,
+  .author-kennel-cast .bot-thumb .grok-bot-motion,
   .grok-bot-hopping .grok-bot-motion,
   .grok-bot-hopping .grok-bot-ground,
   .grok-bot-hopping .grok-bot-comet,

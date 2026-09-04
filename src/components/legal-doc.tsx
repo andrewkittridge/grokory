@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { LockTitle } from "@/components/lock-title";
 import { motionDelay } from "@/lib/utils";
 
 export function LegalDoc({
@@ -20,12 +21,9 @@ export function LegalDoc({
       >
         {kicker}
       </p>
-      <h1
-        className="display-page motion-enter mt-4"
-        style={motionDelay(1)}
-      >
+      <LockTitle delay={1} className="mt-4">
         {title}
-      </h1>
+      </LockTitle>
       <p
         className="motion-enter mt-3 text-sm text-muted-foreground"
         style={motionDelay(2)}

@@ -52,36 +52,46 @@ export default async function AuthorsPage() {
           />
         </div>
       ) : (
-        <ol className="board-panel mt-10 divide-y divide-border">
+        <ol className="mt-10 space-y-3">
           {authors.map((author, index) => (
-            <li key={author.slug}>
-              <Link
-                href={`/authors/${encodeURIComponent(author.slug)}`}
-                className="flex items-center justify-between gap-4 px-3 py-3.5 hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground sm:px-5"
-                style={motionDelay(3 + index)}
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <BotIdentityThumb mark={author.mark} />
-                  <span className="min-w-0">
-                    <span className="block truncate font-heading text-[1.05rem] tracking-tight">
-                      {author.name}
-                    </span>
-                    {author.handles.some(
-                      (handle) => xHandleLabel(handle) !== author.name
-                    ) ? (
-                      <span className="mt-0.5 block truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                        {author.handles
-                          .filter((handle) => xHandleLabel(handle) !== author.name)
-                          .map((handle) => xHandleLabel(handle))
-                          .join(" · ")}
-                      </span>
-                    ) : null}
-                  </span>
-                </span>
+            <li
+              key={author.slug}
+              className="author-kennel board-panel motion-enter px-5 py-5 sm:px-6 sm:py-6"
+              style={motionDelay(3 + index)}
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <Link
+                  href={`/authors/${encodeURIComponent(author.slug)}`}
+                  className="min-w-0 truncate font-heading text-xl tracking-tight hover:underline focus-visible:ring-1 focus-visible:ring-foreground sm:text-[1.35rem]"
+                >
+                  {author.name}
+                </Link>
                 <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
                   {author.count === 1 ? "1 bot" : `${author.count} bots`}
                 </span>
-              </Link>
+              </div>
+              {author.handles.some(
+                (handle) => xHandleLabel(handle) !== author.name
+              ) ? (
+                <p className="mt-1 truncate font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                  {author.handles
+                    .filter((handle) => xHandleLabel(handle) !== author.name)
+                    .map((handle) => xHandleLabel(handle))
+                    .join(" · ")}
+                </p>
+              ) : null}
+              <div className="author-kennel-cast">
+                {author.templates.slice(0, 8).map((template) => (
+                  <Link
+                    key={template.slug}
+                    href={`/templates/${template.slug}`}
+                    className="author-kennel-bot"
+                    aria-label={template.title}
+                  >
+                    <BotIdentityThumb mark={template.mark} size="lg" />
+                  </Link>
+                ))}
+              </div>
             </li>
           ))}
         </ol>

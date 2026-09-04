@@ -193,7 +193,7 @@ export function LandingBoard({
           </div>
         ) : null}
         {empty ? (
-          <div className="empty-scan relative grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 overflow-hidden px-4 py-10 sm:px-5 sm:py-12">
+          <div className="relative grid grid-cols-[2.25rem_minmax(0,1fr)] items-start gap-x-3 px-4 py-10 sm:px-5 sm:py-12">
             <span className="pt-1 font-mono text-xs tabular-nums tracking-wide text-muted-foreground">
               01
             </span>
