@@ -80,22 +80,20 @@ function GuideBlockView({ block }: { block: GuideBlock }) {
       );
     case "h2":
       return (
-        <h2 className="pt-4 text-lg font-normal tracking-tight text-foreground">
+        <h2 className="pt-4 font-heading text-xl font-normal tracking-tight text-foreground">
           {block.text}
         </h2>
       );
     case "ol":
       return (
-        <ol className="space-y-3">
+        <ol className="space-y-5">
           {block.items.map((item, index) => (
             <li
               key={index}
-              className="flex gap-4 rounded-lg border border-border bg-card p-4 sm:p-5"
+              className="procedure-step"
+              data-step={String(index + 1).padStart(2, "0")}
             >
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full border border-sunset font-mono text-sm tabular-nums text-sunset">
-                {index + 1}
-              </span>
-              <p className="min-w-0 pt-1">
+              <p>
                 <GuideText text={item} />
               </p>
             </li>

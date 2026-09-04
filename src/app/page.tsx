@@ -9,7 +9,6 @@ import {
   LandingHero,
 } from "@/components/landing-hero";
 import { LandingHow } from "@/components/landing-how";
-import { LandingWhy } from "@/components/landing-why";
 import { faqJson, itemListJson } from "@/lib/json-ld";
 import { partitionFeatured } from "@/lib/featured";
 import {
@@ -78,7 +77,6 @@ async function Home() {
             vacancies={vacancies}
           />
         </LandingHero>
-        <LandingWhy />
         <LandingHow />
         <p
           className="motion-enter mt-12 border-t border-border pt-5 text-sm leading-7 text-body"

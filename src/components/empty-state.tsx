@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GrokBot } from "@/components/grok-bot";
 import { Button } from "@/components/ui/button";
 
 export function EmptyState({
@@ -13,8 +14,11 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="board-panel relative px-6 py-16 text-center">
-      <h3 className="display-section">{title}</h3>
+    <div className="relative px-6 py-16 text-center">
+      <div className="mx-auto w-[5.5rem]">
+        <GrokBot />
+      </div>
+      <h3 className="display-section mt-6">{title}</h3>
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-body">
         {body}
       </p>
