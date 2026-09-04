@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { breadcrumbListJson, howToJson } from "./json-ld";
+import {
+  breadcrumbListJson,
+  definedTermJson,
+  guideListJson,
+  howToJson,
+  personJson,
+} from "./json-ld";
 
 test("breadcrumbListJson is Board then listing", () => {
   const json = breadcrumbListJson([
@@ -32,4 +38,35 @@ test("howToJson lists numbered steps", () => {
   assert.equal(json.step.length, 2);
   assert.equal(json.step[0]?.position, 1);
   assert.equal(json.step[0]?.["@type"], "HowToStep");
+});
+
+test("definedTermJson names Grok Bot and points at the what-is guide", () => {
+  const json = definedTermJson();
+  assert.equal(json["@type"], "DefinedTerm");
+  assert.equal(json.name, "Grok Bot");
+  assert.equal(json.url, "https://grokdex.net/guides/what-is-grokdex");
+  assert.match(json.description, /https:\/\/x\.ai\/bot/);
+  assert.equal(json.inDefinedTermSet.name, "Grokdex");
+});
+
+test("personJson is an author URL with optional sameAs", () => {
+  const json = personJson("Ada", "/authors/ada", "https://x.com/ada");
+  assert.equal(json["@type"], "Person");
+  assert.equal(json.url, "https://grokdex.net/authors/ada");
+  assert.equal(json.sameAs, "https://x.com/ada");
+  const bare = personJson("Ada", "/authors/ada");
+  assert.equal("sameAs" in bare, false);
+});
+
+test("guideListJson lists hub URLs", () => {
+  const json = guideListJson([
+    { name: "How to list a Grok Bot on Grokdex", path: "/guides/how-to-list" },
+  ]);
+  assert.equal(json["@type"], "ItemList");
+  assert.equal(json.url, "https://grokdex.net/guides");
+  assert.equal(json.numberOfItems, 1);
+  assert.equal(
+    json.itemListElement[0]?.url,
+    "https://grokdex.net/guides/how-to-list"
+  );
 });

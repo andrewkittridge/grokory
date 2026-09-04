@@ -12,7 +12,7 @@ export function SiteFooter() {
               <span className="text-sm tracking-tight">Grokdex</span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">
-              The ranked public board of Grok Bot share links. Independent — not
+              The ranked public board of Grok Bot share links. Independent. Not
               affiliated with xAI or SpaceXAI.
             </p>
           </div>
@@ -28,9 +28,9 @@ export function SiteFooter() {
           <FooterCol
             title="Learn"
             links={[
-              { href: "/guides/what-is-grokdex", label: "What is Grokdex" },
-              { href: "/guides/how-to-add", label: "How to add" },
+              { href: "/guides", label: "Guides" },
               { href: "/guides/how-to-list", label: "How to list" },
+              { href: "/guides/how-to-add", label: "How to add" },
               { href: "/faq", label: "FAQ" },
             ]}
           />

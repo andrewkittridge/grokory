@@ -25,6 +25,7 @@ import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
 import { breadcrumbListJson, softwareJson } from "@/lib/json-ld";
 import { authorIdentity, formatCount, preferredAuthorName } from "@/lib/bot-url";
+import { pageMetadata } from "@/lib/site";
 import { isStripeConfigured } from "@/lib/stripe";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
@@ -51,21 +52,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const template = await getTemplate(slug);
   if (!template) return { title: "Bot not found" };
-  return {
+  return pageMetadata({
     title: template.title,
     description: template.summary,
-    alternates: { canonical: `/templates/${slug}` },
-    openGraph: {
-      title: template.title,
-      description: template.summary,
-      url: `/templates/${slug}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: template.title,
-      description: template.summary,
-    },
-  };
+    path: `/templates/${slug}`,
+  });
 }
 
 export default async function TemplateDetailPage({

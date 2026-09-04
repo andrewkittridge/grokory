@@ -35,6 +35,21 @@ test("pageMetadata sets page-specific OG url and title", () => {
   });
   assert.equal(board.openGraph?.url, "https://grokdex.net/templates");
   assert.equal(board.openGraph?.title, "The board · Grokdex");
+
+  const upload = pageMetadata({
+    title: "Share a Grok Bot",
+    description: "Paste a share link.",
+    path: "/upload",
+  });
+  assert.equal(upload.openGraph?.url, "https://grokdex.net/upload");
+  assert.notEqual(upload.openGraph?.url, "https://grokdex.net");
+
+  const catalog = pageMetadata({
+    title: "Catalog",
+    description: "Public Grok Bots in a parade.",
+    path: "/catalog",
+  });
+  assert.equal(catalog.openGraph?.url, "https://grokdex.net/catalog");
 });
 
 test("site title and description name the ranked directory", () => {

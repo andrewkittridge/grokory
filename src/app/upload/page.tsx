@@ -3,16 +3,17 @@ import { Frame } from "@/components/frame";
 import { LockTitle } from "@/components/lock-title";
 import { UploadForm } from "@/components/upload-form";
 import { isFoundingBoard } from "@/lib/founding";
+import { pageMetadata } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 import { turnstileSiteKey } from "@/lib/turnstile";
 import { motionDelay } from "@/lib/utils";
 
-export const metadata = {
+export const metadata = pageMetadata({
   title: "Share a Grok Bot",
   description:
     "Paste an x.ai/bot share link. It lists on the ranked Grokdex board immediately. Free, no account. Your bot can list itself.",
-  alternates: { canonical: "/upload" },
-};
+  path: "/upload",
+});
 
 const REASONS = [
   {

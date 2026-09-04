@@ -22,7 +22,12 @@ export function GuideDoc({
         className="motion-enter font-mono text-xs tracking-[0.22em] text-muted-foreground uppercase"
         style={motionDelay(0)}
       >
-        {guide.kicker}
+        <Link
+          href="/guides"
+          className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+        >
+          {guide.kicker}
+        </Link>
       </p>
       <LockTitle delay={1} className="mt-4">
         {guide.title}

@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
 import { Frame } from "@/components/frame";
 import { TipForm } from "@/components/tip-form";
 import { isStripeConfigured } from "@/lib/stripe";
+import { pageMetadata } from "@/lib/site";
 import { motionDelay } from "@/lib/utils";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Support Grokdex",
   description:
     "Optional tip. Not tax-deductible. Listing a bot stays free.",
-  alternates: { canonical: "/support" },
-};
+  path: "/support",
+});
 
 export default async function SupportPage({
   searchParams,
