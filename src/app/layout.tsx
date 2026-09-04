@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import Script from "next/script";
 import { GoogleTag } from "@/components/google-tag";
 import { JsonLd } from "@/components/json-ld";
 import { PageTransition } from "@/components/page-transition";
@@ -83,6 +84,12 @@ export default function RootLayout({
           rel="ai-catalog"
           href="/.well-known/ai-catalog.json"
           type="application/json"
+        />
+        <Script
+          src="https://datafa.st/js/script.js"
+          data-website-id="dfid_7KqEADELqhwilQffUQram"
+          data-domain="grokdex.net"
+          strategy="afterInteractive"
         />
       </head>
       <body className="relative flex min-h-full flex-col">
