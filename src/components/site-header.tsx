@@ -45,17 +45,22 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "site-header sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-sm",
+        "site-header sticky top-0 z-40 border-b border-border bg-background",
         dense && "header-dense"
       )}
     >
-      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <Link
           href="/"
           className="group/mark flex min-w-0 shrink-0 items-center gap-2.5"
         >
           <BrandMark className="site-brand-mark size-[1.15rem] text-foreground" />
-          <span className="font-heading text-[1.05rem] tracking-tight">
+          <span
+            className={cn(
+              "font-heading text-[1.05rem] tracking-tight",
+              !catalog && "max-sm:sr-only"
+            )}
+          >
             Grokdex
           </span>
         </Link>

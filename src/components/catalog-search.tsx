@@ -70,7 +70,7 @@ export function CatalogSearch({
           spellCheck={false}
           enterKeyHint="search"
           placeholder={HINTS[hydrated ? hintIndex : 0]}
-          className="h-8 font-mono text-sm"
+          className="h-8 rounded-none font-mono text-sm"
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           onChange={(event) => onQuery(event.target.value)}

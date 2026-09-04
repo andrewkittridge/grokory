@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "btn-shine relative overflow-hidden rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
+          "rounded-full bg-primary text-primary-foreground hover:bg-primary/90",
         outline:
           "rounded-full border-pill-border bg-transparent text-foreground hover:bg-canvas-soft aria-expanded:bg-canvas-soft",
         secondary:

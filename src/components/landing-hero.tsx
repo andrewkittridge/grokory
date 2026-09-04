@@ -199,7 +199,6 @@ export function LandingBoard({
             <BotRankList
               templates={featured}
               showVote
-              scramble
               surface="roster"
               delay={18}
             />
@@ -230,7 +229,6 @@ export function LandingBoard({
           <BotRankList
             templates={ranked}
             showVote
-            scramble
             leader
             surface="roster"
             vacancies={vacancies}

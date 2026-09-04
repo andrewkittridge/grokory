@@ -250,7 +250,7 @@ export default async function TemplateDetailPage({
         <section className="mt-16">
           <h2 className="display-section">Related</h2>
           <div className="mt-5 border-y border-border">
-            <BotRankList templates={related} showVote scramble />
+            <BotRankList templates={related} showVote />
           </div>
         </section>
       ) : null}

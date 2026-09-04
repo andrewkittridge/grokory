@@ -128,7 +128,6 @@ export default async function AuthorPage({
       <BotRankList
         templates={templates}
         showVote
-        scramble
         className="mt-8 border-y border-border"
       />
     </main>

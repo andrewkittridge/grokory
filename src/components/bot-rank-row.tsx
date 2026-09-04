@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
-import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
 import { OpenSlots } from "@/components/open-slots";
@@ -26,7 +25,6 @@ export function BotRankRow({
   template,
   showVote = false,
   size = "default",
-  scramble = false,
   scoreMax,
   surface = "board",
 }: {
@@ -34,7 +32,6 @@ export function BotRankRow({
   template: ListedTemplate;
   showVote?: boolean;
   size?: "default" | "leader";
-  scramble?: boolean;
   scoreMax?: number;
   surface?: "board" | "roster";
 }) {
@@ -76,27 +73,15 @@ export function BotRankRow({
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={template.title}
       />
-      {scramble ? (
-        <RankTick
-          rank={rank}
-          className={cn(
-            "relative z-10 shrink-0",
-            roster && "w-8",
-            leader ? "pt-1" : "pt-1",
-            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
-          )}
-        />
-      ) : (
-        <span
-          className={cn(
-            "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
-            roster && "w-8",
-            rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
-          )}
-        >
-          {String(rank).padStart(2, "0")}
-        </span>
-      )}
+      <span
+        className={cn(
+          "relative z-10 shrink-0 pt-1 font-mono text-xs tabular-nums tracking-wide",
+          roster && "w-8",
+          rank === 1 ? "rank-num-first text-sunset" : "rank-num text-muted-foreground"
+        )}
+      >
+        {String(rank).padStart(2, "0")}
+      </span>
       <span className="relative z-10 pointer-events-none">
         <BotIdentityThumb
           mark={template.mark}
@@ -198,7 +183,6 @@ export function BotRankRow({
 export function BotRankList({
   templates,
   showVote = false,
-  scramble = false,
   leader = false,
   vacant = false,
   vacancies,
@@ -208,7 +192,6 @@ export function BotRankList({
 }: {
   templates: ListedTemplate[];
   showVote?: boolean;
-  scramble?: boolean;
   leader?: boolean;
   vacant?: boolean;
   vacancies?: BoardVacancy[];
@@ -238,7 +221,6 @@ export function BotRankList({
             template={template}
             showVote={showVote}
             size={leader && index === 0 ? "leader" : "default"}
-            scramble={scramble}
             scoreMax={scoreMax}
             surface={surface}
           />
@@ -247,7 +229,6 @@ export function BotRankList({
       <OpenSlots
         slots={open}
         startRank={templates.length + 1}
-        scramble={false}
         delay={delay + templates.length}
         surface={surface}
         inviteAgent={

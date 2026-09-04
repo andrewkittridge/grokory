@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { RankTick } from "@/components/telemetry";
 import {
   LIST_AGENT_HREF,
   LIST_SKILL_PATH,
@@ -22,14 +21,12 @@ function isOpenSlot(target: EventTarget | null) {
 export function OpenSlots({
   slots,
   startRank,
-  scramble = false,
   delay = 0,
   surface = "board",
   inviteAgent = false,
 }: {
   slots: BoardVacancy[];
   startRank: number;
-  scramble?: boolean;
   delay?: number;
   surface?: "board" | "roster";
   inviteAgent?: boolean;
@@ -100,7 +97,6 @@ export function OpenSlots({
           ) : (
             <VacantRankRow
               rank={startRank + index}
-              scramble={scramble}
               label={slot.label}
               hint={slot.hint}
               href={slot.href}
@@ -180,7 +176,6 @@ function AgentInvite({ surface }: { surface: "board" | "roster" }) {
 
 function VacantRankRow({
   rank,
-  scramble = false,
   label = "Share a bot",
   hint,
   href = "/upload",
@@ -188,7 +183,6 @@ function VacantRankRow({
   surface = "board",
 }: {
   rank: number;
-  scramble?: boolean;
   live?: boolean;
   surface?: "board" | "roster";
 } & Partial<BoardVacancy>) {
@@ -213,24 +207,14 @@ function VacantRankRow({
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"
         aria-label={hint ? `${label}. ${hint}` : label}
       />
-      {scramble ? (
-        <RankTick
-          className={cn(
-            "relative z-10 shrink-0 text-muted-foreground",
-            roster && "w-8"
-          )}
-          rank={rank}
-        />
-      ) : (
-        <span
-          className={cn(
-            "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground",
-            roster && "w-8"
-          )}
-        >
-          {String(rank).padStart(2, "0")}
-        </span>
-      )}
+      <span
+        className={cn(
+          "relative z-10 shrink-0 font-mono text-xs tabular-nums tracking-wide text-muted-foreground",
+          roster && "w-8"
+        )}
+      >
+        {String(rank).padStart(2, "0")}
+      </span>
       <span className="bot-thumb-empty relative z-10" aria-hidden="true" />
       <span className="relative z-10 min-w-0 flex-1 overflow-hidden pointer-events-none">
         <span className="rank-open-label block truncate text-[15px] leading-tight">

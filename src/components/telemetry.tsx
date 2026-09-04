@@ -2,53 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useHydrated, usePrefersReducedMotion } from "@/lib/motion";
-import { cn } from "@/lib/utils";
-
-const GLYPHS = "0123456789";
-
-export function RankTick({
-  rank,
-  className,
-}: {
-  rank: number;
-  className?: string;
-}) {
-  const label = String(rank).padStart(2, "0");
-  const hydrated = useHydrated();
-  const reduced = usePrefersReducedMotion();
-  const animate = hydrated && !reduced;
-  const [text, setText] = useState(label);
-
-  useEffect(() => {
-    if (!animate) return;
-
-    let frame = 0;
-    let timer = 0;
-    const frames = 16;
-    const tick = () => {
-      frame += 1;
-      if (frame >= frames) {
-        setText(label);
-        return;
-      }
-      setText(
-        `${GLYPHS[(Math.random() * 10) | 0]}${GLYPHS[(Math.random() * 10) | 0]}`
-      );
-      timer = window.setTimeout(tick, 36);
-    };
-    timer = window.setTimeout(tick, 0);
-    return () => window.clearTimeout(timer);
-  }, [animate, label]);
-
-  return (
-    <span
-      aria-label={label}
-      className={cn("font-mono text-xs tabular-nums tracking-wide", className)}
-    >
-      <span aria-hidden="true">{animate ? text : label}</span>
-    </span>
-  );
-}
 
 export function CountTick({
   value,

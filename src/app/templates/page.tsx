@@ -106,7 +106,6 @@ export default async function TemplatesPage({
               <BotRankList
                 templates={[]}
                 vacancies={vacancies}
-                scramble
               />
             </div>
           ) : emptyBoard ? (
@@ -132,7 +131,7 @@ export default async function TemplatesPage({
               <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Featured
               </p>
-              <BotRankList templates={featured} showVote scramble />
+              <BotRankList templates={featured} showVote />
             </div>
           ) : null}
           {boosted.length > 0 ? (
@@ -140,14 +139,13 @@ export default async function TemplatesPage({
               <p className="px-3 py-3 font-mono text-[10px] tracking-[0.2em] text-muted-foreground uppercase sm:px-5">
                 Boosted
               </p>
-              <BotRankList templates={boosted} showVote scramble />
+              <BotRankList templates={boosted} showVote />
             </div>
           ) : null}
           {templates.length > 0 || vacancies.length > 0 ? (
             <BotRankList
               templates={templates}
               showVote
-              scramble
               leader
               vacancies={vacancies}
             />
