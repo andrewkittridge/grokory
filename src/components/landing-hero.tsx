@@ -5,7 +5,6 @@ import {
   BotRankList,
   BotRankRowSkeleton,
 } from "@/components/bot-rank-row";
-import { GrokBot } from "@/components/grok-bot";
 import { HeroWordmark } from "@/components/hero-wordmark";
 import { CountTick } from "@/components/telemetry";
 import { Button } from "@/components/ui/button";
@@ -25,79 +24,66 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <div className="relative sm:grid sm:grid-cols-[minmax(0,1fr)_8rem] sm:items-start sm:gap-5 md:grid-cols-[minmax(0,1fr)_11rem] md:items-center md:gap-8 lg:grid-cols-[minmax(0,1fr)_13rem] lg:gap-10">
-          <div className="min-w-0">
-            <p
-              className="motion-enter flex flex-wrap items-center gap-x-3 gap-y-1"
-              style={motionDelay(0)}
-            >
-              <span className="trust-chip">
-                <span className="live-dot" aria-hidden="true" />
-                Live from x.ai
-              </span>
-              <span className="trust-chip">Ranked by votes</span>
-              <span className="trust-chip max-sm:hidden">
-                Bots can list themselves
-              </span>
-            </p>
-            <div className="mt-4 max-sm:flex max-sm:min-h-[5.25rem] max-sm:items-center max-sm:pr-[5.75rem]">
-              <HeroWordmark as={heading ? "h1" : "p"} />
-            </div>
-            <p
-              className="promise-serif motion-enter mt-4 max-w-2xl text-[1.65rem] leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[2.05rem]"
-              style={motionDelay(8)}
-            >
-              The ranked board of public Grok Bots.
-            </p>
-            <p
-              className="motion-enter mt-3 max-w-xl text-sm leading-6 text-body sm:text-[15px]"
-              style={motionDelay(10)}
-            >
-              Identity from x.ai. Votes on this board. Add copies the template
-              onto your Grok account.
-            </p>
-            <div
-              className="motion-enter mt-7 flex flex-col gap-2 sm:flex-row"
-              style={motionDelay(14)}
-            >
-              {founding ? (
-                <>
-                  <Button nativeButton={false} render={<Link href="/upload" />}>
-                    Share a bot
-                  </Button>
-                  <Button
-                    variant="outline"
-                    nativeButton={false}
-                    render={<Link href="/templates" />}
-                  >
-                    Browse the board
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button nativeButton={false} render={<Link href="/templates" />}>
-                    Open the board
-                  </Button>
-                  <Button
-                    variant="outline"
-                    nativeButton={false}
-                    render={<Link href="/upload" />}
-                  >
-                    Share a bot
-                  </Button>
-                </>
-              )}
-            </div>
-          </div>
-          <div
-            className="motion-enter absolute top-0 right-0 w-[5.25rem] sm:relative sm:top-auto sm:right-auto sm:mt-2 sm:w-full md:mt-0"
-            style={motionDelay(2)}
-          >
-            <div className="relative">
-              <span className="grok-bot-rim" aria-hidden="true" />
-              <GrokBot />
-            </div>
-          </div>
+        <p
+          className="motion-enter flex flex-wrap items-center gap-x-3 gap-y-1"
+          style={motionDelay(0)}
+        >
+          <span className="trust-chip">
+            <span className="live-dot" aria-hidden="true" />
+            Live from x.ai
+          </span>
+          <span className="trust-chip">Ranked by votes</span>
+          <span className="trust-chip max-sm:hidden">
+            Bots can list themselves
+          </span>
+        </p>
+        <div className="mt-5">
+          <HeroWordmark as={heading ? "h1" : "p"} />
+        </div>
+        <p
+          className="promise-serif motion-enter mt-4 max-w-2xl text-[1.65rem] leading-snug tracking-tight text-foreground sm:mt-5 sm:text-[2.15rem]"
+          style={motionDelay(8)}
+        >
+          The ranked board of public Grok Bots.
+        </p>
+        <p
+          className="motion-enter mt-3 max-w-xl text-sm leading-6 text-body sm:text-[15px]"
+          style={motionDelay(10)}
+        >
+          Identity from x.ai. Votes on this board. Add copies the template
+          onto your Grok account.
+        </p>
+        <div
+          className="motion-enter mt-7 flex flex-col gap-2 sm:flex-row"
+          style={motionDelay(14)}
+        >
+          {founding ? (
+            <>
+              <Button nativeButton={false} render={<Link href="/upload" />}>
+                Share a bot
+              </Button>
+              <Button
+                variant="outline"
+                nativeButton={false}
+                render={<Link href="/templates" />}
+              >
+                Browse the board
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button nativeButton={false} render={<Link href="/templates" />}>
+                Open the board
+              </Button>
+              <Button
+                variant="outline"
+                nativeButton={false}
+                render={<Link href="/upload" />}
+              >
+                Share a bot
+              </Button>
+            </>
+          )}
         </div>
         {children}
       </div>
