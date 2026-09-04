@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
+import { GrokBot } from "@/components/grok-bot";
 import {
   BotRankList,
   BotRankRowSkeleton,
@@ -27,22 +28,30 @@ export function LandingHero({
   return (
     <section className="relative isolate">
       <div className="relative z-10">
-        <p className="cmd motion-enter" style={motionDelay(0)}>
-          {founding ? "just opened" : "live"}
-          <span className="mx-2 text-border" aria-hidden="true">
-            ·
-          </span>
-          ranked public grok bots
-        </p>
-        <div className="mt-3">
-          <HeroWordmark as={heading ? "h1" : "p"} />
+        <div className="flex flex-col-reverse items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0 flex-1">
+            <p className="cmd motion-enter" style={motionDelay(0)}>
+              {founding ? "just opened" : "live"}
+              <span className="mx-2 text-border" aria-hidden="true">
+                ·
+              </span>
+              ranked public grok bots
+            </p>
+            <div className="mt-3">
+              <HeroWordmark as={heading ? "h1" : "p"} />
+            </div>
+            <p
+              className="motion-enter mt-4 max-w-xl text-[1.05rem] leading-7 text-body sm:mt-5 sm:text-[1.15rem]"
+              style={motionDelay(1)}
+            >
+              Identity from x.ai. Add copies the template onto your Grok
+              account.
+            </p>
+          </div>
+          <div className="landing-mascot motion-enter" style={motionDelay(0)}>
+            <GrokBot enterOnMount />
+          </div>
         </div>
-        <p
-          className="motion-enter mt-4 max-w-xl text-[1.05rem] leading-7 text-body sm:mt-5 sm:text-[1.15rem]"
-          style={motionDelay(1)}
-        >
-          Identity from x.ai. Add copies the template onto your Grok account.
-        </p>
         {lead}
         <div
           className="motion-enter mt-7 flex flex-row flex-wrap gap-2"

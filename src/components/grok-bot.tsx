@@ -7,9 +7,17 @@ import {
   GROK_BOT_EYE_R,
   GROK_BOT_MARK_VIEWBOX,
 } from "@/lib/grok-bot-shapes";
+import {
+  GROK_BOT_ENTER_CLASS,
+  GROK_BOT_HOP_CLASS,
+  enterGrokBot,
+  hopGrokBot,
+} from "@/lib/grok-bot-motion";
 import { usePrefersReducedMotion } from "@/lib/motion";
 import type { BotMark } from "@/lib/types";
 import { cn } from "@/lib/utils";
+
+export { hopGrokBot } from "@/lib/grok-bot-motion";
 
 export function GrokBotMark({ className }: { className?: string }) {
   const rawId = useId();
@@ -126,13 +134,6 @@ export function GrokBotIdentityMark({
   );
 }
 
-export function hopGrokBot(el: HTMLElement | null, reduced: boolean) {
-  if (!el || reduced) return;
-  el.classList.remove("grok-bot-hopping");
-  void el.offsetWidth;
-  el.classList.add("grok-bot-hopping");
-}
-
 export function gazeGrokBot(
   el: HTMLElement | null,
   clientX: number,
@@ -166,9 +167,20 @@ export function clearGrokBotGaze(el: HTMLElement | null) {
   el.style.removeProperty("--spec-y");
 }
 
-export function GrokBot({ className }: { className?: string }) {
+export function GrokBot({
+  className,
+  enterOnMount = false,
+}: {
+  className?: string;
+  enterOnMount?: boolean;
+}) {
   const reduced = usePrefersReducedMotion();
   const rootRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!enterOnMount) return;
+    enterGrokBot(rootRef.current, reduced);
+  }, [enterOnMount, reduced]);
 
   useEffect(() => {
     const el = rootRef.current;
@@ -275,7 +287,8 @@ export function GrokBot({ className }: { className?: string }) {
       onClick={() => hopGrokBot(rootRef.current, reduced)}
       onAnimationEnd={(event) => {
         if (event.animationName === "bot-hop") {
-          event.currentTarget.classList.remove("grok-bot-hopping");
+          event.currentTarget.classList.remove(GROK_BOT_HOP_CLASS);
+          event.currentTarget.classList.remove(GROK_BOT_ENTER_CLASS);
         }
         if (event.animationName === "bot-wink") {
           event.currentTarget.classList.remove("grok-bot-winking");

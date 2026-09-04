@@ -687,6 +687,28 @@ body {
   animation: bot-shadow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.landing-mascot {
+  width: min(13.5rem, 46vw);
+  margin-top: 0.35rem;
+  overflow: visible;
+}
+
+.grok-bot-entering {
+  --eye-scale: 1.1;
+}
+
+.grok-bot-entering .grok-bot-motion {
+  animation: bot-hop 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.grok-bot-entering .grok-bot-ground {
+  animation: bot-shadow 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.grok-bot-entering .grok-bot-lid-l {
+  animation: bot-wink 0.42s ease 0.28s both;
+}
+
 @media (hover: hover) {
   .group\/bot:hover,
   .group\/bot:focus-visible {
@@ -996,6 +1018,10 @@ body {
   .author-kennel-cast .bot-thumb .grok-bot-motion,
   .grok-bot-hopping .grok-bot-motion,
   .grok-bot-hopping .grok-bot-ground,
+  .grok-bot-entering,
+  .grok-bot-entering .grok-bot-motion,
+  .grok-bot-entering .grok-bot-ground,
+  .grok-bot-entering .grok-bot-lid-l,
   .btn-ignite:active,
   .vote-tick-up,
   .vote-tick-down,
