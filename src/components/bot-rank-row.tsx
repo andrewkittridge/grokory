@@ -5,7 +5,6 @@ import { RankTick } from "@/components/telemetry";
 import { VoteButtons } from "@/components/vote-buttons";
 import { BoostedMark, FeaturedMark } from "@/components/feature-cta";
 import { OpenSlots } from "@/components/open-slots";
-import { ShareListing } from "@/components/share-listing";
 import {
   addHandleHref,
   formatAdds,
@@ -19,7 +18,6 @@ import {
   isSeatsOpenInvite,
   type BoardVacancy,
 } from "@/lib/founding";
-import { absUrl } from "@/lib/site";
 import { cn, motionDelay } from "@/lib/utils";
 import type { ListedTemplate } from "@/lib/types";
 
@@ -59,7 +57,7 @@ export function BotRankRow({
   return (
     <div
       className={cn(
-        "rank-row relative flex flex-wrap items-start gap-x-3 gap-y-2 hover:bg-canvas-soft",
+        "rank-row relative flex items-start gap-x-3 hover:bg-canvas-soft",
         leader && "rank-row-leader",
         rank === 1 && "rank-row-first",
         roster && "rank-row-roster",
@@ -175,32 +173,23 @@ export function BotRankRow({
       </span>
       <span
         className={cn(
-          "relative z-10 flex w-full items-center gap-1.5 pl-11 sm:w-auto sm:pl-0 sm:self-center",
-          leader && "sm:self-start sm:pt-1"
+          "relative z-10 ml-auto flex shrink-0 items-center self-center",
+          leader && "self-start pt-1"
         )}
       >
-        <ShareListing
-          title={template.title}
-          listingUrl={absUrl(`/templates/${template.slug}`)}
-          xHandle={template.xHandle}
-          summary={template.summary}
-          compact="row"
-        />
-        <span className="ml-auto flex shrink-0 items-center">
-          {showVote ? (
-            <VoteButtons
-              templateId={template.id}
-              score={template.score}
-              userVote={template.userVote}
-              layout="row"
-              size="mat"
-            />
-          ) : (
-            <span className="font-mono text-xs tabular-nums text-muted-foreground">
-              {points}
-            </span>
-          )}
-        </span>
+        {showVote ? (
+          <VoteButtons
+            templateId={template.id}
+            score={template.score}
+            userVote={template.userVote}
+            layout="row"
+            size="mat"
+          />
+        ) : (
+          <span className="font-mono text-xs tabular-nums text-muted-foreground">
+            {points}
+          </span>
+        )}
       </span>
     </div>
   );

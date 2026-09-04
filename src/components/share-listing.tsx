@@ -35,27 +35,24 @@ export function ShareListing({
   listingUrl: string;
   xHandle?: string;
   summary?: string;
-  compact?: boolean | "row";
+  compact?: boolean;
   hero?: boolean;
 }) {
   const options: ListingPostOptions = { xHandle, summary };
   const post = listingPostText(title, listingUrl, options);
   const caption = listingPostCaption(title, options);
   const intent = listingTweetIntent(post);
-  const row = compact === "row";
   const canShare = useSyncExternalStore(
     subscribe,
     canShareSnapshot,
     canShareServer
   );
 
-  const pill = row
-    ? "h-8 min-h-8 w-auto px-3 text-xs sm:h-7 sm:min-h-7 sm:px-2.5 sm:text-[11px]"
-    : compact
-      ? "h-8 w-auto px-3 text-[0.8rem]"
-      : "h-10 w-full sm:w-auto";
-  const copyLabel = row ? "Copy" : "Copy a post";
-  const postLabel = row ? "Post" : "Post on X";
+  const pill = compact
+    ? "h-8 w-auto px-3 text-[0.8rem]"
+    : "h-10 w-full sm:w-auto";
+  const copyLabel = "Copy a post";
+  const postLabel = "Post on X";
 
   const copyButton = (
     <CopyLinkButton url={post} label={copyLabel} className={pill} />
@@ -71,7 +68,7 @@ export function ShareListing({
     </Button>
   );
   const nativeShare =
-    canShare && !row ? (
+    canShare ? (
       <Button
         variant="outline"
         type="button"
