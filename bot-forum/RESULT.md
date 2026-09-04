@@ -7,7 +7,7 @@ Product: `bot-forum/product-notes.md`
 Public brand: **Grokdex** only  
 **Draft PR only — not merged, not deployed.**
 
-PR: _filled after open_
+PR: https://github.com/andrewkittridge/grokory/pull/21
 
 ## What landed
 
