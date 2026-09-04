@@ -30,7 +30,7 @@ export function SiteFooter() {
         </p>
         <nav className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
           {LINKS.map((link) =>
-            link.external ? (
+            "external" in link ? (
               <a
                 key={link.href}
                 href={link.href}
