@@ -409,23 +409,6 @@ body {
   }
 }
 
-@keyframes input-scan {
-  from {
-    left: 0;
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  88% {
-    opacity: 1;
-  }
-  to {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
 @keyframes vt-fade {
   from {
     opacity: 1;
@@ -456,15 +439,6 @@ body {
   }
   100% {
     transform: scaleY(0);
-  }
-}
-
-@keyframes empty-scan {
-  from {
-    top: 0;
-  }
-  to {
-    top: 100%;
   }
 }
 
@@ -1206,23 +1180,6 @@ body {
   animation: motion-lock-scan var(--motion-acquire) both;
 }
 
-.empty-scan::after,
-.empty-scan-bar {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  pointer-events: none;
-  background: color-mix(in srgb, var(--foreground) 55%, transparent);
-  box-shadow: 0 0 8px rgb(255 255 255 / 0.2);
-  animation: empty-scan 2.8s linear infinite;
-}
-
-.empty-scan-bar {
-  content: none;
-}
-
 .btn-shine::after {
   content: "";
   position: absolute;
@@ -1451,44 +1408,6 @@ body {
   transform: rotate(45deg);
 }
 
-.input-scan {
-  position: relative;
-  overflow: hidden;
-}
-
-.input-scan::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  width: 2px;
-  pointer-events: none;
-  background: var(--sunset);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--sunset) 70%, transparent);
-  animation: input-scan 1.15s var(--motion-ease) infinite;
-}
-
-.board-strip {
-  position: sticky;
-  top: 3.5rem;
-  z-index: 30;
-  margin-inline: -1rem;
-  border-block: 1px solid var(--border);
-  background: color-mix(in srgb, var(--background) 92%, transparent);
-  padding-inline: 1rem;
-  padding-block: 0.55rem;
-  backdrop-filter: blur(8px);
-}
-
-@media (min-width: 640px) {
-  .board-strip {
-    margin-inline: -1.5rem;
-    padding-inline: 1.5rem;
-  }
-}
-
 .procedure-step {
   position: relative;
   padding-left: 2.1rem;
@@ -1633,8 +1552,6 @@ body {
   .rank-row-leader::before,
   .rank-row-first::before,
   .rank-open-scan,
-  .empty-scan::after,
-  .empty-scan-bar,
   .btn-shine::after,
   .btn-ignite:active,
   .vote-tick-up,
@@ -1649,12 +1566,15 @@ body {
   .vote-burst-down .vote-diamond-c,
   .site-field,
   .nav-pip,
-  .input-scan::after,
   .catalog-lane-track,
   .catalog-bot,
   .catalog-bot-summary,
   .bot-stage-figure .grok-bot-motion {
     animation: none;
+  }
+
+  .site-field {
+    display: none;
   }
 
   .live-dot {
@@ -1695,13 +1615,6 @@ body {
     opacity: 0;
   }
 
-  .empty-scan::after,
-  .empty-scan-bar,
-  .input-scan::after {
-    content: none;
-  }
-
-  .empty-scan-bar,
   .rank-open-scan {
     display: none;
   }

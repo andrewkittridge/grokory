@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BotIdentityStage } from "@/components/bot-identity";
-import { ScanField } from "@/components/scan-field";
 import { TurnstileField } from "@/components/turnstile-field";
 import { cn } from "@/lib/utils";
 
@@ -98,20 +97,18 @@ export function UploadForm({
           Grok Bot share link
         </Label>
         <div className="flex flex-col gap-2 sm:flex-row">
-          <ScanField active={lookupPending} failed={!!lookupError}>
-            <Input
-              id="shareUrl"
-              name="shareUrl"
-              value={shareUrl}
-              onChange={(event) => setShareUrl(event.target.value)}
-              onBlur={() => {
-                if (parseShareUrl(shareUrl)) runLookup(shareUrl);
-              }}
-              placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
-              className="h-10 font-mono"
-              autoComplete="off"
-            />
-          </ScanField>
+          <Input
+            id="shareUrl"
+            name="shareUrl"
+            value={shareUrl}
+            onChange={(event) => setShareUrl(event.target.value)}
+            onBlur={() => {
+              if (parseShareUrl(shareUrl)) runLookup(shareUrl);
+            }}
+            placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
+            className="h-10 min-w-0 flex-1 font-mono"
+            autoComplete="off"
+          />
           <Button
             type="button"
             variant="outline"

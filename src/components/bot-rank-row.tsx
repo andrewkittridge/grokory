@@ -67,7 +67,7 @@ export function BotRankRow({
       {spark > 0 && rank === 1 ? (
         <span
           className="rank-spark"
-          style={{ "--spark": spark } as CSSProperties}
+          style={{ "--spark": String(spark) } as CSSProperties}
           aria-hidden="true"
         />
       ) : null}

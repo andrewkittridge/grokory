@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, ViewTransition } from "react";
+import { ViewTransition } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { BrandMark } from "@/components/brand-mark";
 import { SiteSearch } from "@/components/site-search";
 import { Button } from "@/components/ui/button";
+import { useHydrated } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -61,11 +62,7 @@ export function SiteHeader() {
         {catalog ? (
           <div className="min-w-0 flex-1" />
         ) : (
-          <Suspense
-            fallback={<SiteSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />}
-          >
-            <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
-          </Suspense>
+          <HeaderSearch className="mx-1 min-w-0 flex-1 sm:mx-2" />
         )}
         <nav className="ml-auto hidden items-center gap-1 lg:flex">
           {NAV.map((item) => (
@@ -89,7 +86,7 @@ export function SiteHeader() {
           <summary className="flex cursor-pointer list-none items-center rounded-full border border-pill-border px-3 py-1.5 text-sm text-foreground hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground [&::-webkit-details-marker]:hidden">
             Menu
           </summary>
-          <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-border bg-popover p-2">
+          <div className="absolute right-0 z-50 mt-2 w-64 border border-border bg-background p-2">
             <nav className="flex flex-col">
               {NAV.map((item) => (
                 <Button
@@ -119,8 +116,17 @@ export function SiteHeader() {
 }
 
 function HeaderSearch({ className }: { className?: string }) {
-  const params = useSearchParams();
-  return <SiteSearch defaultValue={params.get("q") ?? ""} className={className} />;
+  const hydrated = useHydrated();
+  const q = hydrated
+    ? new URLSearchParams(window.location.search).get("q") ?? ""
+    : "";
+  return (
+    <SiteSearch
+      key={hydrated ? `q:${q}` : "ssr"}
+      defaultValue={q}
+      className={className}
+    />
+  );
 }
 
 function HeaderLink({

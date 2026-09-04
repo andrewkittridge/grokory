@@ -139,7 +139,16 @@ export function CatalogParade({
       data-hidden={hidden ? "true" : "false"}
       data-query={searching ? "true" : "false"}
     >
-      <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 pb-3 sm:px-6">
+      {lanes[0] ? (
+        <CatalogLane
+          key={lanes[0].id}
+          id={lanes[0].id}
+          tokens={lanes[0].tokens}
+          index={0}
+          query={q}
+        />
+      ) : null}
+      <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-4 py-3 sm:px-6">
         <CatalogSearch
           q={q}
           hits={hits}
@@ -158,12 +167,12 @@ export function CatalogParade({
           {paused ? "Play" : "Pause"}
         </Button>
       </div>
-      {lanes.map((lane, index) => (
+      {lanes.slice(1).map((lane, index) => (
         <CatalogLane
           key={lane.id}
           id={lane.id}
           tokens={lane.tokens}
-          index={index}
+          index={index + 1}
           query={q}
         />
       ))}
