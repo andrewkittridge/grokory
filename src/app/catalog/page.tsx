@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { CatalogParade } from "@/components/catalog-parade";
 import { JsonLd } from "@/components/json-ld";
@@ -6,18 +5,19 @@ import { LockTitle } from "@/components/lock-title";
 import { isFoundingBoard } from "@/lib/founding";
 import { itemListJson } from "@/lib/json-ld";
 import { catalogLaneTokens, catalogParadeLanes } from "@/lib/templates";
+import { pageMetadata } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Catalog",
   description:
     "Public Grok Bots in a moving parade. Whistle a name or @handle to hop a match, then open a bot to add a copy on x.ai.",
-  alternates: { canonical: "/catalog" },
-};
+  path: "/catalog",
+});
 
 type Search = {
   q?: string;

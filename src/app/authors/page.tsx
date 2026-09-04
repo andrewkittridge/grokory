@@ -1,20 +1,20 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { BotIdentityThumb } from "@/components/bot-identity";
 import { CountTick } from "@/components/telemetry";
 import { LockTitle } from "@/components/lock-title";
 import { xHandleLabel } from "@/lib/bot-url";
+import { pageMetadata } from "@/lib/site";
 import { authorIndex } from "@/lib/templates";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Authors",
   description: "People with a public Grok Bot listed on Grokdex.",
-  alternates: { canonical: "/authors" },
-};
+  path: "/authors",
+});
 
 export default async function AuthorsPage() {
   const authors = authorIndex(await listTemplates());

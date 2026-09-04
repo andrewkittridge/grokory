@@ -13,7 +13,7 @@ const STEPS = [
   {
     n: "02",
     title: "Preview, then Add",
-    body: "Preview opens the share on x.ai. Add copies the template onto your Grok account — not the author’s computer or logins.",
+    body: "Preview opens the share on x.ai. Add copies the template onto your Grok account. Not the author’s computer or logins.",
   },
   {
     n: "03",
@@ -34,7 +34,7 @@ export function LandingHow() {
             variant="outline"
             size="sm"
             nativeButton={false}
-            render={<Link href="/guides/how-to-add" />}
+            render={<Link href="/guides" />}
           >
             Guides
           </Button>

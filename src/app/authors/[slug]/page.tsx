@@ -6,8 +6,9 @@ import { JsonLd } from "@/components/json-ld";
 import { LockTitle } from "@/components/lock-title";
 import { CountTick } from "@/components/telemetry";
 import { authorIdentity, preferredAuthorName, xHandleLabel, xHandleUrl } from "@/lib/bot-url";
-import { itemListJson } from "@/lib/json-ld";
+import { itemListJson, personJson } from "@/lib/json-ld";
 import { sortTemplates } from "@/lib/rank";
+import { pageMetadata } from "@/lib/site";
 import { listTemplates } from "@/lib/templates-store";
 import { motionDelay } from "@/lib/utils";
 import { readVoterId } from "@/lib/voter";
@@ -25,11 +26,11 @@ export async function generateMetadata({
     (template) => authorIdentity(template).slug === slug
   );
   const name = listed[0] ? preferredAuthorName(listed) : slug;
-  return {
+  return pageMetadata({
     title: name,
     description: `Public Grok Bot templates by ${name} on Grokdex.`,
-    alternates: { canonical: `/authors/${slug}` },
-  };
+    path: `/authors/${slug}`,
+  });
 }
 
 export default async function AuthorPage({
@@ -53,10 +54,18 @@ export default async function AuthorPage({
         .filter((handle): handle is string => Boolean(handle))
     ),
   ].filter((handle) => xHandleLabel(handle) !== name);
+  const sameAsHandle = templates.find((template) => template.xHandle)?.xHandle;
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
       <JsonLd data={itemListJson(templates, `/authors/${slug}`)} />
+      <JsonLd
+        data={personJson(
+          name,
+          `/authors/${slug}`,
+          sameAsHandle ? xHandleUrl(sameAsHandle) : undefined
+        )}
+      />
       <p
         className="motion-enter font-mono text-xs tracking-wide text-muted-foreground uppercase"
         style={motionDelay(0)}

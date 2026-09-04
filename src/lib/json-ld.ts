@@ -132,3 +132,49 @@ export function howToJson({
     })),
   };
 }
+
+export function definedTermJson() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "DefinedTerm",
+    name: "Grok Bot",
+    description:
+      "A Grok Bot is a custom agent on x.ai. A public share URL looks like https://x.ai/bot/…. Adding that link on x.ai copies the template onto your Grok account. Identity, description, skills, and routines. It does not share the author’s computer, logins, or chats.",
+    url: absUrl("/guides/what-is-grokdex"),
+    inDefinedTermSet: {
+      "@type": "DefinedTermSet",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  };
+}
+
+export function personJson(
+  name: string,
+  path: string,
+  sameAs?: string | null
+) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name,
+    url: absUrl(path),
+    ...(sameAs ? { sameAs } : {}),
+  };
+}
+
+export function guideListJson(guides: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${SITE_NAME} guides`,
+    url: absUrl("/guides"),
+    numberOfItems: guides.length,
+    itemListElement: guides.map((guide, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: absUrl(guide.path),
+      name: guide.name,
+    })),
+  };
+}

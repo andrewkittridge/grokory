@@ -1,6 +1,6 @@
 import { authorIdentity, grokbotTemplateUrl, preferredAuthorName, xHandleUrl } from "./bot-url";
 import { isFeaturedActive } from "./featured";
-import { getGuide, guideMarkdown } from "./guides";
+import { GUIDES, GUIDES_HUB_PATH, getGuide, guideMarkdown, guidesHubMarkdown } from "./guides";
 import { authorIndex, filterTemplates } from "./templates";
 import { parseSort, sortTemplates } from "./rank";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
@@ -37,6 +37,10 @@ export const FAQS: { q: string; a: string }[] = [
   {
     q: "What is Grokdex?",
     a: "Grokdex is the ranked public board of Grok Bot templates at grokdex.net. Anyone can list a public x.ai/bot share link, upvote useful ones, and add a copy onto their own Grok account. Identity comes from the live x.ai preview. Grokdex is independent and is not affiliated with xAI or SpaceXAI.",
+  },
+  {
+    q: "Is Grokdex an official xAI product?",
+    a: "No. Grokdex is independent. It is not affiliated with, endorsed by, or operated by xAI or SpaceXAI. It indexes public Grok Bot share links.",
   },
   {
     q: "How is Grokdex different from other Grok Bot directories?",
@@ -232,6 +236,9 @@ export function pageMarkdown(
     return { status: 200, body: catalogMarkdown(templates) };
   }
   if (path === "/upload") return { status: 200, body: uploadMarkdown() };
+  if (path === GUIDES_HUB_PATH) {
+    return { status: 200, body: guidesHubMarkdown() };
+  }
   if (path === "/authors") return { status: 200, body: authorsIndexMarkdown(templates) };
   if (path === "/support") return { status: 200, body: supportMarkdown() };
   if (path === "/faq") return { status: 200, body: faqMarkdown() };
@@ -456,7 +463,7 @@ function botList(templates: ListedTemplate[]) {
     .map((template) => {
       const url = absUrl(`/templates/${template.slug}/index.md`);
       const handle = template.xHandle ? ` · @${template.xHandle}` : "";
-      return `- [${template.title}](${url})${handle} — ${template.summary}`;
+      return `- [${template.title}](${url})${handle}. ${template.summary}`;
     })
     .join("\n");
 }
@@ -477,9 +484,11 @@ Grokdex indexes public Grok Bot share links (\`https://x.ai/bot/…\`). Rankings
 - [Share a bot](${absUrl("/upload/index.md")}): List a public share URL
 - [Authors](${absUrl("/authors/index.md")}): People with a listed Grok Bot
 - [FAQ](${absUrl("/faq/index.md")}): Citable answers for assistants
-- [How to list a Grok Bot](${absUrl("/guides/how-to-list/index.md")}): Paste a public share URL
-- [What is Grokdex](${absUrl("/guides/what-is-grokdex/index.md")}): Grok Bot vs Grokdex
-- [How to add a template](${absUrl("/guides/how-to-add/index.md")}): Preview, then Add
+- [Guides](${absUrl(`${GUIDES_HUB_PATH}/index.md`)}): How to list, add, and update a Grok Bot
+${GUIDES.map(
+  (guide) =>
+    `- [${guide.title}](${absUrl(`${guide.path}/index.md`)}): ${guide.llmsLine}`
+).join("\n")}
 - [Full text](${absUrl("/llms-full.txt")}): Expanded board dump
 
 ## For agents

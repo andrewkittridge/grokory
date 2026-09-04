@@ -19,6 +19,7 @@ import {
   SKILL_DOCS,
   skillsIndex,
 } from "./agent";
+import { GUIDES } from "./guides";
 import type { ListedTemplate } from "./types";
 
 function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
@@ -126,6 +127,11 @@ test("homepage and listing markdown are citable", () => {
   assert.match(howToList?.body ?? "", /# How to list a Grok Bot on Grokdex/);
   assert.match(howToList?.body ?? "", /list_bot/);
   assert.equal(pageMarkdown("/guides/missing", [])?.status, 404);
+
+  const hub = pageMarkdown("/guides", []);
+  assert.equal(hub?.status, 200);
+  assert.match(hub?.body ?? "", /^# Guides/m);
+  assert.match(hub?.body ?? "", /how-to-list-with-mcp/);
 });
 
 test("auth.md documents anonymous agent access", () => {
@@ -145,9 +151,12 @@ test("llms.txt is an LLM reading list", () => {
   assert.match(body, /llms-full\.txt/);
   assert.match(body, /templates\/research\/index\.md/);
   assert.match(body, /catalog\/index\.md/);
-  assert.match(body, /guides\/how-to-list\/index\.md/);
-  assert.match(body, /guides\/what-is-grokdex\/index\.md/);
-  assert.match(body, /guides\/how-to-add\/index\.md/);
+  assert.match(body, /guides\/index\.md/);
+  for (const guide of GUIDES) {
+    assert.match(body, new RegExp(`${guide.path}/index\\.md`));
+    assert.match(body, new RegExp(guide.llmsLine.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.equal(pageMarkdown(guide.path, [])?.status, 200);
+  }
 });
 
 test("discovery documents include required fields", async () => {

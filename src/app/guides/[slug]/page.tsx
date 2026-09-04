@@ -2,7 +2,11 @@ import { notFound } from "next/navigation";
 import { GuideDoc } from "@/components/guide-doc";
 import { JsonLd } from "@/components/json-ld";
 import { GUIDES, getGuide } from "@/lib/guides";
-import { howToJson } from "@/lib/json-ld";
+import {
+  breadcrumbListJson,
+  definedTermJson,
+  howToJson,
+} from "@/lib/json-ld";
 import { absUrl, pageMetadata } from "@/lib/site";
 
 export function generateStaticParams() {
@@ -37,16 +41,27 @@ export default async function GuidePage({
     <GuideDoc
       guide={guide}
       extras={
-        guide.howTo ? (
+        <>
           <JsonLd
-            data={howToJson({
-              name: guide.title,
-              description: guide.description,
-              url: absUrl(guide.path),
-              steps: guide.howTo,
-            })}
+            data={breadcrumbListJson([
+              { name: "Guides", path: "/guides" },
+              { name: guide.title, path: guide.path },
+            ])}
           />
-        ) : null
+          {guide.slug === "what-is-grokdex" ? (
+            <JsonLd data={definedTermJson()} />
+          ) : null}
+          {guide.howTo ? (
+            <JsonLd
+              data={howToJson({
+                name: guide.title,
+                description: guide.description,
+                url: absUrl(guide.path),
+                steps: guide.howTo,
+              })}
+            />
+          ) : null}
+        </>
       }
     />
   );
