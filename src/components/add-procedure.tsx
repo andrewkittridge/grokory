@@ -1,5 +1,4 @@
 import { AddBotButton } from "@/components/add-bot-button";
-import { CopyLinkButton } from "@/components/copy-link-button";
 import { ListingTrust } from "@/components/listing-trust";
 import { Button } from "@/components/ui/button";
 import type { ListedTemplate } from "@/lib/types";
@@ -53,20 +52,11 @@ export function AddProcedure({
           preview comes back.
         </p>
       )}
-      <div className="mt-5 flex flex-col gap-2 border-t border-border pt-4">
-        <CopyLinkButton url={template.botUrl} label="Copy share link" />
-        <CopyLinkButton url={listingUrl} label="Copy listing link" />
-      </div>
-      <div className="mt-5 border-t border-border pt-4">
-        <ListingTrust
-          template={template}
-          listingUrl={listingUrl}
-          refresh={refresh}
-        />
-        <p className="mt-3 text-xs text-muted-foreground">
-          Listed by {template.submittedBy}
-        </p>
-      </div>
+      <ListingTrust
+        template={template}
+        listingUrl={listingUrl}
+        refresh={refresh}
+      />
     </div>
   );
 }

@@ -185,23 +185,6 @@ body {
   }
 }
 
-@keyframes motion-lock-scan {
-  from {
-    left: 0;
-    opacity: 0;
-  }
-  12% {
-    opacity: 1;
-  }
-  82% {
-    opacity: 1;
-  }
-  to {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
 @keyframes live-pulse {
   0% {
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--sunset) 50%, transparent);
@@ -550,25 +533,6 @@ body {
   position: relative;
   animation: motion-lock-in var(--motion-acquire) both;
   animation-delay: calc(var(--d, 0) * var(--motion-stagger));
-}
-
-.motion-lock-scan {
-  position: absolute;
-  top: 0.12em;
-  bottom: 0.12em;
-  left: 0;
-  width: 2px;
-  background: var(--sunset);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--sunset) 70%, transparent);
-  pointer-events: none;
-  opacity: 0;
-  animation: motion-lock-scan var(--motion-acquire) both;
-  animation-delay: calc(var(--d, 0) * var(--motion-stagger));
-}
-
-.motion-acquire > .motion-lock-scan {
-  top: 0;
-  bottom: 0;
 }
 
 .hero-wordmark {
@@ -965,28 +929,9 @@ body {
   transition: transform 150ms ease;
 }
 
-.rank-row::after {
-  content: "";
-  position: absolute;
-  left: 0.55rem;
-  top: 50%;
-  z-index: 11;
-  width: 4px;
-  height: 4px;
-  pointer-events: none;
-  background: var(--sunset);
-  transform: translateY(-50%) rotate(45deg) scale(0);
-  transition: transform 150ms var(--motion-ease);
-}
-
 .rank-row:hover::before,
 .rank-row:focus-within::before {
   transform: scaleY(1);
-}
-
-.rank-row:hover::after,
-.rank-row:focus-within::after {
-  transform: translateY(-50%) rotate(45deg) scale(1);
 }
 
 .rank-spark {
@@ -1046,17 +991,12 @@ body {
   display: none;
 }
 
-.rank-row-open::before,
-.rank-row-open::after {
+.rank-row-open::before {
   transition-duration: 250ms;
 }
 
 .rank-row-open.is-live::before {
   transform: scaleY(1);
-}
-
-.rank-row-open.is-live::after {
-  transform: translateY(-50%) rotate(45deg) scale(1);
 }
 
 .rank-row-open .rank-open-label,
@@ -1090,20 +1030,6 @@ body {
 .rank-row-roster.rank-row-open:focus-within .rank-open-go,
 .rank-row-roster.rank-row-open.is-live .rank-open-go {
   color: var(--body);
-}
-
-.rank-open-scan {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 12;
-  width: 2px;
-  pointer-events: none;
-  background: var(--sunset);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--sunset) 70%, transparent);
-  opacity: 0;
-  animation: motion-lock-scan var(--motion-acquire) both;
 }
 
 .btn-ignite:active {
@@ -1296,42 +1222,6 @@ body {
   animation: sort-pip-in 0.35s var(--motion-ease) both;
 }
 
-.field-lock {
-  position: relative;
-  padding-left: 0.9rem;
-}
-
-.field-lock::before {
-  content: "";
-  position: absolute;
-  top: 0.35em;
-  left: 0;
-  width: 6px;
-  height: 6px;
-  background: var(--sunset);
-  transform: rotate(45deg);
-}
-
-.procedure-step {
-  position: relative;
-  padding-left: 2.1rem;
-}
-
-.procedure-step::before {
-  content: attr(data-step);
-  position: absolute;
-  top: 0.15rem;
-  left: 0;
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 10px;
-  letter-spacing: 0.16em;
-  color: var(--muted-foreground);
-}
-
-.procedure-step-live::before {
-  color: var(--sunset);
-}
-
 @keyframes catalog-marquee {
   from {
     transform: translate3d(0, 0, 0);
@@ -1412,6 +1302,12 @@ body {
     max-height 180ms ease;
 }
 
+@media (max-width: 639px) {
+  .catalog-bot-summary {
+    display: none;
+  }
+}
+
 .catalog-bot:hover .catalog-bot-summary,
 .catalog-bot:focus-within .catalog-bot-summary {
   max-height: 2.6rem;
@@ -1434,7 +1330,6 @@ body {
   .motion-view,
   .motion-lock,
   .motion-acquire,
-  .motion-lock-scan,
   .hero-letter,
   .hero-letter::after,
   .live-dot,
@@ -1453,7 +1348,6 @@ body {
   .grok-bot-hopping .grok-bot-comet,
   .rank-row-leader::before,
   .rank-row-first::before,
-  .rank-open-scan,
   .btn-ignite:active,
   .vote-tick-up,
   .vote-tick-down,
@@ -1514,19 +1408,10 @@ body {
     opacity: 0;
   }
 
-  .rank-open-scan {
-    display: none;
-  }
-
   .rank-row,
   .rank-row::before,
-  .rank-row::after,
   .brand-mark-inner {
     transition: none;
-  }
-
-  .motion-lock-scan {
-    display: none;
   }
 
   .site-field {

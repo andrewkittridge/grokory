@@ -44,32 +44,3 @@ export function CountTick({
     </span>
   );
 }
-
-export function MissionClock() {
-  const hydrated = useHydrated();
-  const reduced = usePrefersReducedMotion();
-  const [elapsed, setElapsed] = useState(0);
-
-  useEffect(() => {
-    if (!hydrated || reduced) return;
-    const origin = Date.now();
-    const id = window.setInterval(() => {
-      setElapsed(Date.now() - origin);
-    }, 1000);
-    return () => window.clearInterval(id);
-  }, [hydrated, reduced]);
-
-  const total = Math.floor(elapsed / 1000);
-  const hours = String(Math.floor(total / 3600)).padStart(2, "0");
-  const minutes = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
-  const seconds = String(total % 60).padStart(2, "0");
-
-  return (
-    <span
-      aria-hidden="true"
-      className="font-mono text-xs tracking-[0.18em] text-muted-foreground tabular-nums"
-    >
-      T+ {hours}:{minutes}:{seconds}
-    </span>
-  );
-}

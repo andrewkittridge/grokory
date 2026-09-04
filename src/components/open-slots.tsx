@@ -199,9 +199,6 @@ function VacantRankRow({
         live && "is-live"
       )}
     >
-      {live ? (
-        <span className="rank-open-scan" aria-hidden="true" />
-      ) : null}
       <Link
         href={href}
         className="absolute inset-0 z-0 focus-visible:ring-1 focus-visible:ring-foreground"

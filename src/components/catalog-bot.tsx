@@ -59,8 +59,8 @@ export function CatalogBot({
       data-catalog-hit={searching ? (hit ? "true" : "false") : undefined}
       aria-hidden={clone || undefined}
       className={cn(
-        "catalog-bot group/bot relative flex w-[8.25rem] shrink-0 flex-col items-center px-1 py-2 sm:w-[9.25rem]",
-        featured && "w-[9.5rem] sm:w-[10.5rem]",
+        "catalog-bot group/bot relative flex w-[9.5rem] shrink-0 flex-col items-center px-1 py-2 sm:w-[10.5rem]",
+        featured && "w-[10.5rem] sm:w-[11.5rem]",
         searching && hit && "is-hit",
         searching && !hit && "is-miss"
       )}

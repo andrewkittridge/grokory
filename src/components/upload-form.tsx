@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BotIdentityStage } from "@/components/bot-identity";
 import { TurnstileField } from "@/components/turnstile-field";
-import { cn } from "@/lib/utils";
 
 const initial: { error?: string; slug?: string } = {};
 
@@ -90,12 +89,7 @@ export function UploadForm({
       className="space-y-5"
     >
       <div className="space-y-2">
-        <Label
-          htmlFor="shareUrl"
-          className={cn(parsedShare && "field-lock")}
-        >
-          Grok Bot share link
-        </Label>
+        <Label htmlFor="shareUrl">Grok Bot share link</Label>
         <div className="flex flex-col gap-2 sm:flex-row">
           <Input
             id="shareUrl"
@@ -106,7 +100,7 @@ export function UploadForm({
               if (parseShareUrl(shareUrl)) runLookup(shareUrl);
             }}
             placeholder="https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN"
-            className="h-10 min-w-0 flex-1 font-mono"
+            className="h-10 min-w-0 flex-1 rounded-none font-mono"
             autoComplete="off"
           />
           <Button
@@ -128,7 +122,7 @@ export function UploadForm({
       {existing ? (
         <>
           <input type="hidden" name="updateFields" value="1" />
-          <p className="rounded-lg border border-border bg-transparent px-3 py-2 text-sm leading-6 text-body">
+          <p className="border-y border-border py-3 text-sm leading-6 text-body">
             {existing.title} is already on the board. Publishing refreshes the
             name from x.ai and any tags or note you set.{" "}
             <a className="underline" href={`/templates/${existing.slug}`}>
@@ -330,9 +324,7 @@ function IdentityFields({
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="title" className={cn(title && "field-lock")}>
-            Bot name
-          </Label>
+          <Label htmlFor="title">Bot name</Label>
           <Input
             id="title"
             name="title"
@@ -343,12 +335,7 @@ function IdentityFields({
           />
         </div>
         <div className="space-y-2">
-          <Label
-            htmlFor="authorName"
-            className={cn(authorName && "field-lock")}
-          >
-            Made by
-          </Label>
+          <Label htmlFor="authorName">Made by</Label>
           <Input
             id="authorName"
             name="authorName"
@@ -361,12 +348,7 @@ function IdentityFields({
       </div>
 
       <div className="space-y-2">
-        <Label
-          htmlFor="description"
-          className={cn(description && "field-lock")}
-        >
-          What it does
-        </Label>
+        <Label htmlFor="description">What it does</Label>
         <Textarea
           id="description"
           name="description"

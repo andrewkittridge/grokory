@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LockTitle } from "@/components/lock-title";
 import { Button } from "@/components/ui/button";
 import type { Guide, GuideBlock } from "@/lib/guides";
-import { motionDelay } from "@/lib/utils";
+import { cn, motionDelay } from "@/lib/utils";
 
 const TOKEN =
   /(\[([^\]]+)\]\(([^)]+)\)|`([^`]+)`|\*\*([^*]+)\*\*)/g;
@@ -86,14 +86,21 @@ function GuideBlockView({ block }: { block: GuideBlock }) {
       );
     case "ol":
       return (
-        <ol className="space-y-5">
+        <ol className="border-y border-border">
           {block.items.map((item, index) => (
             <li
               key={index}
-              className="procedure-step"
-              data-step={String(index + 1).padStart(2, "0")}
+              className="flex items-start gap-3 border-b border-border py-4 last:border-b-0"
             >
-              <p>
+              <span
+                className={cn(
+                  "w-8 shrink-0 pt-0.5 font-mono text-xs tabular-nums tracking-wide",
+                  index === 0 ? "text-sunset" : "text-muted-foreground"
+                )}
+              >
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <p className="min-w-0 flex-1">
                 <GuideText text={item} />
               </p>
             </li>

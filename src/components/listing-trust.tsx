@@ -1,15 +1,20 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ShareListing } from "@/components/share-listing";
+import { CopyText } from "@/components/copy-link-button";
 import {
   addHandleHref,
   authorIdentity,
   formatCheckedAt,
+  listingPostText,
+  listingTweetIntent,
   reportMailto,
   xHandleLabel,
   xHandleUrl,
 } from "@/lib/bot-url";
 import type { ListedTemplate } from "@/lib/types";
+
+const TOOL =
+  "copy-share inline h-auto w-auto cursor-pointer rounded-none border-0 bg-transparent p-0 text-xs leading-6 text-muted-foreground hover:bg-transparent hover:text-foreground hover:underline";
 
 export function ListingTrust({
   template,
@@ -26,31 +31,35 @@ export function ListingTrust({
     botUrl: template.botUrl,
     listingUrl,
   });
+  const post = listingPostText(template.title, listingUrl, {
+    xHandle: template.xHandle,
+    summary: template.summary,
+  });
 
   return (
-    <div className="space-y-3 text-xs leading-5 text-muted-foreground">
+    <div className="mt-5 border-t border-border pt-4 text-xs leading-6 text-muted-foreground">
       <p>
         <span
-          className={
-            template.live ? "text-foreground" : "text-destructive"
-          }
+          className={template.live ? "text-foreground" : "text-destructive"}
         >
           {template.live ? "Live share link" : "Share link is down"}
         </span>
         {" · "}
         {formatCheckedAt(template.lastCheckedAt)}
       </p>
-      <p>
-        Adds count clicks, not confirmed installs.
-      </p>
-      <ShareListing
-        title={template.title}
-        listingUrl={listingUrl}
-        xHandle={template.xHandle}
-        summary={template.summary}
-        compact
-      />
-      <p className="flex flex-wrap gap-x-3 gap-y-1">
+      <p>Adds count clicks, not confirmed installs.</p>
+      <p className="flex flex-wrap gap-x-3 gap-y-0">
+        <CopyText text={template.botUrl} label="Copy share" className={TOOL} />
+        <CopyText text={listingUrl} label="Copy listing" className={TOOL} />
+        <CopyText text={post} label="Copy a post" className={TOOL} />
+        <a
+          href={listingTweetIntent(post)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+        >
+          Post on X
+        </a>
         <a
           href={report}
           className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
@@ -66,6 +75,7 @@ export function ListingTrust({
           <div className="mt-2">{refresh}</div>
         </details>
       ) : null}
+      <p>Listed by {template.submittedBy}</p>
     </div>
   );
 }
