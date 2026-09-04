@@ -76,3 +76,24 @@ export async function consumeVoteRate(ip: string) {
     VOTE_RATE_WINDOW_MS
   );
 }
+
+const memoryRates = new Map<string, RateRecord>();
+
+export function resetMemoryRates() {
+  memoryRates.clear();
+}
+
+/** KV when present; in-process fallback so local/tests are still capped. */
+export async function consumeBoundedRate(
+  key: string,
+  limit: number,
+  windowMs: number,
+  now = Date.now()
+) {
+  const kv = await rateKv();
+  if (kv) return consumeKvRate(key, limit, windowMs);
+  const current = memoryRates.get(key) ?? null;
+  const { ok, record } = nextRate(current, now, limit, windowMs);
+  memoryRates.set(key, record);
+  return ok;
+}

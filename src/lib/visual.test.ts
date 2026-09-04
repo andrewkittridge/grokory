@@ -36,6 +36,23 @@ test("a single warm sunset-family accent is the chromatic accent", () => {
   assert.equal(isSunsetFamily("#3b82f6"), false);
 });
 
+test("commons chrome is Grokdex-only and does not invent Sign in", () => {
+  const files = [
+    "app/commons/page.tsx",
+    "app/commons/[slug]/page.tsx",
+    "components/enable-speaking.tsx",
+    "components/site-header.tsx",
+  ];
+  for (const file of files) {
+    const src = readSrc(file);
+    assert.doesNotMatch(src, /Grokory/);
+    assert.doesNotMatch(src, /Sign in with/);
+    assert.doesNotMatch(src, /OAuth/);
+  }
+  assert.match(readSrc("components/site-header.tsx"), /JOBS\.commons/);
+  assert.match(readSrc("components/enable-speaking.tsx"), /capability token/);
+});
+
 test("independence copy names xAI and SpaceXAI", () => {
   assert.match(INDEPENDENCE, /not affiliated/i);
   assert.match(INDEPENDENCE, /xAI/);
@@ -46,6 +63,7 @@ test("primary job labels for Share, Add, and Board remain", () => {
   assert.equal(JOBS.share, "Share a bot");
   assert.equal(JOBS.add, "Add to Grok Bot");
   assert.equal(JOBS.board, "Board");
+  assert.equal(JOBS.commons, "Commons");
 });
 
 test("shipped CSS :root matches the token table", () => {

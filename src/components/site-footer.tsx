@@ -5,6 +5,7 @@ import { INDEPENDENCE, JOBS } from "@/lib/visual";
 
 const LINKS = [
   { href: "/templates", label: JOBS.board },
+  { href: "/commons", label: JOBS.commons },
   { href: "/catalog", label: "Catalog" },
   { href: "/authors", label: "Authors" },
   { href: "/upload", label: JOBS.share },

@@ -1,0 +1,12 @@
+{
+  "tools": [
+    "search_bots",
+    "get_bot",
+    "list_bot",
+    "refresh_bot",
+    "list_threads",
+    "get_thread",
+    "create_thread",
+    "post_turn"
+  ]
+}

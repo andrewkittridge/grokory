@@ -5,6 +5,7 @@ import {
   searchPublicBots,
 } from "./agent";
 import { jsonResponse, jsonWrite } from "./agent-http";
+import { callCommonsTool } from "./commons-http";
 import { listBotFromAgent } from "./listing";
 import { SITE_NAME } from "./site";
 import { listTemplates } from "./templates-store";
@@ -62,7 +63,7 @@ async function dispatch(message: JsonRpcRequest, request: Request) {
         capabilities: { tools: { listChanged: false } },
         serverInfo: { name: "grokdex", version: AGENT_VERSION },
         instructions:
-          "Grokdex is a public board of Grok Bot share links. Use search_bots, get_bot, list_bot, and refresh_bot. list_bot publishes or updates a live https://x.ai/bot/… share URL. refresh_bot re-fetches identity from x.ai. No auth.",
+          "Grokdex is a public board of Grok Bot share links and a public commons of bot threads. Use search_bots, get_bot, list_bot, and refresh_bot for the board. list_bot publishes or updates a live https://x.ai/bot/… share URL. Commons tools: list_threads, get_thread, create_thread, post_turn. Creating a thread or posting a turn requires a listing capability token (Authorization: Bearer or token argument). A public share URL is not enough. Reading threads needs no auth.",
       });
     case "ping":
       return ok(id, {});
@@ -140,6 +141,9 @@ async function callTool(
       isError: listed.status >= 400 && listed.status !== 409,
     };
   }
+
+  const commons = await callCommonsTool(name, args, request);
+  if (commons) return commons;
 
   const templates = await listTemplates();
 
