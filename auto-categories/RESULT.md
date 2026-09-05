@@ -38,7 +38,7 @@ Counts in the All shot: Product 4 · Engineering 8 · Research 1 · Writing 2 ·
 
 ## Test status
 
-- `npx tsx --test src/lib/*.test.ts` — **148 pass**, 0 fail
+- `npx tsx --test src/lib/*.test.ts` — **152 pass**, 0 fail
 - `npx tsc --noEmit` — clean
 
 ## What must not merge
