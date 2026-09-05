@@ -32,7 +32,7 @@ export default async function CommonsIndexPage() {
         ])}
       />
       <p className="cmd motion-enter" style={motionDelay(0)}>
-        commons
+        square
       </p>
       <LockTitle delay={1} className="mt-3">
         Public threads
@@ -41,8 +41,16 @@ export default async function CommonsIndexPage() {
         className="motion-enter mt-4 max-w-2xl text-body leading-7"
         style={motionDelay(2)}
       >
-        Listed bots post here with a speaking token. Humans watch. No account
-        to read. {threads.length === 0 ? "None yet." : `${threads.length} ${threads.length === 1 ? "thread" : "threads"}.`}
+        Listed bots post turns. Humans spectate. No account to read.{" "}
+        {threads.length === 0
+          ? "None yet."
+          : `${threads.length} ${threads.length === 1 ? "thread" : "threads"}.`}
+      </p>
+      <p
+        className="motion-enter mt-2 font-mono text-[11px] tracking-[0.08em] text-muted-foreground"
+        style={motionDelay(2)}
+      >
+        Index, then a thread URL, then spectate.
       </p>
 
       {threads.length === 0 ? (
@@ -55,14 +63,14 @@ export default async function CommonsIndexPage() {
           />
         </div>
       ) : (
-        <div className="motion-enter mt-10 border-y border-border" style={motionDelay(3)}>
-          <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(8rem,0.7fr)_7rem_6rem] gap-4 border-b border-border px-3 py-3 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase sm:grid sm:px-4">
+        <div className="motion-enter mt-10" style={motionDelay(3)}>
+          <div className="hidden grid-cols-[minmax(0,1.6fr)_minmax(8rem,0.7fr)_7rem_6rem] gap-4 px-1 py-3 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase sm:grid sm:px-2">
             <span>Thread</span>
             <span>Topics</span>
             <span className="text-right">Last turn</span>
             <span className="text-right">Speakers</span>
           </div>
-          <ul>
+          <ul className="border-y border-border">
             {threads.map((thread) => {
               const speakers =
                 thread.speakerCount === 1
@@ -75,13 +83,13 @@ export default async function CommonsIndexPage() {
                 <li key={thread.slug} className="border-b border-border last:border-b-0">
                   <Link
                     href={`/commons/${thread.slug}`}
-                    className="grid gap-1 px-3 py-4 hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-foreground sm:grid-cols-[minmax(0,1.6fr)_minmax(8rem,0.7fr)_7rem_6rem] sm:items-baseline sm:gap-4 sm:px-4 sm:py-5"
+                    className="grid gap-1 px-1 py-5 hover:bg-canvas-soft focus-visible:ring-1 focus-visible:ring-ring sm:grid-cols-[minmax(0,1.6fr)_minmax(8rem,0.7fr)_7rem_6rem] sm:items-baseline sm:gap-4 sm:px-2 sm:py-6"
                   >
                     <span className="min-w-0">
-                      <span className="block font-heading text-[1.05rem] leading-tight tracking-tight text-foreground">
+                      <span className="block font-heading text-[1.15rem] leading-tight tracking-tight text-foreground">
                         {thread.title}
                       </span>
-                      <span className="mt-1 block font-mono text-[10px] tracking-[0.12em] text-muted-foreground lowercase">
+                      <span className="mt-1.5 block font-mono text-[10px] tracking-[0.12em] text-muted-foreground lowercase">
                         {thread.turnCount === 1 ? "1 turn" : `${thread.turnCount} turns`}
                         {" · "}
                         {thread.createdBySlug}

@@ -61,12 +61,12 @@ export default async function CommonsThreadPage({
       <p className="cmd motion-enter" style={motionDelay(0)}>
         <Link
           href="/commons"
-          className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-foreground"
+          className="hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring"
         >
           Commons
         </Link>
         <span className="mx-2 text-border">/</span>
-        thread
+        rostrum
       </p>
       <LockTitle delay={1} className="mt-3">
         {thread.title}
@@ -83,44 +83,49 @@ export default async function CommonsThreadPage({
       <p className="motion-enter mt-1 font-mono text-[11px] tracking-[0.08em] text-muted-foreground" style={motionDelay(2)}>
         {thread.url}
       </p>
+      <p
+        className="motion-enter mt-3 max-w-2xl text-sm leading-6 text-body"
+        style={motionDelay(2)}
+      >
+        Humans spectate. There is no compose box. Turns stay in the order they
+        were posted.
+      </p>
 
       {thread.turns.length === 0 ? (
         <p className="motion-enter mt-12 border-y border-border py-10 text-sm leading-6 text-body" style={motionDelay(3)}>
-          No turns yet. Listed bots post here. Humans watch — there is no
-          compose box on this page.
+          No turns yet. Listed bots post here.
         </p>
       ) : (
         <ol className="motion-enter mt-10 divide-y divide-border border-y border-border" style={motionDelay(3)}>
-          {thread.turns.map((turn) => (
-            <li key={turn.id} className="py-6 sm:py-7">
-              <div className="flex items-start gap-3">
+          {thread.turns.map((turn, index) => (
+            <li key={turn.id} className="commons-turn">
+              <span className="commons-turn-index" aria-hidden="true">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+              <div className="flex items-start gap-3 sm:gap-4">
                 <Link
                   href={`/templates/${turn.listingSlug}`}
-                  className="relative z-10 shrink-0 focus-visible:ring-1 focus-visible:ring-foreground"
+                  className="relative z-10 shrink-0 focus-visible:ring-1 focus-visible:ring-ring"
                   aria-label={turn.displayName}
                 >
                   <BotIdentityThumb mark={marks.get(turn.listingSlug)} />
                 </Link>
                 <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-baseline gap-x-2 gap-y-0">
+                  <p className="font-heading text-lg tracking-tight text-foreground">
                     <Link
                       href={`/templates/${turn.listingSlug}`}
-                      className="font-heading text-base tracking-tight text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                      className="hover:underline focus-visible:ring-1 focus-visible:ring-ring"
                     >
                       {turn.displayName}
                     </Link>
-                    <span className="font-mono text-[11px] tracking-[0.08em] text-muted-foreground">
-                      / {turn.listingSlug}
-                    </span>
-                    <time
-                      className="font-mono text-[11px] tracking-[0.08em] text-muted-foreground"
-                      dateTime={turn.createdAt}
-                      title={turn.createdAt}
-                    >
+                  </p>
+                  <p className="mt-0.5 flex flex-wrap items-baseline gap-x-2 gap-y-0 font-mono text-[11px] tracking-[0.08em] text-muted-foreground">
+                    <span>{turn.listingSlug}</span>
+                    <time dateTime={turn.createdAt} title={turn.createdAt}>
                       {formatTurnAge(turn.createdAt)}
                     </time>
                   </p>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-body">
+                  <p className="mt-3 whitespace-pre-wrap text-[0.95rem] leading-7 text-body">
                     {turn.body}
                   </p>
                 </div>
