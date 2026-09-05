@@ -5,11 +5,18 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   CHROMATIC_ACCENTS,
+  COMMONS,
+  COMMONS_ROOT_VARS,
   INDEPENDENCE,
   JOBS,
   ROOT_VARS,
   VISUAL,
+  commonsBootScript,
+  isCommonsPath,
+  isCoolOffWhite,
+  isNavyFamily,
   isNearBlack,
+  isRestrainedBlue,
   isSunsetFamily,
   parseHex,
 } from "./visual";
@@ -48,9 +55,54 @@ test("commons chrome is Grokdex-only and does not invent Sign in", () => {
     assert.doesNotMatch(src, /Grokory/);
     assert.doesNotMatch(src, /Sign in with/);
     assert.doesNotMatch(src, /OAuth/);
+    assert.doesNotMatch(src, /toga|SPQR|lorem ipsum|colonnade/i);
   }
   assert.match(readSrc("components/site-header.tsx"), /JOBS\.commons/);
   assert.match(readSrc("components/enable-speaking.tsx"), /capability token/);
+});
+
+test("commons shell is SpaceXAI-light and does not touch board :root", () => {
+  assert.equal(isCoolOffWhite(COMMONS.canvas), true);
+  assert.equal(isNavyFamily(COMMONS.navy), true);
+  assert.equal(isRestrainedBlue(COMMONS.focus), true);
+  assert.equal(isSunsetFamily(COMMONS.navy), false);
+  assert.equal(COMMONS_ROOT_VARS["--background"], COMMONS.canvas);
+  assert.equal(COMMONS_ROOT_VARS["--primary"], COMMONS.navy);
+  assert.equal(COMMONS_ROOT_VARS["--ring"], COMMONS.focus);
+  assert.equal(isNearBlack(VISUAL.canvas), true);
+  assert.equal(VISUAL.colorScheme, "dark");
+  assert.equal(COMMONS.colorScheme, "light");
+});
+
+test("commons path helper is the square and its threads only", () => {
+  assert.equal(isCommonsPath("/commons"), true);
+  assert.equal(isCommonsPath("/commons/the-nature-of-intelligence-43afbf"), true);
+  assert.equal(isCommonsPath("/templates"), false);
+  assert.equal(isCommonsPath("/templates/research-q6nive"), false);
+  assert.equal(isCommonsPath("/"), false);
+});
+
+test("commons index is a square, thread is a rostrum, speaking is permission", () => {
+  const index = readSrc("app/commons/page.tsx");
+  const thread = readSrc("app/commons/[slug]/page.tsx");
+  const speaking = readSrc("components/enable-speaking.tsx");
+  const layout = readSrc("app/layout.tsx");
+  assert.match(index, />\s*square\s*</);
+  assert.match(index, /spectate/);
+  assert.doesNotMatch(index, /New Thread|compose|typing/i);
+  assert.match(thread, />\s*rostrum\s*</);
+  assert.match(thread, /commons-turn-index/);
+  assert.match(thread, /no compose box/);
+  assert.doesNotMatch(thread, /typing|seeded|Sign in/i);
+  assert.match(speaking, /Permission to speak/);
+  assert.match(speaking, /API key/);
+  assert.match(speaking, /Not Sign in/);
+  assert.match(speaking, /commonsStyle/);
+  assert.match(speaking, /text-foreground/);
+  assert.match(layout, /commonsBootScript/);
+  assert.match(layout, /CommonsShell/);
+  assert.match(commonsBootScript(), /dataset\.shell/);
+  assert.match(commonsBootScript(), new RegExp(COMMONS.canvas));
 });
 
 test("independence copy names xAI and SpaceXAI", () => {
@@ -97,4 +149,12 @@ test("chrome imports the shipped token and copy units", () => {
 
   const add = readSrc("components/add-bot-button.tsx");
   assert.match(add, /JOBS\.add/);
+});
+
+test("board CSS :root stays dark while commons shell is a scoped remap", () => {
+  const css = readSrc("app/globals.css");
+  assert.match(css, /:root \{[\s\S]*?color-scheme:\s*dark/);
+  assert.match(css, /\[data-shell="commons"\]/);
+  assert.match(css, /\.commons-speak/);
+  assert.match(css, /\.commons-turn-index/);
 });

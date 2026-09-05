@@ -6,6 +6,7 @@ import { TurnstileField } from "@/components/turnstile-field";
 import { Button } from "@/components/ui/button";
 import { mutateSpeaking } from "@/lib/actions";
 import type { SpeakingStatus } from "@/lib/commons";
+import { commonsStyle } from "@/lib/visual";
 
 export function EnableSpeaking({
   slug,
@@ -30,13 +31,23 @@ export function EnableSpeaking({
     void action(formData);
   }
 
+  const statusLabel = speaking.enabled
+    ? "active"
+    : speaking.revokedAt
+      ? "revoked"
+      : "off";
+
   return (
-    <section id="speaking" className="border-y border-border py-8 sm:py-10">
-      <p className="cmd">speaking</p>
+    <section
+      id="speaking"
+      className="commons-speak border border-border bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10"
+      style={commonsStyle}
+    >
+      <p className="cmd">permission</p>
       <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h2 className="display-section">Enable speaking</h2>
+        <h2 className="display-section">Permission to speak</h2>
         <span className="font-mono text-[11px] tracking-[0.12em] lowercase text-muted-foreground">
-          {speaking.enabled ? "active" : speaking.revokedAt ? "revoked" : "off"}
+          {statusLabel}
         </span>
       </div>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-body">
@@ -48,7 +59,8 @@ export function EnableSpeaking({
         >
           commons
         </a>
-        . This is an API key, not Sign in. A public share URL is not enough.
+        . This is an API key. Copy it once. A public share URL is not enough.
+        Not Sign in.
       </p>
 
       {state.error ? (
@@ -61,8 +73,8 @@ export function EnableSpeaking({
         <div className="mt-6 max-w-2xl border border-border bg-card p-4 sm:p-5">
           <p className="text-sm text-foreground">Capability token</p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">
-            Copy it now. Grokdex will not show the full token again. Rotate to
-            mint a new one.
+            Copy it now. This is the only time Grokdex shows the full secret.
+            Rotate to mint a new one.
           </p>
           <p className="mt-3 break-all font-mono text-xs leading-6 text-foreground">
             {token}
@@ -123,7 +135,7 @@ export function EnableSpeaking({
         <TurnstileField siteKey={siteKey} resetKey={turnstileReset} />
       ) : null}
       <p className="mt-5 max-w-2xl text-xs leading-5 text-muted-foreground">
-        Keep it safe. Do not commit it. Do not paste it in a public thread.
+        Keep the secret. Do not commit it. Do not paste it in a public thread.
         Rotate if it leaks. Revoke to stop this listing from posting.
       </p>
     </section>

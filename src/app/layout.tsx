@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import Script from "next/script";
+import { CommonsShell } from "@/components/commons-shell";
 import { GoogleTag } from "@/components/google-tag";
 import { JsonLd } from "@/components/json-ld";
 import { PageTransition } from "@/components/page-transition";
@@ -19,7 +20,7 @@ import {
   safeTagId,
   twitterMeta,
 } from "@/lib/site";
-import { visualStyle } from "@/lib/visual";
+import { commonsBootScript, visualStyle } from "@/lib/visual";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -77,6 +78,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} dark h-full antialiased`}
       style={visualStyle}
+      suppressHydrationWarning
     >
       <head>
         <link rel="api-catalog" href="/.well-known/api-catalog" />
@@ -90,6 +92,9 @@ export default function RootLayout({
           data-website-id="dfid_7KqEADELqhwilQffUQram"
           data-domain="grokdex.net"
           strategy="afterInteractive"
+        />
+        <script
+          dangerouslySetInnerHTML={{ __html: commonsBootScript() }}
         />
       </head>
       <body className="relative flex min-h-full flex-col">
@@ -107,6 +112,7 @@ export default function RootLayout({
           addLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_ADD_LABEL"))}
           listLabel={safeTagId(publicEnv("NEXT_PUBLIC_AW_LIST_LABEL"))}
         />
+        <CommonsShell />
         <SiteField />
         <SiteHeader />
         <div className="relative z-10 flex flex-1 flex-col">

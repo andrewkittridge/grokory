@@ -14,6 +14,21 @@ export const VISUAL = {
   radius: "0px",
 } as const;
 
+/** Commons-only SpaceXAI-light. Board :root stays dark. */
+export const COMMONS = {
+  colorScheme: "light",
+  canvas: "#f3f5f8",
+  panel: "#ffffff",
+  ink: "#12141a",
+  body: "#3c4250",
+  mute: "#6b7382",
+  hairline: "#d5dae3",
+  navy: "#1b2d4f",
+  focus: "#3b6ea8",
+  wash: "#e8ebf0",
+  radius: "0px",
+} as const;
+
 export const CHROMATIC_ACCENTS = [VISUAL.sunset] as const;
 
 export const JOBS = {
@@ -50,10 +65,72 @@ export const ROOT_VARS = {
   "--radius": VISUAL.radius,
 } as const;
 
+export const COMMONS_ROOT_VARS = {
+  "--background": COMMONS.canvas,
+  "--foreground": COMMONS.ink,
+  "--card": COMMONS.panel,
+  "--card-foreground": COMMONS.ink,
+  "--popover": COMMONS.panel,
+  "--popover-foreground": COMMONS.ink,
+  "--primary": COMMONS.navy,
+  "--primary-foreground": COMMONS.canvas,
+  "--secondary": COMMONS.panel,
+  "--secondary-foreground": COMMONS.body,
+  "--muted": COMMONS.wash,
+  "--muted-foreground": COMMONS.mute,
+  "--accent": COMMONS.wash,
+  "--accent-foreground": COMMONS.ink,
+  "--border": COMMONS.hairline,
+  "--input": COMMONS.hairline,
+  "--ring": COMMONS.focus,
+  "--sunset": COMMONS.navy,
+  "--canvas-soft": COMMONS.wash,
+  "--body": COMMONS.body,
+  "--radius": COMMONS.radius,
+  "--pill-border": "rgb(18 20 26 / 0.16)",
+} as const;
+
 export const visualStyle = {
   colorScheme: VISUAL.colorScheme,
   ...ROOT_VARS,
 } as CSSProperties;
+
+export const commonsStyle = {
+  colorScheme: COMMONS.colorScheme,
+  ...COMMONS_ROOT_VARS,
+} as CSSProperties;
+
+export function isCommonsPath(path: string) {
+  return path === "/commons" || path.startsWith("/commons/");
+}
+
+export function applyCommonsShell(on: boolean) {
+  const root = document.documentElement;
+  if (on) {
+    root.dataset.shell = "commons";
+    root.style.colorScheme = COMMONS.colorScheme;
+    for (const [name, value] of Object.entries(COMMONS_ROOT_VARS)) {
+      root.style.setProperty(name, value);
+    }
+    return;
+  }
+  delete root.dataset.shell;
+  root.style.colorScheme = VISUAL.colorScheme;
+  for (const [name, value] of Object.entries(ROOT_VARS)) {
+    root.style.setProperty(name, value);
+  }
+  root.style.removeProperty("--pill-border");
+}
+
+export function commonsBootScript() {
+  const assigns = Object.entries(COMMONS_ROOT_VARS)
+    .map(
+      ([name, value]) =>
+        `r.style.setProperty(${JSON.stringify(name)},${JSON.stringify(value)});`
+    )
+    .join("");
+  return `(function(){var p=location.pathname;if(p!=="/commons"&&p.indexOf("/commons/")!==0)return;var r=document.documentElement;r.dataset.shell="commons";r.style.colorScheme="light";${assigns}})();`;
+}
 
 export function parseHex(hex: string) {
   const n = hex.startsWith("#") ? hex.slice(1) : hex;
@@ -75,4 +152,33 @@ export function isNearBlack(hex: string) {
 export function isSunsetFamily(hex: string) {
   const { r, g, b } = parseHex(hex);
   return r >= 200 && g > 60 && g < 180 && b < 80 && r > g && g > b;
+}
+
+export function isCoolOffWhite(hex: string) {
+  const { r, g, b } = parseHex(hex);
+  return (
+    Math.min(r, g, b) >= 232 &&
+    b >= r &&
+    Math.abs(r - g) <= 8 &&
+    b - r <= 16
+  );
+}
+
+export function isNavyFamily(hex: string) {
+  const { r, g, b } = parseHex(hex);
+  return r < 48 && g < 64 && b > 64 && b > r && b > g;
+}
+
+export function isRestrainedBlue(hex: string) {
+  const { r, g, b } = parseHex(hex);
+  return (
+    r >= 40 &&
+    r < 90 &&
+    g >= 90 &&
+    g < 140 &&
+    b >= 140 &&
+    b < 190 &&
+    b > g &&
+    g > r
+  );
 }

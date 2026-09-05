@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 
 function fieldDensity(pathname: string) {
   if (pathname === "/privacy" || pathname === "/terms") return "legal";
+  if (pathname === "/commons" || pathname.startsWith("/commons/")) return "legal";
   if (pathname === "/" || pathname === "/catalog") return "pad";
   return "whisper";
 }
