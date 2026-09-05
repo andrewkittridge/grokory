@@ -14,6 +14,7 @@ import { extendFeaturedUntil } from "./featured";
 import { applyBallot } from "./vote";
 import type { VoteResult } from "./vote";
 import { markFromStored, sanitizeMark, serializeMark } from "./bot-mark";
+import { DEFAULT_LANE, assignLane, parseLane, type Lane } from "./lane";
 import type {
   BotMark,
   BotTemplate,
@@ -58,6 +59,7 @@ type TemplateRow = {
   mark?: string | BotMark | null;
   category: string;
   tags: string[];
+  lane?: string | null;
   note: string | null;
   submitted_by: string;
   origin: string;
@@ -134,7 +136,7 @@ function toListed(
 }
 
 function normalizeTemplate(
-  template: BotTemplate & { category?: string }
+  template: BotTemplate & { category?: string; lane?: string | null }
 ): BotTemplate {
   const rest = { ...template };
   delete rest.category;
@@ -149,6 +151,8 @@ function normalizeTemplate(
     boostedUntil: rest.boostedUntil,
     xHandle: rest.xHandle?.trim() || undefined,
     mark: sanitizeMark(rest.mark),
+    lane: parseLane(rest.lane) ?? DEFAULT_LANE,
+    tags: rest.tags ?? [],
   };
 }
 
@@ -203,6 +207,7 @@ function rowToTemplate(row: TemplateRow): BotTemplate {
     ogImage: row.og_image ?? undefined,
     mark: markFromStored(row.mark),
     tags: row.tags ?? [],
+    lane: parseLane(row.lane) ?? DEFAULT_LANE,
     note: row.note ?? undefined,
     submittedBy: row.submitted_by,
     origin: row.origin as TemplateOrigin,
@@ -328,7 +333,11 @@ async function readLiveKvList(): Promise<ListedTemplate[] | null> {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as ListedTemplate[];
     if (!Array.isArray(parsed)) return null;
-    return parsed;
+    return parsed.map((template) => ({
+      ...normalizeTemplate(template),
+      score: template.score ?? 0,
+      userVote: 0 as const,
+    }));
   } catch {
     return null;
   }
@@ -379,6 +388,7 @@ async function ensureNeon() {
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS boosted_until timestamptz`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS x_handle text`,
         db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS mark text`,
+        db`ALTER TABLE templates ADD COLUMN IF NOT EXISTS lane text NOT NULL DEFAULT 'other'`,
         db`CREATE TABLE IF NOT EXISTS stripe_sessions (
           session_id text PRIMARY KEY,
           kind text NOT NULL,
@@ -643,16 +653,20 @@ export async function addTemplate(
       slug = `${template.slug}-${n}`;
       n += 1;
     }
-    const saved = normalizeTemplate({ ...template, slug });
+    const saved = normalizeTemplate({
+      ...template,
+      slug,
+      lane: parseLane(template.lane) ?? assignLane(template),
+    });
     await db`
       INSERT INTO templates (
         id, slug, bot_id, bot_url, title, author_name, x_handle, summary, description,
-        og_image, category, tags, note, submitted_by, origin, featured, featured_until, boosted_until, created_at, adds,
+        og_image, category, tags, lane, note, submitted_by, origin, featured, featured_until, boosted_until, created_at, adds,
         live, last_checked_at, skills, routines, mark
       ) VALUES (
         ${saved.id}, ${saved.slug}, ${saved.botId}, ${saved.botUrl}, ${saved.title},
         ${saved.authorName}, ${saved.xHandle ?? null}, ${saved.summary}, ${saved.description},         ${saved.ogImage ?? null},
-        ${""}, ${saved.tags}, ${saved.note ?? null}, ${saved.submittedBy},
+        ${""}, ${saved.tags}, ${saved.lane}, ${saved.note ?? null}, ${saved.submittedBy},
         ${saved.origin}, ${saved.featured}, ${saved.featuredUntil ?? null}, ${saved.boostedUntil ?? null}, ${saved.createdAt}, ${saved.adds},
         ${saved.live}, ${saved.lastCheckedAt ?? null}, ${saved.skills}, ${saved.routines}, ${serializeMark(saved.mark)}
       )
@@ -680,7 +694,11 @@ export async function addTemplate(
       slug = `${template.slug}-${n}`;
       n += 1;
     }
-    const saved = normalizeTemplate({ ...template, slug });
+    const saved = normalizeTemplate({
+      ...template,
+      slug,
+      lane: parseLane(template.lane) ?? assignLane(template),
+    });
     store.templates.push(saved);
     const written = await writeStore(store);
     if (!written) {
@@ -786,6 +804,7 @@ export type ListingPatch = {
   live?: boolean;
   lastCheckedAt?: string;
   tags?: string[];
+  lane?: Lane;
   note?: string | null;
   submittedBy?: string;
 };
@@ -817,6 +836,7 @@ function applyListingPatch(
     live: patch.live ?? current.live,
     lastCheckedAt: patch.lastCheckedAt ?? current.lastCheckedAt,
     tags: patch.tags ?? current.tags,
+    lane: patch.lane ?? current.lane,
     note,
     submittedBy: patch.submittedBy ?? current.submittedBy,
   });
@@ -860,6 +880,7 @@ export async function updateListingFromShare(
         og_image = ${next.ogImage ?? null},
         mark = COALESCE(${serializeMark(next.mark)}, mark),
         tags = ${next.tags},
+        lane = ${next.lane},
         note = ${next.note ?? null},
         submitted_by = ${next.submittedBy},
         live = ${next.live},

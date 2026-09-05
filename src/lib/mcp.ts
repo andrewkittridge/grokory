@@ -152,6 +152,7 @@ async function callTool(
     const hits = searchPublicBots(templates, {
       q: str(args.query),
       skill: str(args.skill),
+      lane: str(args.lane),
       sort: str(args.sort),
     }).slice(0, limit);
     return textResult(JSON.stringify({ bots: hits, count: hits.length }));

@@ -51,6 +51,7 @@ function listing(over: Partial<ListedTemplate> = {}): ListedTemplate {
     summary: "Cited answers.",
     description: "Cited answers from primary sources.",
     tags: [],
+    lane: "research",
     submittedBy: "Andrew",
     origin: "community",
     featured: false,

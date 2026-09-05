@@ -46,6 +46,7 @@ function listed(
     summary: "A chief of agents for a solo founder who routes work.",
     description: "A chief of agents for a solo founder who routes work.",
     tags: ["routing"],
+    lane: "ops",
     note: "Keep it at the top of a roster.",
     submittedBy: "Anonymous",
     origin: "community",
@@ -278,6 +279,55 @@ test("agent updates require a live x.ai preview", async () => {
   assert.equal(result.ok, false);
   if (result.ok) return;
   assert.equal(result.code, "preview");
+});
+
+test("create assigns a lane and keeps freeform tags", async () => {
+  const result = await publishListing(
+    {
+      shareUrl: SHARE,
+      tags: "writing, drafts",
+      source: "agent",
+    },
+    deps({
+      save: async (template) => {
+        assert.deepEqual(template.tags, ["writing", "drafts"]);
+        assert.equal(template.lane, "writing");
+        return { ok: true, template: saved(template) };
+      },
+    })
+  );
+  assert.equal(result.ok, true);
+});
+
+test("refresh reassigns lane without wiping tags", async () => {
+  const result = await publishListing(
+    {
+      shareUrl: SHARE,
+      tags: "should-not-apply",
+      source: "agent",
+      intent: "refresh",
+    },
+    deps({
+      findExisting: async () => ({
+        slug: "jarvis-n92u9t",
+        title: "Jarvis",
+        tags: ["writing", "drafts"],
+        summary: "A writing partner for drafting essays.",
+      }),
+      update: async (_botId, patch) => {
+        assert.equal(patch.tags, undefined);
+        assert.equal(patch.lane, "writing");
+        return {
+          ok: true,
+          template: listed({
+            tags: ["writing", "drafts"],
+            lane: "writing",
+          }),
+        };
+      },
+    })
+  );
+  assert.equal(result.ok, true);
 });
 
 test("agent listings use x.ai preview fields", async () => {

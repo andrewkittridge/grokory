@@ -1,6 +1,6 @@
 # Grokdex implementation plan
 
-Dated 2 September 2026. Categories (job filters, job lanes, category boosts, `list_categories`) were removed: the board is a single ranked list, boost is a labeled board strip (max 2), and listing no longer asks for a job.
+Dated 2 September 2026. Categories (job filters, job lanes, category boosts, `list_categories`) were removed: the board is a single ranked list, boost is a labeled board strip (max 2), and listing no longer asks for a job. Auto-inferred browse **lanes** (chip filter on the same board, `?lane=`) are not that product: they do not boost rank and are not separate boards.
 
 The board is still founding: **2 live listings** against a floor of **8**. Do not buy ads, restore seed bots, or add chrome that needs a full catalog to make sense.
 

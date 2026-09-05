@@ -3,6 +3,7 @@
 import { ViewTransition } from "react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { boardSearchHref } from "@/lib/lane";
 import { cn } from "@/lib/utils";
 
 function hrefFor(params: {
@@ -10,16 +11,9 @@ function hrefFor(params: {
   tag?: string;
   skill?: string;
   sort?: string;
+  lane?: string;
 }) {
-  const search = new URLSearchParams();
-  if (params.q) search.set("q", params.q);
-  if (params.tag) search.set("tag", params.tag);
-  if (params.skill) search.set("skill", params.skill);
-  if (params.sort && params.sort !== "hot") {
-    search.set("sort", params.sort);
-  }
-  const qs = search.toString();
-  return qs ? `/templates?${qs}` : "/templates";
+  return boardSearchHref(params);
 }
 
 export function BotFilters({
@@ -27,12 +21,14 @@ export function BotFilters({
   tag,
   skill,
   sort,
+  lane,
   sortTabs = true,
 }: {
   q: string;
   tag?: string;
   skill?: string;
   sort: string;
+  lane?: string;
   sortTabs?: boolean;
 }) {
   if (!sortTabs && !tag && !skill) return null;
@@ -48,7 +44,7 @@ export function BotFilters({
           ].map((item) => (
             <FilterTab
               key={item.value}
-              href={hrefFor({ q, tag, skill, sort: item.value })}
+              href={hrefFor({ q, tag, skill, lane, sort: item.value })}
               active={(sort || "hot") === item.value}
             >
               {item.label}
@@ -65,7 +61,7 @@ export function BotFilters({
           <span className="text-border" aria-hidden="true">
             {" · "}
           </span>
-          <FilterText href={hrefFor({ q, sort, skill })} active={false}>
+          <FilterText href={hrefFor({ q, sort, skill, lane })} active={false}>
             Clear
           </FilterText>
         </p>
@@ -79,7 +75,7 @@ export function BotFilters({
           <span className="text-border" aria-hidden="true">
             {" · "}
           </span>
-          <FilterText href={hrefFor({ q, sort, tag })} active={false}>
+          <FilterText href={hrefFor({ q, sort, tag, lane })} active={false}>
             Clear
           </FilterText>
         </p>

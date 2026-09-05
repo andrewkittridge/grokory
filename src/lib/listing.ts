@@ -18,6 +18,7 @@ import {
 } from "./bot-url";
 import { consumeKvRate, headerIp } from "./rate-limit";
 import { absUrl } from "./site";
+import { assignLane } from "./lane";
 import type { BotPreview, BotTemplate, ListedTemplate } from "./types";
 
 const LIST_RATE_LIMIT = 8;
@@ -61,6 +62,8 @@ export type ExistingListing = {
   title?: string;
   authorName?: string;
   xHandle?: string;
+  summary?: string;
+  description?: string;
   tags?: string[];
   note?: string;
   submittedBy?: string;
@@ -209,6 +212,13 @@ export async function publishListing(
       ogImage: preview?.ogImage,
       mark: preview?.mark,
       tags: normalizeTags(input.tags),
+      lane: assignLane({
+        botId: parsed.botId,
+        title: resolvedTitle,
+        summary,
+        description: resolvedDescription,
+        tags: normalizeTags(input.tags),
+      }),
       note: (input.note ?? "").trim().slice(0, 400) || undefined,
       submittedBy,
       origin: "community",
@@ -258,6 +268,8 @@ function toExisting(template: ListedTemplate): ExistingListing {
     title: template.title,
     authorName: template.authorName,
     xHandle: template.xHandle,
+    summary: template.summary,
+    description: template.description,
     tags: template.tags,
     note: template.note,
     submittedBy: template.submittedBy,
@@ -390,6 +402,15 @@ async function updateExistingListing(args: {
     const submittedBy = (input.submittedBy ?? "").trim().slice(0, 60);
     if (submittedBy) patch.submittedBy = submittedBy;
   }
+
+  const tagsForLane = patch.tags ?? existing.tags ?? [];
+  patch.lane = assignLane({
+    botId: parsed.botId,
+    title: patch.title ?? existing.title ?? "",
+    summary: patch.summary ?? existing.summary ?? "",
+    description: patch.description ?? existing.description ?? "",
+    tags: tagsForLane,
+  });
 
   const saved = await update(parsed.botId, patch);
   if (!saved.ok) {

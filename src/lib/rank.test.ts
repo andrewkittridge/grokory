@@ -14,6 +14,7 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     summary: "A short summary of the bot.",
     description: "A short summary of the bot.",
     tags: [],
+    lane: "other",
     submittedBy: "Anonymous",
     origin: "community",
     featured: false,

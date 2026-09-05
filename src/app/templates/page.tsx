@@ -3,6 +3,7 @@ import { BotFilters } from "@/components/bot-filters";
 import { BotRankList } from "@/components/bot-rank-row";
 import { EmptyState } from "@/components/empty-state";
 import { JsonLd } from "@/components/json-ld";
+import { LaneChips } from "@/components/lane-chips";
 import { LockTitle } from "@/components/lock-title";
 import { itemListJson } from "@/lib/json-ld";
 import { partitionBoosted } from "@/lib/boost";
@@ -12,6 +13,7 @@ import {
   isFoundingBoard,
   showBoardSortTabs,
 } from "@/lib/founding";
+import { laneCounts, parseLane } from "@/lib/lane";
 import { parseSort, sortTemplates } from "@/lib/rank";
 import { filterTemplates } from "@/lib/templates";
 import { pageMetadata } from "@/lib/site";
@@ -33,6 +35,7 @@ type Search = {
   q?: string;
   tag?: string;
   skill?: string;
+  lane?: string;
   sort?: string;
 };
 
@@ -45,18 +48,16 @@ export default async function TemplatesPage({
   const q = params.q?.trim() ?? "";
   const tag = params.tag?.trim().toLowerCase() ?? "";
   const skill = params.skill?.trim().toLowerCase() ?? "";
+  const lane = parseLane(params.lane);
   const sort = parseSort(params.sort);
   const all = await listTemplates(await readVoterId());
   const founding = isFoundingBoard(all.length);
-  const filtered = filterTemplates(all, {
-    q,
-    tag,
-    skill,
-  });
+  const scoped = filterTemplates(all, { q, tag, skill });
+  const filtered = filterTemplates(scoped, { lane });
   const { featured, organic } = partitionFeatured(filtered);
   const { boosted, rest } = partitionBoosted(organic);
   const templates = sortTemplates(rest, sort);
-  const emptyBoard = !q && !tag && !skill;
+  const emptyBoard = !q && !tag && !skill && !lane;
   const empty =
     templates.length === 0 && featured.length === 0 && boosted.length === 0;
   const vacancies = emptyBoard
@@ -96,8 +97,20 @@ export default async function TemplatesPage({
           q={q}
           tag={tag}
           skill={skill}
+          lane={lane}
           sort={sort}
           sortTabs={showBoardSortTabs(all.length)}
+        />
+      </div>
+      <div className="motion-enter mt-5" style={motionDelay(4)}>
+        <LaneChips
+          q={q}
+          tag={tag}
+          skill={skill}
+          sort={sort}
+          lane={lane}
+          total={scoped.length}
+          counts={laneCounts(scoped)}
         />
       </div>
       <BoardStrip sort={sort} count={filtered.length} founding={founding} />
