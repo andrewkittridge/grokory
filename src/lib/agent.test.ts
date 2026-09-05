@@ -33,6 +33,7 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     summary: "Primary-source research for cited answers.",
     description: "Primary-source research for cited answers.",
     tags: ["citations"],
+    lane: "research",
     submittedBy: "Anonymous",
     origin: "community",
     featured: false,
@@ -183,6 +184,17 @@ test("discovery documents include required fields", async () => {
 
   const spec = openApiSpec();
   assert.ok(spec.paths["/api/bots"].post);
+  const laneParam = spec.paths["/api/bots"].get.parameters.find(
+    (param: { name: string }) => param.name === "lane"
+  );
+  assert.ok(laneParam);
+  assert.match(String(laneParam.description), /does not change rank/i);
+  const toolNames: string[] = mcp.tools.map((tool) => tool.name);
+  assert.equal(toolNames.includes("list_categories"), false);
+  const search = mcp.tools.find((tool) => tool.name === "search_bots");
+  assert.ok(search?.inputSchema.properties.lane);
+  const listBot = mcp.tools.find((tool) => tool.name === "list_bot");
+  assert.equal("lane" in (listBot?.inputSchema.properties ?? {}), false);
   assert.match(
     spec.paths["/api/bots"].post.responses["200"].description,
     /Updated an existing listing/
@@ -237,6 +249,14 @@ test("searchPublicBots filters without voter fields leaking", () => {
   assert.equal(hits[0]?.slug, "loops");
   assert.equal("userVote" in publicBot(bot()), false);
   assert.equal(publicBot(bot()).xHandle, null);
+  assert.equal(publicBot(bot()).lane, "research");
+  assert.equal(
+    searchPublicBots(
+      [bot(), bot({ slug: "loops", title: "Loops", lane: "engineering" })],
+      { lane: "engineering" }
+    )[0]?.slug,
+    "loops"
+  );
   assert.equal(publicBot(bot({ xHandle: "andrew" })).xUrl, "https://x.com/andrew");
   assert.equal(
     publicBot(bot({ authorName: "Unknown", xHandle: "poteto" })).authorName,

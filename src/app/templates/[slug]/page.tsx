@@ -19,6 +19,7 @@ import { VoteButtons } from "@/components/vote-buttons";
 import { isBoostedActive } from "@/lib/boost";
 import { isFeaturedActive } from "@/lib/featured";
 import { isFoundingBoard } from "@/lib/founding";
+import { LANE_LABELS, boardSearchHref } from "@/lib/lane";
 import { getTemplate, listTemplates } from "@/lib/templates-store";
 import { relatedTemplates } from "@/lib/templates";
 import { breadcrumbListJson, softwareJson } from "@/lib/json-ld";
@@ -168,6 +169,14 @@ export default async function TemplateDetailPage({
                   {template.note}
                 </blockquote>
               ) : null}
+              <p className="mt-5 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase">
+                <Link
+                  href={boardSearchHref({ lane: template.lane })}
+                  className="hover:text-foreground hover:underline focus-visible:ring-1 focus-visible:ring-foreground"
+                >
+                  {LANE_LABELS[template.lane]}
+                </Link>
+              </p>
               {template.tags.length > 0 ? (
                 <p className="mt-5 flex flex-wrap gap-x-3 gap-y-0 text-xs text-muted-foreground">
                   {template.tags.map((tag) => (

@@ -1,4 +1,5 @@
 import { authorIdentity, grokbotTemplateUrl, preferredAuthorName, xHandleUrl } from "./bot-url";
+import { LANES, parseLane, type Lane } from "./lane";
 import { isFeaturedActive } from "./featured";
 import { GUIDES, GUIDES_HUB_PATH, getGuide, guideMarkdown, guidesHubMarkdown } from "./guides";
 import { authorIndex, filterTemplates } from "./templates";
@@ -6,7 +7,7 @@ import { parseSort, sortTemplates } from "./rank";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absUrl } from "./site";
 import type { ListedTemplate } from "./types";
 
-export const AGENT_VERSION = "0.5.0";
+export const AGENT_VERSION = "0.5.1";
 export const CONTENT_SIGNAL =
   "search=yes, ai-input=yes, ai-train=yes, use=full";
 export const AI_CATALOG_PATH = "/.well-known/ai-catalog.json";
@@ -93,6 +94,7 @@ export type PublicBot = {
   summary: string;
   description: string;
   tags: string[];
+  lane: Lane;
   skills: string[];
   routines: string[];
   botUrl: string;
@@ -114,6 +116,7 @@ export function publicBot(template: ListedTemplate): PublicBot {
     summary: template.summary,
     description: template.description,
     tags: template.tags,
+    lane: parseLane(template.lane) ?? "other",
     skills: template.skills,
     routines: template.routines,
     botUrl: template.botUrl,
@@ -132,6 +135,7 @@ export function searchPublicBots(
     q?: string;
     tag?: string;
     skill?: string;
+    lane?: string;
     sort?: string;
   }
 ) {
@@ -139,6 +143,7 @@ export function searchPublicBots(
     q: filters.q,
     tag: filters.tag,
     skill: filters.skill,
+    lane: parseLane(filters.lane),
   });
   return sortTemplates(filtered, parseSort(filters.sort)).map(publicBot);
 }
@@ -372,6 +377,7 @@ ${skills}${routines}${emptyLists}
 
 Third-party template. Bots on your account share one computer. Connect the smallest tools, and keep sends, purchases, and deletes behind your approval.
 
+Lane: ${bot.lane}
 Tags: ${bot.tags.length ? bot.tags.join(", ") : "none"}
 `;
 }
@@ -651,6 +657,13 @@ export function openApiSpec() {
               schema: { type: "string" },
             },
             {
+              name: "lane",
+              in: "query",
+              schema: { type: "string", enum: [...LANES] },
+              description:
+                "Closed browse lane. Filters the same ranked list. Does not change rank.",
+            },
+            {
               name: "sort",
               in: "query",
               schema: { type: "string", enum: ["hot", "top", "new"] },
@@ -794,12 +807,17 @@ export const MCP_TOOLS = [
     name: "search_bots",
     title: "Search Grok Bots",
     description:
-      "Search public Grok Bot listings on Grokdex by query, skill, or sort.",
+      "Search public Grok Bot listings on Grokdex by query, skill, lane, or sort. Lane filters the same ranked list and does not change rank.",
     inputSchema: {
       type: "object",
       properties: {
         query: { type: "string", description: "Free-text search" },
         skill: { type: "string", description: "Exact skill name" },
+        lane: {
+          type: "string",
+          enum: [...LANES],
+          description: "Closed browse lane. Filter only; does not change rank.",
+        },
         sort: { type: "string", enum: ["hot", "top", "new"] },
         limit: { type: "integer", minimum: 1, maximum: 50 },
       },

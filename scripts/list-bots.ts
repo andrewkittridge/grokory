@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { ALREADY_LISTED, parseShareUrl, slugify } from "../src/lib/bot-url";
 import { fetchBotPreview } from "../src/lib/fetch-bot";
+import { assignLane } from "../src/lib/lane";
 import { addTemplate, findByBotId } from "../src/lib/templates-store";
 import type { BotTemplate } from "../src/lib/types";
 
@@ -69,6 +70,13 @@ async function listOne(spec: Spec) {
     ogImage: preview.ogImage,
     mark: preview.mark,
     tags: [],
+    lane: assignLane({
+      botId: parsed.botId,
+      title: preview.title,
+      summary: preview.summary,
+      description: preview.description,
+      tags: [],
+    }),
     note: spec.note,
     submittedBy: "Anonymous",
     origin: "community",

@@ -962,6 +962,16 @@ body {
   animation: sort-pip-in 0.35s var(--motion-ease) both;
 }
 
+.lane-chips {
+  scrollbar-width: none;
+}
+.lane-chips::-webkit-scrollbar {
+  display: none;
+}
+.lane-chip {
+  border-radius: 0;
+}
+
 @keyframes catalog-marquee {
   from {
     transform: translate3d(0, 0, 0);

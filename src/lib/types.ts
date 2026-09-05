@@ -12,6 +12,10 @@ export type BotMark = {
   headPath?: string;
 };
 
+import type { Lane } from "./lane";
+
+export type { Lane };
+
 export type SortMode = "hot" | "top" | "new";
 
 export type VoteValue = 1 | -1;
@@ -35,6 +39,7 @@ export type BotTemplate = {
   ogImage?: string;
   mark?: BotMark;
   tags: string[];
+  lane: Lane;
   note?: string;
   submittedBy: string;
   origin: TemplateOrigin;
@@ -72,5 +77,6 @@ export type TemplateFilters = {
   q?: string;
   tag?: string;
   skill?: string;
+  lane?: string;
   sort?: SortMode;
 };

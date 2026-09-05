@@ -14,6 +14,7 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     summary: "Primary-source research for cited answers.",
     description: "Primary-source research for cited answers.",
     tags: ["citations"],
+    lane: "research",
     submittedBy: "Anonymous",
     origin: "community",
     featured: false,

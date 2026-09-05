@@ -17,6 +17,7 @@ export async function GET(request: Request) {
     q: url.searchParams.get("q") ?? undefined,
     tag: url.searchParams.get("tag") ?? undefined,
     skill: url.searchParams.get("skill") ?? undefined,
+    lane: url.searchParams.get("lane") ?? undefined,
     sort: url.searchParams.get("sort") ?? undefined,
   }).slice(0, limit);
   return jsonResponse({ bots, count: bots.length });

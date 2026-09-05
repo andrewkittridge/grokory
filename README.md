@@ -4,7 +4,7 @@ A public ranked board of [Grok Bot](https://x.ai/bot) templates. People share bo
 
 `https://x.ai/bot/N92u9t1nHlL_gtgk2nAeN`
 
-Browse by **Hot**, **Top**, and **New**. Upvote the good ones. Paste a share link to list a community bot, then **Add to Grok Bot** on x.ai. Adding a shared bot copies the template onto the recipient’s account. It does not share the author’s computer, logins, or chats.
+Browse by **Hot**, **Top**, and **New**. Closed **lanes** (Product, Engineering, Research, Writing, Design, Marketing, Sales, Ops, Personal, Media, Other) are inferred on list/refresh from public text and filter the same board via `?lane=` — they do not change rank. Upvote the good ones. Paste a share link to list a community bot, then **Add to Grok Bot** on x.ai. Adding a shared bot copies the template onto the recipient’s account. It does not share the author’s computer, logins, or chats.
 
 Voting uses a browser cookie (no account). One vote per browser per bot.
 

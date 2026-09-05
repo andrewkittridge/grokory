@@ -43,6 +43,21 @@ test("a single warm sunset-family accent is the chromatic accent", () => {
   assert.equal(isSunsetFamily("#3b82f6"), false);
 });
 
+test("lane chips match dark Grokdex chrome and upload does not nag for a job", () => {
+  const chips = readSrc("components/lane-chips.tsx");
+  assert.match(chips, /Filter by lane/);
+  assert.match(chips, /boardSearchHref/);
+  assert.doesNotMatch(chips, /bg-(red|blue|green|purple|pink|yellow)-/);
+  assert.doesNotMatch(chips, /Grokory/);
+  assert.doesNotMatch(chips, /list_categories/);
+  const upload = readSrc("components/upload-form.tsx");
+  assert.doesNotMatch(upload, /name="lane"/);
+  assert.doesNotMatch(upload, /name="job"/);
+  assert.doesNotMatch(upload, /Pick a job/);
+  const rank = readSrc("lib/rank.ts");
+  assert.doesNotMatch(rank, /lane/);
+});
+
 test("commons chrome is Grokdex-only and does not invent Sign in", () => {
   const files = [
     "app/commons/page.tsx",

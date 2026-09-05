@@ -24,6 +24,7 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
     summary: "Primary-source research for cited answers.",
     description: "Primary-source research for cited answers.",
     tags: ["citations"],
+    lane: "research",
     submittedBy: "Anonymous",
     origin: "community",
     featured: false,
@@ -38,17 +39,19 @@ function bot(over: Partial<ListedTemplate> = {}): ListedTemplate {
   };
 }
 
-test("filterTemplates matches tag, skill, and query", () => {
-  const research = bot();
+test("filterTemplates matches tag, skill, query, and lane", () => {
+  const research = bot({ lane: "research" });
   const coding = bot({
     id: "loops",
     slug: "loops",
     title: "Loops",
     tags: ["engineering"],
+    lane: "engineering",
     summary: "Outer loop for a repo you name.",
   });
   const all = [research, coding];
 
+  assert.equal(filterTemplates(all, { lane: "engineering" })[0]?.id, "loops");
   assert.equal(filterTemplates(all, { tag: "citations" })[0]?.id, "id");
   assert.equal(
     filterTemplates(

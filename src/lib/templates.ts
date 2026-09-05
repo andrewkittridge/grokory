@@ -35,8 +35,10 @@ export function filterTemplates(
   const q = filters.q?.trim().toLowerCase();
   const tag = filters.tag?.trim().toLowerCase();
   const skill = filters.skill?.trim().toLowerCase();
+  const lane = filters.lane?.trim().toLowerCase();
 
   return templates.filter((template) => {
+    if (lane && template.lane !== lane) return false;
     if (tag && !template.tags.some((item) => item === tag)) return false;
     if (
       skill &&
