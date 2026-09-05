@@ -22,10 +22,15 @@ const AI_USER_AGENTS = [
   "Claude-Web",
   "anthropic-ai",
   "Google-Extended",
+  "Google-CloudVertexBot",
   "Googlebot",
   "PerplexityBot",
+  "Applebot",
   "Applebot-Extended",
   "Amazonbot",
+  "Bingbot",
+  "DuckAssistBot",
+  "YouBot",
   "Bytespider",
   "CCBot",
   "cohere-ai",
@@ -230,6 +235,15 @@ export function shouldServeMarkdown(pathname: string, accept: string | null) {
 
 export function estimateTokens(text: string) {
   return Math.max(1, Math.ceil(text.length / 4));
+}
+
+export function markdownNeedsListings(pathname: string) {
+  const path = pathname === "" ? "/" : pathname;
+  if (path === "/") return true;
+  if (path === "/templates" || path.startsWith("/templates/")) return true;
+  if (path === "/catalog") return true;
+  if (path === "/authors" || path.startsWith("/authors/")) return true;
+  return false;
 }
 
 export function pageMarkdown(
@@ -671,11 +685,14 @@ export function openApiSpec() {
             {
               name: "limit",
               in: "query",
-              schema: { type: "integer", minimum: 1, maximum: 100 },
+              schema: { type: "integer", minimum: 1, maximum: 500, default: 100 },
             },
           ],
           responses: {
-            "200": { description: "Array of public listings" },
+            "200": {
+              description:
+                "bots is one page. count and total are the matching catalog size, not the page length.",
+            },
           },
         },
         post: {
@@ -819,7 +836,7 @@ export const MCP_TOOLS = [
           description: "Closed browse lane. Filter only; does not change rank.",
         },
         sort: { type: "string", enum: ["hot", "top", "new"] },
-        limit: { type: "integer", minimum: 1, maximum: 50 },
+        limit: { type: "integer", minimum: 1, maximum: 100 },
       },
     },
   },

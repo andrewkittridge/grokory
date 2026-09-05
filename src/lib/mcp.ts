@@ -148,14 +148,22 @@ async function callTool(
   const templates = await listTemplates();
 
   if (name === "search_bots") {
-    const limit = clamp(Number(args.limit) || 10, 1, 50);
-    const hits = searchPublicBots(templates, {
+    const limit = clamp(Number(args.limit) || 100, 1, 100);
+    const matched = searchPublicBots(templates, {
       q: str(args.query),
       skill: str(args.skill),
       lane: str(args.lane),
       sort: str(args.sort),
-    }).slice(0, limit);
-    return textResult(JSON.stringify({ bots: hits, count: hits.length }));
+    });
+    const hits = matched.slice(0, limit);
+    return textResult(
+      JSON.stringify({
+        bots: hits,
+        count: matched.length,
+        total: matched.length,
+        limit,
+      })
+    );
   }
   if (name === "get_bot") {
     const slug = str(args.slug);

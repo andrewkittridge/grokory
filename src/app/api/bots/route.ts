@@ -11,16 +11,22 @@ export function OPTIONS() {
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const limit = clamp(Number(url.searchParams.get("limit") ?? "50"), 1, 100);
+  const limit = clamp(Number(url.searchParams.get("limit") ?? "100"), 1, 500);
   const templates = await listTemplates();
-  const bots = searchPublicBots(templates, {
+  const matched = searchPublicBots(templates, {
     q: url.searchParams.get("q") ?? undefined,
     tag: url.searchParams.get("tag") ?? undefined,
     skill: url.searchParams.get("skill") ?? undefined,
     lane: url.searchParams.get("lane") ?? undefined,
     sort: url.searchParams.get("sort") ?? undefined,
-  }).slice(0, limit);
-  return jsonResponse({ bots, count: bots.length });
+  });
+  const bots = matched.slice(0, limit);
+  return jsonResponse({
+    bots,
+    count: matched.length,
+    total: matched.length,
+    limit,
+  });
 }
 
 export async function POST(request: Request) {

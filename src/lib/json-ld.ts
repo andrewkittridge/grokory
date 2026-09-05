@@ -7,9 +7,14 @@ export function organizationJson() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${SITE_URL}/#organization`,
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
+    logo: {
+      "@type": "ImageObject",
+      url: absUrl("/icon.png"),
+    },
   };
 }
 
@@ -17,17 +22,22 @@ export function websiteJson() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
     name: SITE_NAME,
     url: SITE_URL,
     description: SITE_DESCRIPTION,
     publisher: {
+      "@id": `${SITE_URL}/#organization`,
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
     },
     potentialAction: {
       "@type": "SearchAction",
-      target: `${SITE_URL}/templates?q={search_term_string}`,
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/templates?q={search_term_string}`,
+      },
       "query-input": "required name=search_term_string",
     },
   };
