@@ -7,7 +7,7 @@ Product: `auto-categories/product-notes.md`
 Public brand: **Grokdex** only  
 **Draft PR only — not merged, not deployed.**
 
-PR: _pending push_
+PR: https://github.com/andrewkittridge/grokory/pull/23
 
 ## What landed
 
