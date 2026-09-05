@@ -5,8 +5,35 @@ import {
   definedTermJson,
   guideListJson,
   howToJson,
+  organizationJson,
   personJson,
+  websiteJson,
 } from "./json-ld";
+
+test("organizationJson has a stable @id and a logo URL", () => {
+  const json = organizationJson();
+  assert.equal(json["@type"], "Organization");
+  assert.equal(json["@id"], "https://grokdex.net/#organization");
+  assert.equal(json.logo["@type"], "ImageObject");
+  assert.equal(json.logo.url, "https://grokdex.net/icon.png");
+});
+
+test("websiteJson SearchAction uses an EntryPoint urlTemplate", () => {
+  const json = websiteJson();
+  assert.equal(json["@type"], "WebSite");
+  assert.equal(json["@id"], "https://grokdex.net/#website");
+  assert.equal(json.publisher["@id"], "https://grokdex.net/#organization");
+  assert.equal(json.potentialAction["@type"], "SearchAction");
+  assert.equal(json.potentialAction.target["@type"], "EntryPoint");
+  assert.equal(
+    json.potentialAction.target.urlTemplate,
+    "https://grokdex.net/templates?q={search_term_string}"
+  );
+  assert.equal(
+    json.potentialAction["query-input"],
+    "required name=search_term_string"
+  );
+});
 
 test("breadcrumbListJson is Board then listing", () => {
   const json = breadcrumbListJson([

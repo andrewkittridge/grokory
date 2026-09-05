@@ -7,6 +7,7 @@ import {
   ardCatalog,
   authMarkdown,
   llmsTxt,
+  markdownNeedsListings,
   markdownSourcePath,
   mcpServerCard,
   openApiSpec,
@@ -54,7 +55,25 @@ test("robots.txt declares Content Signals, Agentmap, and AI crawlers", () => {
   assert.match(body, /Agentmap: https:\/\/grokdex\.net\/\.well-known\/ai-catalog\.json/);
   assert.match(body, /User-agent: GPTBot/);
   assert.match(body, /User-agent: Claude-Web/);
+  assert.match(body, /User-agent: Bingbot/);
+  assert.match(body, /User-agent: Google-CloudVertexBot/);
+  assert.match(body, /User-agent: DuckAssistBot/);
+  assert.match(body, /User-agent: YouBot/);
   assert.match(body, /Sitemap: https:\/\/grokdex\.net\/sitemap\.xml/);
+});
+
+test("markdownNeedsListings is only true for pages that list bots", () => {
+  assert.equal(markdownNeedsListings("/"), true);
+  assert.equal(markdownNeedsListings("/templates"), true);
+  assert.equal(markdownNeedsListings("/templates/research"), true);
+  assert.equal(markdownNeedsListings("/catalog"), true);
+  assert.equal(markdownNeedsListings("/authors"), true);
+  assert.equal(markdownNeedsListings("/authors/poteto"), true);
+  assert.equal(markdownNeedsListings("/faq"), false);
+  assert.equal(markdownNeedsListings("/guides/how-to-list"), false);
+  assert.equal(markdownNeedsListings("/upload"), false);
+  assert.equal(markdownNeedsListings("/privacy"), false);
+  assert.equal(markdownNeedsListings("/commons"), false);
 });
 
 test("markdown negotiation prefers text/markdown over html", () => {
@@ -183,6 +202,12 @@ test("discovery documents include required fields", async () => {
   assert.ok(mcp.tools.some((tool) => tool.name === "post_turn"));
 
   const spec = openApiSpec();
+  const limitParam = spec.paths["/api/bots"].get.parameters.find(
+    (parameter: { name: string }) => parameter.name === "limit"
+  );
+  assert.ok(limitParam);
+  assert.equal(limitParam.schema.maximum, 500);
+  assert.equal(limitParam.schema.default, 100);
   assert.ok(spec.paths["/api/bots"].post);
   const laneParam = spec.paths["/api/bots"].get.parameters.find(
     (param: { name: string }) => param.name === "lane"

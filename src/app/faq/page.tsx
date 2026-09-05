@@ -6,6 +6,8 @@ import { GUIDES } from "@/lib/guides";
 import { faqJson } from "@/lib/json-ld";
 import { pageMetadata } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = pageMetadata({
   title: "FAQ",
   description:

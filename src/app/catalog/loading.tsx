@@ -4,7 +4,7 @@ export default function CatalogLoading() {
   return (
     <main>
       <div className="mx-auto w-full max-w-6xl px-4 pt-8 pb-4 sm:px-6 sm:pt-14">
-        <h1 className="display-page">Catalog</h1>
+        <p className="display-page">Catalog</p>
         <p className="mt-4 max-w-xl text-sm leading-6 text-body">
           The ranked board, marching.
         </p>

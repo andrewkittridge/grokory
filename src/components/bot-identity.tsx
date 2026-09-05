@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   GrokBotIdentityMark,
   GrokBotMark,
@@ -19,6 +19,11 @@ export function BotIdentityThumb({
   size?: "md" | "lg";
   className?: string;
 }) {
+  const [painted, setPainted] = useState(false);
+  useEffect(() => {
+    setPainted(true);
+  }, []);
+
   return (
     <span
       className={cn(
@@ -30,7 +35,13 @@ export function BotIdentityThumb({
       aria-hidden="true"
     >
       <span className="grok-bot-rim" aria-hidden="true" />
-      {mark ? <GrokBotIdentityMark mark={mark} /> : <GrokBotMark />}
+      {painted ? (
+        mark ? (
+          <GrokBotIdentityMark mark={mark} />
+        ) : (
+          <GrokBotMark />
+        )
+      ) : null}
     </span>
   );
 }
